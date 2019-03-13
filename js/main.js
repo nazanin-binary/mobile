@@ -46,21 +46,6 @@
 "use strict";
 
 /**
- * @name Change Password module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/11/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.change-password", ["binary.pages.change-password.controllers"]);
-
-  angular.module("binary.pages.change-password.controllers", []);
-})();
-"use strict";
-
-/**
  * @name authentication module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -72,6 +57,21 @@
   angular.module("binary.pages.authentication", ["binary.pages.authentication.controllers"]);
 
   angular.module("binary.pages.authentication.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name Change Password module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/11/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.change-password", ["binary.pages.change-password.controllers"]);
+
+  angular.module("binary.pages.change-password.controllers", []);
 })();
 "use strict";
 
@@ -215,21 +215,6 @@
 "use strict";
 
 /**
- * @name new-account-real module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.real-account-opening", []);
-
-  angular.module("binary.pages.real-account-opening.controllers", []);
-})();
-"use strict";
-
-/**
  * @name Redirect Module
  * @author Morteza Tavanarad
  * @contributors []
@@ -241,6 +226,21 @@
   angular.module("binary.pages.redirect", ["binary.pages.redirect.controllers"]);
 
   angular.module("binary.pages.redirect.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name new-account-real module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/14/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.real-account-opening", []);
+
+  angular.module("binary.pages.real-account-opening.controllers", []);
 })();
 "use strict";
 
@@ -845,8 +845,27 @@
 "use strict";
 
 (function () {
-    angular.module("binary").run(["$rootScope", "$ionicPlatform", "$state", "alertService", "appStateService", function ($rootScope, $ionicPlatform, $state, alertService, appStateService) {
+    angular.module("binary").run(["$rootScope", "$ionicPlatform", "$state", "alertService", "appStateService", "appVersionService", function ($rootScope, $ionicPlatform, $state, alertService, appStateService, appVersionService) {
         $ionicPlatform.ready(function () {
+            if (window.CacheClear) {
+                cordova.getAppVersion().then(function (version) {
+                    if (version === localStorage.version) {
+                        return;
+                    }
+
+                    var language = localStorage.language;
+                    var accounts = localStorage.accounts;
+                    window.CacheClear(function () {
+                        localStorage.version = version;
+                        localStorage.language = language || "en";
+                        localStorage.accounts = accounts || null;
+
+                        window.location.href = 'file:///android_asset/www/index.html';
+                    }, function (e) {
+                        console.log('Cannot clear cache!'); // eslint-disable-line no-console
+                    });
+                });
+            }
             if (ionic.Platform.isIOS()) {
                 setTimeout(function () {
                     navigator.splashscreen.hide();
@@ -1170,13 +1189,15 @@ angular.module("ngIOS9UIWebViewPatch", ["ng"]).config(["$provide", function ($pr
  * @copyright Binary Ltd
  */
 
+var isBinaryMe = window.location.host === 'ticktrade.binary.me';
+
 angular.module("binary").constant("config", {
-    app_id: "10",
+    app_id: isBinaryMe ? "15488" : "10",
     serverUrl: "frontend.binaryws.com",
     serverCertFP: "",
     qaMachinesCertFP: "",
     wsUrl: "wss://frontend.binaryws.com/websockets/v3", // Don't set language value here
-    oauthUrl: "https://oauth.binary.com/oauth2/authorize",
+    oauthUrl: "https://oauth.binary." + (isBinaryMe ? 'me' : 'com') + "/oauth2/authorize",
     tradeCategories: [{
         name: "up_down",
         markets: ["forex", "volidx", "random"],
@@ -1664,6 +1685,7 @@ angular.module("binary").config(["$locationProvider", "$stateProvider", "$urlRou
 
 angular.module("binary").config(["$translateProvider", function ($translateProvider) {
     var language = localStorage.language || "en";
+    $translateProvider.fallbackLanguage("en");
     $translateProvider.preferredLanguage(language);
     $translateProvider.useStaticFilesLoader({
         prefix: "i18n/",
@@ -2394,6 +2416,25 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
+ * @name authentication controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 04/27/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.authentication.controllers").controller("AuthenticationController", Authentication);
+
+    Authentication.$inject = [];
+
+    function Authentication() {
+        var vm = this;
+    }
+})();
+"use strict";
+
+/**
  * @name Change Password controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2459,25 +2500,6 @@ angular.module("binary").constant("financialInformationOptions", {
                 alertService.displayError(error.message);
             }
         });
-    }
-})();
-"use strict";
-
-/**
- * @name authentication controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 04/27/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.authentication.controllers").controller("AuthenticationController", Authentication);
-
-    Authentication.$inject = [];
-
-    function Authentication() {
-        var vm = this;
     }
 })();
 "use strict";
@@ -3905,6 +3927,38 @@ angular.module("binary").constant("financialInformationOptions", {
         return DataChange;
     }
 })();
+'use strict';
+
+/**
+ * @name Redirect Controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 03/03/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module('binary.pages.redirect.controllers').controller("RedirectController", Redirect);
+
+    Redirect.$inject = ['$state'];
+
+    function Redirect($state) {
+        var vm = this;
+
+        vm.init = function () {
+            var url = window.location.href;
+            var result = /^.*\?(.*)$/g.exec(url);
+
+            if (result) {
+                $state.go('signin', { accountTokens: url });
+            } else {
+                $state.go('home');
+            }
+        };
+
+        vm.init();
+    }
+})();
 "use strict";
 
 /**
@@ -4055,38 +4109,6 @@ angular.module("binary").constant("financialInformationOptions", {
             vm.errors = {};
             websocketService.sendRequestFor.residenceListSend();
             vm.readOnly = !isVirtual;
-        };
-
-        vm.init();
-    }
-})();
-'use strict';
-
-/**
- * @name Redirect Controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 03/03/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module('binary.pages.redirect.controllers').controller("RedirectController", Redirect);
-
-    Redirect.$inject = ['$state'];
-
-    function Redirect($state) {
-        var vm = this;
-
-        vm.init = function () {
-            var url = window.location.href;
-            var result = /^.*\?(.*)$/g.exec(url);
-
-            if (result) {
-                $state.go('signin', { accountTokens: url });
-            } else {
-                $state.go('home');
-            }
         };
 
         vm.init();
@@ -4543,9 +4565,7 @@ angular.module("binary").constant("financialInformationOptions", {
         vm.ios = ionic.Platform.isIOS();
         vm.android = ionic.Platform.isAndroid();
         vm.disableNextbutton = false;
-        vm.clientCountryIsUK = false;
         vm.linkToRegulatory = "https://www.binary.com/" + (localStorage.getItem("language") || "en") + "/regulation.html";
-        vm.gamStopLink = "https://www.gamstop.co.uk/";
 
         /**
          * On load:
@@ -4696,14 +4716,6 @@ angular.module("binary").constant("financialInformationOptions", {
             });
         });
 
-        $scope.$on("website_status", function (e, website_status) {
-            $scope.$applyAsync(function () {
-                if (/gb/.test(website_status.clients_country)) {
-                    vm.clientCountryIsUK = true;
-                }
-            });
-        });
-
         // change different type of singing methods
         vm.changeSigninView = function (_isBack) {
             _isBack = _isBack || false;
@@ -4750,10 +4762,6 @@ angular.module("binary").constant("financialInformationOptions", {
 
         vm.goToRegulatory = function () {
             window.open(vm.linkToRegulatory, "_blank");
-        };
-
-        vm.goToGamStop = function () {
-            window.open(vm.gamStopLink, "_blank");
         };
     }
 })();
@@ -5564,8 +5572,8 @@ angular.module("binary").constant("financialInformationOptions", {
         vm.showSpinner = true;
         vm.platform = null;
 
-        vm.openExternal = function ($event) {
-            window.open($event.currentTarget.href, "_system");
+        vm.openExternal = function (url) {
+            window.open(url, "_system");
             return false;
         };
 
@@ -6584,7 +6592,9 @@ angular.module("binary").factory("chartService", ["$rootScope", function ($rootS
                         index: index + (tickPriceList.length - 1)
                     });
                 }
-            } else if (isExitSpot(tickTime, utils.getAbsoluteIndex(index))) {
+            }
+
+            if (isExitSpot(tickTime, utils.getAbsoluteIndex(index))) {
                 contract.showingExitSpot = true;
             }
         };
@@ -6601,11 +6611,13 @@ angular.module("binary").factory("chartService", ["$rootScope", function ($rootS
                     utils.setObjValue(contract, "barrier", barrier, !utils.digitTrade(contract));
                     utils.setObjValue(contract, "entrySpotPrice", tickPrice, true);
                     utils.setObjValue(contract, "entrySpotTime", tickTime, !hasEntrySpot());
-                } else if (isExitSpot(tickTime, index)) {
-                    utils.setObjValue(contract, "exitSpot", tickTime, !hasExitSpot());
+                    utils.setObjValue(contract, "entrySpotIndex", index, true);
                 }
-                utils.setObjValue(contract, "entrySpotIndex", index, isEntrySpot(tickTime));
-                utils.setObjValue(contract, "exitSpotIndex", index, isExitSpot(tickTime, index));
+
+                if (isExitSpot(tickTime, index)) {
+                    utils.setObjValue(contract, "exitSpot", tickTime, !hasExitSpot());
+                    utils.setObjValue(contract, "exitSpotIndex", index, true);
+                }
 
                 // tickPriceList.push(tickPrice);
             }
@@ -6781,10 +6793,12 @@ angular.module("binary").factory("chartService", ["$rootScope", function ($rootS
             } else {
                 end = thisChart.datasets[0].points.slice(-1)[0].x;
             }
-            if (end <= start) {
+            if (end < start) {
                 return;
+            } else if (end === start) {
+                start -= 2; // subtract 2 from start to make the region visible when the duration is 1 tick
             }
-            var length = end - start;
+            var length = end - start || 6; // set the region length to 6 whenever the duration is 1 tick
             ctx.fillStyle = region.color;
             ctx.fillRect(start, thisChart.scale.startPoint - 12, length, height); // begin the region from the top
         };
@@ -8233,7 +8247,7 @@ angular.module("binary").factory("validationService", ["clientService", function
     var validateGeneralRegex = /[`~!@#$%^&*)(_=+[}{\]\\/";:?><|]+/;
     var validateAddressRegex = /[`~!$%^&*_=+[}{\]\\"?><|]+/;
     var validatePostcodeRegex = /^([a-zA-Z\d-\s])*$/;
-    var validatePhoneRegex = /^\+?[0-9\s]*$/;
+    var validatePhoneRegex = /^\+?((-|\s)*[0-9])*$/;
     var validateTaxIdentificationNumberRegex = /^[\w-]{0,20}$/;
     var passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]+/;
     var mailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
@@ -8298,7 +8312,7 @@ angular.module("binary").factory("validationService", ["clientService", function
             max: 20
         },
         phone: {
-            min: 6,
+            min: 8,
             max: 35
         },
         secret_answer: {
@@ -12020,6 +12034,9 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
                 vm.options.digit = tradeTypes[vm.options.tradeType][0].last_digit_range ? vm.options.digit || tradeTypes[vm.options.tradeType][0].last_digit_range[0] : null;
                 vm.options.barrier = tradeTypes[vm.options.tradeType][0].barriers > 0 ? vm.options.barrier || tradeTypes[vm.options.tradeType][0].barrier : null;
                 vm.options.selected_tick = vm.options.tradeType === 'High/Low Ticks' ? vm.options.selected_tick || vm.options.tick : null;
+                var min = parseInt(tradeTypes[vm.options.tradeType][0].min_contract_duration.slice(0, -1));
+                var max = parseInt(tradeTypes[vm.options.tradeType][0].max_contract_duration.slice(0, -1));
+                vm.tickRangeLength = min && max ? _.range(min, max + 1).length : 0;
                 updateProposal();
                 tradeService.proposalIsReady = true;
             });
@@ -12070,6 +12087,13 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
                         }
                         break;
                     }
+                case vm.SECTIONS.TICKS:
+                    {
+                        if (vm.tickRangeLength <= 1) {
+                            return;
+                        }
+                        break;
+                    }
                 default:
                     break;
             }
@@ -12115,6 +12139,9 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             vm.options.digit = tradeType.last_digit_range ? vm.options.digit || tradeType.last_digit_range[0] : null;
             vm.options.barrier = tradeType.barriers > 0 && !_.isEmpty(tradeType.barrier) ? vm.options.barrier || tradeType.barrier : null;
             vm.options.selected_tick = vm.options.tradeType === 'High/Low Ticks' ? vm.options.selected_tick || parseInt(vm.options.tick) : null;
+            var min = parseInt(tradeType.min_contract_duration.slice(0, -1));
+            var max = parseInt(tradeType.max_contract_duration.slice(0, -1));
+            vm.tickRangeLength = min && max ? _.range(min, max + 1).length : 0;
             vm.section2 = vm.SECTIONS.OVERVIEW2;
             updateProposal();
             hideModal();
