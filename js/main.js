@@ -31,21 +31,6 @@
 "use strict";
 
 /**
- * @name Asset Index module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/26/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.asset-index", ["binary.pages.asset-index.controllers"]);
-
-  angular.module("binary.pages.asset-index.controllers", []);
-})();
-"use strict";
-
-/**
  * @name authentication module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -87,6 +72,21 @@
   angular.module("binary.pages.contact", ["binary.pages.contact.controllers"]);
 
   angular.module("binary.pages.contact.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name Asset Index module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/26/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.asset-index", ["binary.pages.asset-index.controllers"]);
+
+  angular.module("binary.pages.asset-index.controllers", []);
 })();
 "use strict";
 
@@ -733,6 +733,25 @@
 "use strict";
 
 /**
+ * @name chart module
+ * @author morteza tavnarad
+ * @contributors []
+ * @since 08/29/2016
+ * @copyright binary ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart", ["binary.pages.trade.components.chart.controllers", "binary.pages.trade.components.chart.directives", "binary.pages.trade.components.chart.services"]);
+
+    angular.module("binary.pages.trade.components.chart.controllers", []);
+
+    angular.module("binary.pages.trade.components.chart.directives", []);
+
+    angular.module("binary.pages.trade.components.chart.services", []);
+})();
+"use strict";
+
+/**
  * @name longcode module
  * @author Morteza Tavnarad
  * @contributors []
@@ -799,25 +818,6 @@
     angular.module("binary.pages.trade.components.purchase.controllers", []);
 
     angular.module("binary.pages.trade.components.purchase.directives", []);
-})();
-"use strict";
-
-/**
- * @name chart module
- * @author morteza tavnarad
- * @contributors []
- * @since 08/29/2016
- * @copyright binary ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart", ["binary.pages.trade.components.chart.controllers", "binary.pages.trade.components.chart.directives", "binary.pages.trade.components.chart.services"]);
-
-    angular.module("binary.pages.trade.components.chart.controllers", []);
-
-    angular.module("binary.pages.trade.components.chart.directives", []);
-
-    angular.module("binary.pages.trade.components.chart.services", []);
 })();
 "use strict";
 
@@ -2298,124 +2298,6 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
- * @name Asset Index controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/26/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.asset-index.controllers").controller("AssetIndexController", AssetIndex);
-
-    AssetIndex.$inject = ["$scope", "$q"];
-
-    function AssetIndex($scope, $q) {
-        var vm = this;
-        vm.hasError = false;
-        vm.assetIndex = JSON.parse(sessionStorage.asset_index || null);
-        vm.activeSymbols = JSON.parse(sessionStorage.all_active_symbols);
-
-        vm.getSymbolInfo = function (qSymbol, activeSymbols) {
-            return _.filter(activeSymbols, function (sy, id) {
-                return sy.symbol === qSymbol;
-            });
-        };
-
-        vm.getAssetIndexData = function (assetIndex, activeSymbols) {
-            if (!assetIndex || !activeSymbols) {
-                return false;
-            }
-
-            vm.marketColumns = {};
-
-            var idx = {
-                symbol: 0,
-                displayName: 1,
-                cells: 2,
-                cellName: 0,
-                cellDisplayName: 1,
-                cellFrom: 2,
-                cellTo: 3,
-                symInfo: 3,
-                values: 4
-            };
-
-            for (var i = 0; i < assetIndex.length; i++) {
-                vm.assetItem = assetIndex[i];
-                vm.symbolInfo = vm.getSymbolInfo(vm.assetItem[idx.symbol], activeSymbols)[0];
-                if (vm.symbolInfo) {
-                    var market = vm.symbolInfo.market;
-
-                    vm.assetItem.push(vm.symbolInfo);
-
-                    if (!(market in vm.marketColumns)) {
-                        vm.marketColumns[market] = {
-                            header: [],
-                            columns: [],
-                            sub: [],
-                            displayName: vm.symbolInfo.market_display_name
-                        };
-                    }
-
-                    vm.assetCells = vm.assetItem[idx.cells];
-                    var values = {};
-                    for (var j = 0; j < vm.assetCells.length; j++) {
-                        var col = vm.assetCells[j][idx.displayName];
-                        values[col] = vm.assetCells[j][idx.cellFrom] + " - " + vm.assetCells[j][idx.cellTo];
-                        var marketCols = vm.marketColumns[market];
-                        if (marketCols.columns.indexOf(col) < 0) {
-                            marketCols.header.push(vm.assetCells[j][idx.cellDisplayName]);
-                            marketCols.columns.push(col);
-                        }
-                    }
-                    vm.assetItem.push(values);
-                }
-            }
-            vm.assetIndex = assetIndex;
-            return vm.assetIndex;
-        };
-        vm.getMarketColumns = function () {
-            $scope.$applyAsync(function () {
-                if (vm.marketColumns) {
-                    vm.selectedMarket = Object.getOwnPropertyNames(vm.marketColumns)[0];
-                }
-            });
-            vm.hasError = false;
-            return vm.marketColumns;
-        };
-
-        vm.getSubmarketTable = function (marketColumns, assetIndex) {
-            vm.submarketNames = {};
-            if (assetIndex) {
-                for (var i = 0; i < assetIndex.length; i++) {
-                    var assetItem = assetIndex[i];
-                    if (assetItem[3]) {
-                        var symInfo = assetItem[3];
-                        var marketId = symInfo.market;
-                        var subMarketId = symInfo.submarket;
-                        var submarketDisplayName = symInfo.submarket_display_name;
-                        if (marketColumns[marketId].sub.indexOf(subMarketId) < 0) {
-                            marketColumns[marketId].sub.push(subMarketId);
-                            vm.submarketNames[subMarketId] = submarketDisplayName;
-                        }
-                    }
-                }
-            }
-        };
-        vm.getAssetIndexData(vm.assetIndex, vm.activeSymbols);
-        var promise = $q(function (resolve) {
-            if (vm.getMarketColumns()) resolve();
-        });
-        promise.then(function () {
-            vm.getSubmarketTable(vm.marketColumns, vm.assetIndex);
-            vm.hasError = false;
-        });
-    }
-})();
-"use strict";
-
-/**
  * @name authentication controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2587,6 +2469,124 @@ angular.module("binary").constant("financialInformationOptions", {
                 }
             }
         };
+    }
+})();
+"use strict";
+
+/**
+ * @name Asset Index controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/26/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.asset-index.controllers").controller("AssetIndexController", AssetIndex);
+
+    AssetIndex.$inject = ["$scope", "$q"];
+
+    function AssetIndex($scope, $q) {
+        var vm = this;
+        vm.hasError = false;
+        vm.assetIndex = JSON.parse(sessionStorage.asset_index || null);
+        vm.activeSymbols = JSON.parse(sessionStorage.all_active_symbols);
+
+        vm.getSymbolInfo = function (qSymbol, activeSymbols) {
+            return _.filter(activeSymbols, function (sy, id) {
+                return sy.symbol === qSymbol;
+            });
+        };
+
+        vm.getAssetIndexData = function (assetIndex, activeSymbols) {
+            if (!assetIndex || !activeSymbols) {
+                return false;
+            }
+
+            vm.marketColumns = {};
+
+            var idx = {
+                symbol: 0,
+                displayName: 1,
+                cells: 2,
+                cellName: 0,
+                cellDisplayName: 1,
+                cellFrom: 2,
+                cellTo: 3,
+                symInfo: 3,
+                values: 4
+            };
+
+            for (var i = 0; i < assetIndex.length; i++) {
+                vm.assetItem = assetIndex[i];
+                vm.symbolInfo = vm.getSymbolInfo(vm.assetItem[idx.symbol], activeSymbols)[0];
+                if (vm.symbolInfo) {
+                    var market = vm.symbolInfo.market;
+
+                    vm.assetItem.push(vm.symbolInfo);
+
+                    if (!(market in vm.marketColumns)) {
+                        vm.marketColumns[market] = {
+                            header: [],
+                            columns: [],
+                            sub: [],
+                            displayName: vm.symbolInfo.market_display_name
+                        };
+                    }
+
+                    vm.assetCells = vm.assetItem[idx.cells];
+                    var values = {};
+                    for (var j = 0; j < vm.assetCells.length; j++) {
+                        var col = vm.assetCells[j][idx.displayName];
+                        values[col] = vm.assetCells[j][idx.cellFrom] + " - " + vm.assetCells[j][idx.cellTo];
+                        var marketCols = vm.marketColumns[market];
+                        if (marketCols.columns.indexOf(col) < 0) {
+                            marketCols.header.push(vm.assetCells[j][idx.cellDisplayName]);
+                            marketCols.columns.push(col);
+                        }
+                    }
+                    vm.assetItem.push(values);
+                }
+            }
+            vm.assetIndex = assetIndex;
+            return vm.assetIndex;
+        };
+        vm.getMarketColumns = function () {
+            $scope.$applyAsync(function () {
+                if (vm.marketColumns) {
+                    vm.selectedMarket = Object.getOwnPropertyNames(vm.marketColumns)[0];
+                }
+            });
+            vm.hasError = false;
+            return vm.marketColumns;
+        };
+
+        vm.getSubmarketTable = function (marketColumns, assetIndex) {
+            vm.submarketNames = {};
+            if (assetIndex) {
+                for (var i = 0; i < assetIndex.length; i++) {
+                    var assetItem = assetIndex[i];
+                    if (assetItem[3]) {
+                        var symInfo = assetItem[3];
+                        var marketId = symInfo.market;
+                        var subMarketId = symInfo.submarket;
+                        var submarketDisplayName = symInfo.submarket_display_name;
+                        if (marketColumns[marketId].sub.indexOf(subMarketId) < 0) {
+                            marketColumns[marketId].sub.push(subMarketId);
+                            vm.submarketNames[subMarketId] = submarketDisplayName;
+                        }
+                    }
+                }
+            }
+        };
+        vm.getAssetIndexData(vm.assetIndex, vm.activeSymbols);
+        var promise = $q(function (resolve) {
+            if (vm.getMarketColumns()) resolve();
+        });
+        promise.then(function () {
+            vm.getSubmarketTable(vm.marketColumns, vm.assetIndex);
+            vm.hasError = false;
+        });
     }
 })();
 "use strict";
@@ -11360,6 +11360,299 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
+ * @name chart controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 08/29/2015
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.controllers").controller("ChartController", Chart);
+
+    Chart.$inject = ["$scope", "chartService", "websocketService"];
+
+    function Chart($scope, chartService, websocketService) {
+        var vm = this;
+
+        $scope.$on("$destroy", function (e, value) {
+            websocketService.sendRequestFor.forgetTicks();
+            chartService.destroy();
+        });
+
+        $scope.$on("portfolio", function (e, portfolio) {
+            var contractId = vm.purchasedContract.contractId;
+
+            if (!_.isEmpty(contractId)) {
+                portfolio.contracts.forEach(function (contract) {
+                    if (contract.contract_id.toString() === contractId) {
+                        chartService.addContract({
+                            startTime: contract.date_start + 1,
+                            duration: parseInt(vm.proposal.duration),
+                            type: vm.proposal.tradeType === "Higher/Lower" ? contract.contract_type + "HL" : contract.contract_type,
+                            selectedTick: vm.proposal.tradeType === "High/Low Ticks" ? vm.proposal.selected_tick : null,
+                            barrier: vm.proposal.barrier
+                        });
+                    }
+                });
+            }
+        });
+
+        $scope.$on("tick", function (e, feed) {
+            if (feed && feed.echo_req.ticks_history === vm.proposal.symbol) {
+                chartService.historyInterface.addTick(feed.tick);
+            } else {
+                websocketService.sendRequestFor.forgetStream(feed.tick.id);
+            }
+        });
+
+        $scope.$on("history", function (e, feed) {
+            if (feed && feed.echo_req.ticks_history === vm.proposal.symbol) {
+                chartService.historyInterface.addHistory(feed.history);
+            }
+        });
+
+        $scope.$on("candles", function (e, feed) {
+            if (feed) {
+                chartService.historyInterface.addCandles(feed.candles);
+            }
+        });
+
+        $scope.$on("ohlc", function (e, feed) {
+            if (feed) {
+                chartService.historyInterface.addOhlc(feed.ohlc);
+            }
+        });
+
+        $scope.$on("connection:ready", function (e) {
+            sendTickHistoryRequest();
+        });
+
+        $scope.$watch(function () {
+            return vm.proposal.symbol;
+        }, function (newValue, oldValue) {
+            if (vm.proposal.symbol) {
+                // && newValue !== oldValue){
+                sendTickHistoryRequest();
+            }
+        });
+
+        function init() {
+            var chartId = "tradeChart";
+
+            vm.chartDragLeft = chartService.dragLeft;
+            vm.chartDragRight = chartService.dragRight;
+            vm.chartTouch = chartService.dragStart;
+            vm.chartRelease = chartService.dragEnd;
+            vm.chartPinchIn = chartService.zoomOut;
+            vm.chartPinchOut = chartService.zoomIn;
+            vm.chartPinchStart = chartService.zoomStart;
+            vm.chartPinchEnd = chartService.zoomEnd;
+
+            chartService.drawChart(chartId);
+            sendTickHistoryRequest();
+        }
+
+        function sendTickHistoryRequest() {
+            if (_.isEmpty(vm.proposal.symbol)) {
+                return;
+            }
+
+            var symbol = vm.proposal.symbol;
+            websocketService.sendRequestFor.forgetTicks();
+            websocketService.sendRequestFor.ticksHistory({
+                ticks_history: symbol,
+                end: "latest",
+                count: chartService.getCapacity(),
+                subscribe: 1
+            });
+        }
+
+        init();
+    }
+})();
+"use strict";
+
+/**
+ * @name chart directive
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 08/29/2015
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.directives").directive("bgChart", Chart);
+
+    function Chart() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/chart/chart.template.html",
+            controller: "ChartController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {
+                proposal: "=",
+                purchasedContract: "="
+            }
+        };
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name digit-result controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 10/01/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.controllers").controller("DigitResultController", Result);
+
+    Result.$inject = ["$scope"];
+
+    function Result($scope) {
+        var vm = this;
+
+        vm.spots = [];
+        vm.reset = true;
+        vm.counter = 0;
+
+        $scope.$on("contract:spot", function (e, contract, lastPrice) {
+            if (vm.reset) {
+                // vm.spots = new Array(contract.duration+1).fill().map((e, i) => { return {}});
+                vm.spots = new Array(contract.duration + 1);
+                for (var i = 0; i < vm.spots.length; i++) {
+                    vm.spots[i] = {};
+                }
+                vm.reset = false;
+                vm.counter = 0;
+            }
+
+            var localContract = _.clone(contract);
+
+            $scope.$applyAsync(function () {
+                vm.spots[vm.counter++] = {
+                    result: localContract.result,
+                    value: lastPrice.toString().slice(-1)
+                };
+            });
+        });
+
+        $scope.$on("contract:finished", function (e, contract) {
+            vm.reset = true;
+        });
+    }
+})();
+"use strict";
+
+/**
+ * @name digit-result directive
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 10/01/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.directives").directive("bgDigitResult", Result);
+
+    function Result() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/chart/digit-result.template.html",
+            controller: "DigitResultController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
+        };
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name tick result controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 06/30/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.controllers").controller("TickResultController", TickResult);
+
+    TickResult.$inject = ["$scope"];
+
+    function TickResult($scope) {
+        var vm = this;
+
+        vm.spots = [];
+        vm.reset = true;
+        vm.counter = 0;
+        vm.selectedTick = 0;
+
+        $scope.$on("contract:spot", function (e, contract, lastPrice) {
+            if (vm.reset) {
+                vm.spots = new Array(contract.duration + 1);
+                _.map(vm.spots, function (val, i) {
+                    vm.spots[i] = {};
+                });
+                vm.reset = false;
+                vm.counter = 0;
+            }
+            var localContract = _.clone(contract);
+
+            $scope.$applyAsync(function () {
+                vm.selectedTick = contract.selectedTick - 1;
+                if (vm.counter < vm.spots.length) {
+                    vm.spots[vm.counter++] = {
+                        result: localContract.result,
+                        value: lastPrice
+                    };
+                }
+            });
+        });
+
+        $scope.$on("contract:finished", function (e, contract) {
+            vm.reset = true;
+        });
+    }
+})();
+"use strict";
+
+/**
+ * @name tick result directive
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 06/30/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.directives").directive("bgTickResult", TickResult);
+
+    function TickResult() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/chart/tick-result.template.html",
+            controller: "TickResultController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
+        };
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
  * @name longcode controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -12758,299 +13051,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
                 purchasedContract: "=",
                 showSummary: "=inPurchaseMode"
             }
-        };
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
- * @name chart controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 08/29/2015
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.controllers").controller("ChartController", Chart);
-
-    Chart.$inject = ["$scope", "chartService", "websocketService"];
-
-    function Chart($scope, chartService, websocketService) {
-        var vm = this;
-
-        $scope.$on("$destroy", function (e, value) {
-            websocketService.sendRequestFor.forgetTicks();
-            chartService.destroy();
-        });
-
-        $scope.$on("portfolio", function (e, portfolio) {
-            var contractId = vm.purchasedContract.contractId;
-
-            if (!_.isEmpty(contractId)) {
-                portfolio.contracts.forEach(function (contract) {
-                    if (contract.contract_id.toString() === contractId) {
-                        chartService.addContract({
-                            startTime: contract.date_start + 1,
-                            duration: parseInt(vm.proposal.duration),
-                            type: vm.proposal.tradeType === "Higher/Lower" ? contract.contract_type + "HL" : contract.contract_type,
-                            selectedTick: vm.proposal.tradeType === "High/Low Ticks" ? vm.proposal.selected_tick : null,
-                            barrier: vm.proposal.barrier
-                        });
-                    }
-                });
-            }
-        });
-
-        $scope.$on("tick", function (e, feed) {
-            if (feed && feed.echo_req.ticks_history === vm.proposal.symbol) {
-                chartService.historyInterface.addTick(feed.tick);
-            } else {
-                websocketService.sendRequestFor.forgetStream(feed.tick.id);
-            }
-        });
-
-        $scope.$on("history", function (e, feed) {
-            if (feed && feed.echo_req.ticks_history === vm.proposal.symbol) {
-                chartService.historyInterface.addHistory(feed.history);
-            }
-        });
-
-        $scope.$on("candles", function (e, feed) {
-            if (feed) {
-                chartService.historyInterface.addCandles(feed.candles);
-            }
-        });
-
-        $scope.$on("ohlc", function (e, feed) {
-            if (feed) {
-                chartService.historyInterface.addOhlc(feed.ohlc);
-            }
-        });
-
-        $scope.$on("connection:ready", function (e) {
-            sendTickHistoryRequest();
-        });
-
-        $scope.$watch(function () {
-            return vm.proposal.symbol;
-        }, function (newValue, oldValue) {
-            if (vm.proposal.symbol) {
-                // && newValue !== oldValue){
-                sendTickHistoryRequest();
-            }
-        });
-
-        function init() {
-            var chartId = "tradeChart";
-
-            vm.chartDragLeft = chartService.dragLeft;
-            vm.chartDragRight = chartService.dragRight;
-            vm.chartTouch = chartService.dragStart;
-            vm.chartRelease = chartService.dragEnd;
-            vm.chartPinchIn = chartService.zoomOut;
-            vm.chartPinchOut = chartService.zoomIn;
-            vm.chartPinchStart = chartService.zoomStart;
-            vm.chartPinchEnd = chartService.zoomEnd;
-
-            chartService.drawChart(chartId);
-            sendTickHistoryRequest();
-        }
-
-        function sendTickHistoryRequest() {
-            if (_.isEmpty(vm.proposal.symbol)) {
-                return;
-            }
-
-            var symbol = vm.proposal.symbol;
-            websocketService.sendRequestFor.forgetTicks();
-            websocketService.sendRequestFor.ticksHistory({
-                ticks_history: symbol,
-                end: "latest",
-                count: chartService.getCapacity(),
-                subscribe: 1
-            });
-        }
-
-        init();
-    }
-})();
-"use strict";
-
-/**
- * @name chart directive
- * @author Morteza Tavanarad
- * @contributors []
- * @since 08/29/2015
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.directives").directive("bgChart", Chart);
-
-    function Chart() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/pages/trade/components/chart/chart.template.html",
-            controller: "ChartController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {
-                proposal: "=",
-                purchasedContract: "="
-            }
-        };
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
- * @name digit-result controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 10/01/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.controllers").controller("DigitResultController", Result);
-
-    Result.$inject = ["$scope"];
-
-    function Result($scope) {
-        var vm = this;
-
-        vm.spots = [];
-        vm.reset = true;
-        vm.counter = 0;
-
-        $scope.$on("contract:spot", function (e, contract, lastPrice) {
-            if (vm.reset) {
-                // vm.spots = new Array(contract.duration+1).fill().map((e, i) => { return {}});
-                vm.spots = new Array(contract.duration + 1);
-                for (var i = 0; i < vm.spots.length; i++) {
-                    vm.spots[i] = {};
-                }
-                vm.reset = false;
-                vm.counter = 0;
-            }
-
-            var localContract = _.clone(contract);
-
-            $scope.$applyAsync(function () {
-                vm.spots[vm.counter++] = {
-                    result: localContract.result,
-                    value: lastPrice.toString().slice(-1)
-                };
-            });
-        });
-
-        $scope.$on("contract:finished", function (e, contract) {
-            vm.reset = true;
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name digit-result directive
- * @author Morteza Tavanarad
- * @contributors []
- * @since 10/01/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.directives").directive("bgDigitResult", Result);
-
-    function Result() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/pages/trade/components/chart/digit-result.template.html",
-            controller: "DigitResultController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
- * @name tick result controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 06/30/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.controllers").controller("TickResultController", TickResult);
-
-    TickResult.$inject = ["$scope"];
-
-    function TickResult($scope) {
-        var vm = this;
-
-        vm.spots = [];
-        vm.reset = true;
-        vm.counter = 0;
-        vm.selectedTick = 0;
-
-        $scope.$on("contract:spot", function (e, contract, lastPrice) {
-            if (vm.reset) {
-                vm.spots = new Array(contract.duration + 1);
-                _.map(vm.spots, function (val, i) {
-                    vm.spots[i] = {};
-                });
-                vm.reset = false;
-                vm.counter = 0;
-            }
-            var localContract = _.clone(contract);
-
-            $scope.$applyAsync(function () {
-                vm.selectedTick = contract.selectedTick - 1;
-                if (vm.counter < vm.spots.length) {
-                    vm.spots[vm.counter++] = {
-                        result: localContract.result,
-                        value: lastPrice
-                    };
-                }
-            });
-        });
-
-        $scope.$on("contract:finished", function (e, contract) {
-            vm.reset = true;
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name tick result directive
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 06/30/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.directives").directive("bgTickResult", TickResult);
-
-    function TickResult() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/pages/trade/components/chart/tick-result.template.html",
-            controller: "TickResultController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
         };
 
         return directive;
