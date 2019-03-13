@@ -10415,6 +10415,10 @@ ion-subheader-bar.bar.bar-subheader.bar-positive {
     align-items: flex-end !important; }
     .sign-in .regulatory-information a {
       font-weight: normal; }
+  .sign-in .gamstop a {
+    display: inline-block; }
+    .sign-in .gamstop a img {
+      width: 150px; }
   .sign-in #emailform,
   .sign-in #virtualws {
     margin: 0 auto; }
@@ -11661,7 +11665,7 @@ ion-subheader-bar.bar.bar-subheader.bar-positive {
     display: flex;
     flex-grow: 1;
     padding: 0;
-    font-size: 0.9rem; }
+    font-size: 1rem; }
     .transaction-detail ul.statement-list .statement-element.last-statement-element {
       display: block; }
 

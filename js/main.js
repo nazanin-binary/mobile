@@ -437,23 +437,6 @@
 "use strict";
 
 /**
- * @name balance module
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/15/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.balance", ["binary.share.components.balance.directives", "binary.share.components.balance.controllers"]);
-
-    angular.module("binary.share.components.balance.controllers", []);
-
-    angular.module("binary.share.components.balance.directives", []);
-})();
-"use strict";
-
-/**
  * @name app version module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -467,6 +450,23 @@
     angular.module("binary.share.components.app-version.controllers", []);
 
     angular.module("binary.share.components.app-version.directives", []);
+})();
+"use strict";
+
+/**
+ * @name balance module
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 08/15/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.balance", ["binary.share.components.balance.directives", "binary.share.components.balance.controllers"]);
+
+    angular.module("binary.share.components.balance.controllers", []);
+
+    angular.module("binary.share.components.balance.directives", []);
 })();
 "use strict";
 
@@ -517,23 +517,6 @@
 
     angular.module("binary.share.components.connectivity.directives", []);
 })();
-'use strict';
-
-/**
- * @name iOS PWA Prompt Module
- * @author Morteza Tavanarad
- * @contributors []
- * @since 03/11/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module('binary.share.components.ios-pwa-prompt', ['binary.share.components.ios-pwa-prompt.controllers', 'binary.share.components.ios-pwa-prompt.directives']);
-
-    angular.module('binary.share.components.ios-pwa-prompt.controllers', []);
-
-    angular.module('binary.share.components.ios-pwa-prompt.directives', []);
-})();
 "use strict";
 
 /**
@@ -551,6 +534,23 @@
     angular.module("binary.share.components.language.directives", []);
 
     angular.module("binary.share.components.language.controllers", []);
+})();
+'use strict';
+
+/**
+ * @name iOS PWA Prompt Module
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 03/11/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module('binary.share.components.ios-pwa-prompt', ['binary.share.components.ios-pwa-prompt.controllers', 'binary.share.components.ios-pwa-prompt.directives']);
+
+    angular.module('binary.share.components.ios-pwa-prompt.controllers', []);
+
+    angular.module('binary.share.components.ios-pwa-prompt.directives', []);
 })();
 "use strict";
 
@@ -686,23 +686,6 @@
 "use strict";
 
 /**
- * @name updater module
- * @author Morteza Tavanarad
- * @contributors []
- * @since 12/20/2015
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.updater", ["binary.share.components.updater.controllers", "binary.share.components.updater.directives"]);
-
-    angular.module("binary.share.components.updater.controllers", []);
-
-    angular.module("binary.share.components.updater.directives", []);
-})();
-"use strict";
-
-/**
  * @name spinner-logo module
  * @author Morteza Tavnarad
  * @contributors []
@@ -716,6 +699,23 @@
     angular.module("binary.share.components.spinner-logo.directives", []);
 
     angular.module("binary.share.components.spinner-logo.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name updater module
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 12/20/2015
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.updater", ["binary.share.components.updater.controllers", "binary.share.components.updater.directives"]);
+
+    angular.module("binary.share.components.updater.controllers", []);
+
+    angular.module("binary.share.components.updater.directives", []);
 })();
 "use strict";
 
@@ -845,27 +845,8 @@
 "use strict";
 
 (function () {
-    angular.module("binary").run(["$rootScope", "$ionicPlatform", "$state", "alertService", "appStateService", "appVersionService", function ($rootScope, $ionicPlatform, $state, alertService, appStateService, appVersionService) {
+    angular.module("binary").run(["$rootScope", "$ionicPlatform", "$state", "alertService", "appStateService", function ($rootScope, $ionicPlatform, $state, alertService, appStateService) {
         $ionicPlatform.ready(function () {
-            if (window.CacheClear) {
-                cordova.getAppVersion().then(function (version) {
-                    if (version === localStorage.version) {
-                        return;
-                    }
-
-                    var language = localStorage.language;
-                    var accounts = localStorage.accounts;
-                    window.CacheClear(function () {
-                        localStorage.version = version;
-                        localStorage.language = language || "en";
-                        localStorage.accounts = accounts || null;
-
-                        window.location.href = 'file:///android_asset/www/index.html';
-                    }, function (e) {
-                        console.log('Cannot clear cache!'); // eslint-disable-line no-console
-                    });
-                });
-            }
             if (ionic.Platform.isIOS()) {
                 setTimeout(function () {
                     navigator.splashscreen.hide();
@@ -1189,15 +1170,13 @@ angular.module("ngIOS9UIWebViewPatch", ["ng"]).config(["$provide", function ($pr
  * @copyright Binary Ltd
  */
 
-var isBinaryMe = window.location.host === 'ticktrade.binary.me';
-
 angular.module("binary").constant("config", {
-    app_id: isBinaryMe ? "15488" : "10",
+    app_id: "10",
     serverUrl: "frontend.binaryws.com",
     serverCertFP: "",
     qaMachinesCertFP: "",
     wsUrl: "wss://frontend.binaryws.com/websockets/v3", // Don't set language value here
-    oauthUrl: "https://oauth.binary." + (isBinaryMe ? 'me' : 'com') + "/oauth2/authorize",
+    oauthUrl: "https://oauth.binary.com/oauth2/authorize",
     tradeCategories: [{
         name: "up_down",
         markets: ["forex", "volidx", "random"],
@@ -1685,7 +1664,6 @@ angular.module("binary").config(["$locationProvider", "$stateProvider", "$urlRou
 
 angular.module("binary").config(["$translateProvider", function ($translateProvider) {
     var language = localStorage.language || "en";
-    $translateProvider.fallbackLanguage("en");
     $translateProvider.preferredLanguage(language);
     $translateProvider.useStaticFilesLoader({
         prefix: "i18n/",
@@ -4565,7 +4543,9 @@ angular.module("binary").constant("financialInformationOptions", {
         vm.ios = ionic.Platform.isIOS();
         vm.android = ionic.Platform.isAndroid();
         vm.disableNextbutton = false;
+        vm.clientCountryIsUK = false;
         vm.linkToRegulatory = "https://www.binary.com/" + (localStorage.getItem("language") || "en") + "/regulation.html";
+        vm.gamStopLink = "https://www.gamstop.co.uk/";
 
         /**
          * On load:
@@ -4716,6 +4696,14 @@ angular.module("binary").constant("financialInformationOptions", {
             });
         });
 
+        $scope.$on("website_status", function (e, website_status) {
+            $scope.$applyAsync(function () {
+                if (/gb/.test(website_status.clients_country)) {
+                    vm.clientCountryIsUK = true;
+                }
+            });
+        });
+
         // change different type of singing methods
         vm.changeSigninView = function (_isBack) {
             _isBack = _isBack || false;
@@ -4762,6 +4750,10 @@ angular.module("binary").constant("financialInformationOptions", {
 
         vm.goToRegulatory = function () {
             window.open(vm.linkToRegulatory, "_blank");
+        };
+
+        vm.goToGamStop = function () {
+            window.open(vm.gamStopLink, "_blank");
         };
     }
 })();
@@ -5572,8 +5564,8 @@ angular.module("binary").constant("financialInformationOptions", {
         vm.showSpinner = true;
         vm.platform = null;
 
-        vm.openExternal = function (url) {
-            window.open(url, "_system");
+        vm.openExternal = function ($event) {
+            window.open($event.currentTarget.href, "_system");
             return false;
         };
 
@@ -6592,9 +6584,7 @@ angular.module("binary").factory("chartService", ["$rootScope", function ($rootS
                         index: index + (tickPriceList.length - 1)
                     });
                 }
-            }
-
-            if (isExitSpot(tickTime, utils.getAbsoluteIndex(index))) {
+            } else if (isExitSpot(tickTime, utils.getAbsoluteIndex(index))) {
                 contract.showingExitSpot = true;
             }
         };
@@ -6611,13 +6601,11 @@ angular.module("binary").factory("chartService", ["$rootScope", function ($rootS
                     utils.setObjValue(contract, "barrier", barrier, !utils.digitTrade(contract));
                     utils.setObjValue(contract, "entrySpotPrice", tickPrice, true);
                     utils.setObjValue(contract, "entrySpotTime", tickTime, !hasEntrySpot());
-                    utils.setObjValue(contract, "entrySpotIndex", index, true);
-                }
-
-                if (isExitSpot(tickTime, index)) {
+                } else if (isExitSpot(tickTime, index)) {
                     utils.setObjValue(contract, "exitSpot", tickTime, !hasExitSpot());
-                    utils.setObjValue(contract, "exitSpotIndex", index, true);
                 }
+                utils.setObjValue(contract, "entrySpotIndex", index, isEntrySpot(tickTime));
+                utils.setObjValue(contract, "exitSpotIndex", index, isExitSpot(tickTime, index));
 
                 // tickPriceList.push(tickPrice);
             }
@@ -6793,12 +6781,10 @@ angular.module("binary").factory("chartService", ["$rootScope", function ($rootS
             } else {
                 end = thisChart.datasets[0].points.slice(-1)[0].x;
             }
-            if (end < start) {
+            if (end <= start) {
                 return;
-            } else if (end === start) {
-                start -= 2; // subtract 2 from start to make the region visible when the duration is 1 tick
             }
-            var length = end - start || 6; // set the region length to 6 whenever the duration is 1 tick
+            var length = end - start;
             ctx.fillStyle = region.color;
             ctx.fillRect(start, thisChart.scale.startPoint - 12, length, height); // begin the region from the top
         };
@@ -8247,7 +8233,7 @@ angular.module("binary").factory("validationService", ["clientService", function
     var validateGeneralRegex = /[`~!@#$%^&*)(_=+[}{\]\\/";:?><|]+/;
     var validateAddressRegex = /[`~!$%^&*_=+[}{\]\\"?><|]+/;
     var validatePostcodeRegex = /^([a-zA-Z\d-\s])*$/;
-    var validatePhoneRegex = /^\+?((-|\s)*[0-9])*$/;
+    var validatePhoneRegex = /^\+?[0-9\s]*$/;
     var validateTaxIdentificationNumberRegex = /^[\w-]{0,20}$/;
     var passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]+/;
     var mailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
@@ -8312,7 +8298,7 @@ angular.module("binary").factory("validationService", ["clientService", function
             max: 20
         },
         phone: {
-            min: 8,
+            min: 6,
             max: 35
         },
         secret_answer: {
@@ -9373,6 +9359,71 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
+		 * @name app version controller
+		 * @author Nazanin Reihani Haghighi
+		 * @contributors []
+		 * @since 12/19/2016
+		 * @copyright Binary Ltd
+		 */
+
+(function () {
+    angular.module("binary.share.components.app-version.controllers").controller("AppVersionController", AppVersion);
+
+    AppVersion.$inject = ["$scope", "$ionicPlatform", "appVersionService"];
+
+    function AppVersion($scope, $ionicPlatform, appVersionService) {
+        var vm = this;
+        vm.appVersion = '0.0.0';
+        $ionicPlatform.ready(function () {
+            $scope.$applyAsync(function () {
+                if (window.cordova) {
+                    cordova.getAppVersion(function (version) {
+                        vm.appVersion = version;
+                        window._trackJs.version = vm.appVersion;
+                    }, function (err) {
+                        // console.log(err);
+                    });
+                } else {
+                    appVersionService.getAppVersion().success(function (data) {
+                        vm.appVersion = data.version;
+                        window._trackJs.version = vm.appVersion;
+                    }).error(function (data) {
+                        vm.appVersion = "0.0.0";
+                        window._trackJs.version = vm.appVersion;
+                    });
+                }
+            });
+        });
+    }
+})();
+"use strict";
+
+/**
+ * @name app version directive
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 12/19/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.app-version.directives").directive("bgAppVersion", AppVersion);
+
+    function AppVersion() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/share/components/app-version/app-version.template.html",
+            controller: "AppVersionController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
+        };
+        return directive;
+    }
+})();
+"use strict";
+
+/**
  * @name balance controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -9463,71 +9514,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             });
         }
 
-        return directive;
-    }
-})();
-"use strict";
-
-/**
-		 * @name app version controller
-		 * @author Nazanin Reihani Haghighi
-		 * @contributors []
-		 * @since 12/19/2016
-		 * @copyright Binary Ltd
-		 */
-
-(function () {
-    angular.module("binary.share.components.app-version.controllers").controller("AppVersionController", AppVersion);
-
-    AppVersion.$inject = ["$scope", "$ionicPlatform", "appVersionService"];
-
-    function AppVersion($scope, $ionicPlatform, appVersionService) {
-        var vm = this;
-        vm.appVersion = '0.0.0';
-        $ionicPlatform.ready(function () {
-            $scope.$applyAsync(function () {
-                if (window.cordova) {
-                    cordova.getAppVersion(function (version) {
-                        vm.appVersion = version;
-                        window._trackJs.version = vm.appVersion;
-                    }, function (err) {
-                        // console.log(err);
-                    });
-                } else {
-                    appVersionService.getAppVersion().success(function (data) {
-                        vm.appVersion = data.version;
-                        window._trackJs.version = vm.appVersion;
-                    }).error(function (data) {
-                        vm.appVersion = "0.0.0";
-                        window._trackJs.version = vm.appVersion;
-                    });
-                }
-            });
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name app version directive
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 12/19/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.app-version.directives").directive("bgAppVersion", AppVersion);
-
-    function AppVersion() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/share/components/app-version/app-version.template.html",
-            controller: "AppVersionController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
         return directive;
     }
 })();
@@ -10169,98 +10155,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
         return directive;
     }
 })();
-'use strict';
-
-/**
- * @name iOS PWA Prompt Controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 03/11/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module('binary.share.components.ios-pwa-prompt.controllers').controller('IosPwaPromptController', PWAPrompt);
-
-    PWAPrompt.$inject = ['$scope', '$translate', 'alertService'];
-
-    function PWAPrompt($scope, $translate, alertService) {
-
-        var vm = this;
-        vm.icon = '<i class="icon ion-ios-upload-outline"></i>';
-
-        vm.showPrompt = function () {
-            $translate(['ios-pwa-prompt.title', 'ios-pwa-prompt.close']).then(function (translation) {
-                var popup = alertService.displayIOSPWAPrompt(translation['ios-pwa-prompt.title'], 'ios-paw-prompt', $scope, 'js/share/components/ios-pwa-prompt/ios-pwa-prompt.template.html', [{
-                    text: translation['ios-pwa-prompt.close'],
-                    type: 'button-default',
-                    onTap: function onTap(e) {
-                        popup.close();
-                    }
-                }]);
-            });
-
-            localStorage.setItem('lastSeenIOSPWAPrompt', new Date().getTime());
-        };
-
-        vm.checkToShowPrompt = function () {
-            if (window.navigator.standalone) {
-                return false;
-            }
-
-            var lastSeen = localStorage.getItem('lastSeenIOSPWAPrompt') || null;
-            var diffDays = lastSeen ? (new Date().getTime() - lastSeen) / (86400 * 1000) : 0;
-            var isApple = /IPHONE|IPAD|IPOD/i.test(navigator.appVersion);
-
-            return isApple && isSafari() && (diffDays === 0 || diffDays >= 14);
-        };
-
-        vm.init = function () {
-            if (vm.checkToShowPrompt()) {
-                vm.showPrompt();
-            }
-        };
-
-        vm.init();
-
-        function isSafari() {
-            var ua = window.navigator.userAgent;
-
-            var isNotSafari = /chrome|ucbrowser|fxios|crios/i.test(ua);
-
-            if (!isNotSafari && /safari/i.test(ua)) {
-                return true;
-            }
-
-            return false;
-        }
-    }
-})();
-'use strict';
-
-/**
- * @name iOS PWA Prompt Directive
- * @author Morteza Tavanarad
- * @contributors []
- * @since 03/11/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module('binary.share.components.ios-pwa-prompt.directives').directive('iosPwaPrompt', PWAPrompt);
-
-    function PWAPrompt() {
-        var directive = {
-            restrict: 'E',
-            controller: 'IosPwaPromptController',
-            controllerAs: 'vm',
-            bindToController: true,
-            scope: {}
-        };
-
-        return directive;
-    }
-})();
 "use strict";
 
 /**
@@ -10380,6 +10274,98 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             controllerAs: "vm",
             scope: {},
             bindToController: true
+        };
+
+        return directive;
+    }
+})();
+'use strict';
+
+/**
+ * @name iOS PWA Prompt Controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 03/11/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module('binary.share.components.ios-pwa-prompt.controllers').controller('IosPwaPromptController', PWAPrompt);
+
+    PWAPrompt.$inject = ['$scope', '$translate', 'alertService'];
+
+    function PWAPrompt($scope, $translate, alertService) {
+
+        var vm = this;
+        vm.icon = '<i class="icon ion-ios-upload-outline"></i>';
+
+        vm.showPrompt = function () {
+            $translate(['ios-pwa-prompt.title', 'ios-pwa-prompt.close']).then(function (translation) {
+                var popup = alertService.displayIOSPWAPrompt(translation['ios-pwa-prompt.title'], 'ios-paw-prompt', $scope, 'js/share/components/ios-pwa-prompt/ios-pwa-prompt.template.html', [{
+                    text: translation['ios-pwa-prompt.close'],
+                    type: 'button-default',
+                    onTap: function onTap(e) {
+                        popup.close();
+                    }
+                }]);
+            });
+
+            localStorage.setItem('lastSeenIOSPWAPrompt', new Date().getTime());
+        };
+
+        vm.checkToShowPrompt = function () {
+            if (window.navigator.standalone) {
+                return false;
+            }
+
+            var lastSeen = localStorage.getItem('lastSeenIOSPWAPrompt') || null;
+            var diffDays = lastSeen ? (new Date().getTime() - lastSeen) / (86400 * 1000) : 0;
+            var isApple = /IPHONE|IPAD|IPOD/i.test(navigator.appVersion);
+
+            return isApple && isSafari() && (diffDays === 0 || diffDays >= 14);
+        };
+
+        vm.init = function () {
+            if (vm.checkToShowPrompt()) {
+                vm.showPrompt();
+            }
+        };
+
+        vm.init();
+
+        function isSafari() {
+            var ua = window.navigator.userAgent;
+
+            var isNotSafari = /chrome|ucbrowser|fxios|crios/i.test(ua);
+
+            if (!isNotSafari && /safari/i.test(ua)) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+})();
+'use strict';
+
+/**
+ * @name iOS PWA Prompt Directive
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 03/11/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module('binary.share.components.ios-pwa-prompt.directives').directive('iosPwaPrompt', PWAPrompt);
+
+    function PWAPrompt() {
+        var directive = {
+            restrict: 'E',
+            controller: 'IosPwaPromptController',
+            controllerAs: 'vm',
+            bindToController: true,
+            scope: {}
         };
 
         return directive;
@@ -10983,33 +10969,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name side-menu directive
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/08/2016
- * @copyright Binary Ltd
- * Application Side Menu
- */
-
-(function () {
-    angular.module("binary.share.components").directive("bgSideMenu", SideMenu);
-
-    function SideMenu() {
-        var directive = {
-            link: link,
-            templateUrl: "js/share/components/side-menu/side-menu.template.html",
-            retrict: "A",
-            scope: {}
-        };
-
-        function link() {}
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
  * @name Service Outage Page Controller
  * @author Morteza Tavanarad
  * @contributors []
@@ -11095,46 +11054,26 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name updater module
- * @author Morteza Tavanarad
+ * @name side-menu directive
+ * @author Morteza Tavnarad
  * @contributors []
- * @since 12/20/2015
+ * @since 08/08/2016
  * @copyright Binary Ltd
+ * Application Side Menu
  */
 
 (function () {
-    angular.module("binary.share.components.updater.controllers").controller("UpdaterController", Updater);
+    angular.module("binary.share.components").directive("bgSideMenu", SideMenu);
 
-    Updater.$inject = ["$ionicPlatform"];
-
-    function Updater($ionicPlatform) {
-        $ionicPlatform.ready(function () {
-            if (window.codePush) {
-                window.codePush.sync();
-            }
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name updater directive
- * @author Morteza Tavanarad
- * @contributors []
- * @since 12/26/2015
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.updater.directives").directive("bgUpdater", Updater);
-
-    function Updater() {
+    function SideMenu() {
         var directive = {
-            restrict: "E",
-            controller: "UpdaterController",
-            controllerAs: "vm",
+            link: link,
+            templateUrl: "js/share/components/side-menu/side-menu.template.html",
+            retrict: "A",
             scope: {}
         };
+
+        function link() {}
 
         return directive;
     }
@@ -11188,6 +11127,53 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             controller: "SpinnerLogoController",
             controllerAs: "vm",
             bindToController: true,
+            scope: {}
+        };
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name updater module
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 12/20/2015
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.updater.controllers").controller("UpdaterController", Updater);
+
+    Updater.$inject = ["$ionicPlatform"];
+
+    function Updater($ionicPlatform) {
+        $ionicPlatform.ready(function () {
+            if (window.codePush) {
+                window.codePush.sync();
+            }
+        });
+    }
+})();
+"use strict";
+
+/**
+ * @name updater directive
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 12/26/2015
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.updater.directives").directive("bgUpdater", Updater);
+
+    function Updater() {
+        var directive = {
+            restrict: "E",
+            controller: "UpdaterController",
+            controllerAs: "vm",
             scope: {}
         };
 
@@ -12034,9 +12020,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
                 vm.options.digit = tradeTypes[vm.options.tradeType][0].last_digit_range ? vm.options.digit || tradeTypes[vm.options.tradeType][0].last_digit_range[0] : null;
                 vm.options.barrier = tradeTypes[vm.options.tradeType][0].barriers > 0 ? vm.options.barrier || tradeTypes[vm.options.tradeType][0].barrier : null;
                 vm.options.selected_tick = vm.options.tradeType === 'High/Low Ticks' ? vm.options.selected_tick || vm.options.tick : null;
-                var min = parseInt(tradeTypes[vm.options.tradeType][0].min_contract_duration.slice(0, -1));
-                var max = parseInt(tradeTypes[vm.options.tradeType][0].max_contract_duration.slice(0, -1));
-                vm.tickRangeLength = min && max ? _.range(min, max + 1).length : 0;
                 updateProposal();
                 tradeService.proposalIsReady = true;
             });
@@ -12087,13 +12070,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
                         }
                         break;
                     }
-                case vm.SECTIONS.TICKS:
-                    {
-                        if (vm.tickRangeLength <= 1) {
-                            return;
-                        }
-                        break;
-                    }
                 default:
                     break;
             }
@@ -12139,9 +12115,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             vm.options.digit = tradeType.last_digit_range ? vm.options.digit || tradeType.last_digit_range[0] : null;
             vm.options.barrier = tradeType.barriers > 0 && !_.isEmpty(tradeType.barrier) ? vm.options.barrier || tradeType.barrier : null;
             vm.options.selected_tick = vm.options.tradeType === 'High/Low Ticks' ? vm.options.selected_tick || parseInt(vm.options.tick) : null;
-            var min = parseInt(tradeType.min_contract_duration.slice(0, -1));
-            var max = parseInt(tradeType.max_contract_duration.slice(0, -1));
-            vm.tickRangeLength = min && max ? _.range(min, max + 1).length : 0;
             vm.section2 = vm.SECTIONS.OVERVIEW2;
             updateProposal();
             hideModal();
