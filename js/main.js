@@ -46,21 +46,6 @@
 "use strict";
 
 /**
- * @name authentication module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 04/27/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.authentication", ["binary.pages.authentication.controllers"]);
-
-  angular.module("binary.pages.authentication.controllers", []);
-})();
-"use strict";
-
-/**
  * @name Change Password module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -72,6 +57,21 @@
   angular.module("binary.pages.change-password", ["binary.pages.change-password.controllers"]);
 
   angular.module("binary.pages.change-password.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name authentication module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 04/27/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.authentication", ["binary.pages.authentication.controllers"]);
+
+  angular.module("binary.pages.authentication.controllers", []);
 })();
 "use strict";
 
@@ -2394,25 +2394,6 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
- * @name authentication controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 04/27/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.authentication.controllers").controller("AuthenticationController", Authentication);
-
-    Authentication.$inject = [];
-
-    function Authentication() {
-        var vm = this;
-    }
-})();
-"use strict";
-
-/**
  * @name Change Password controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2478,6 +2459,25 @@ angular.module("binary").constant("financialInformationOptions", {
                 alertService.displayError(error.message);
             }
         });
+    }
+})();
+"use strict";
+
+/**
+ * @name authentication controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 04/27/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.authentication.controllers").controller("AuthenticationController", Authentication);
+
+    Authentication.$inject = [];
+
+    function Authentication() {
+        var vm = this;
     }
 })();
 "use strict";
