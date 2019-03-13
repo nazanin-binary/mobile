@@ -91,21 +91,6 @@
 "use strict";
 
 /**
- * @name Home Module
- * @author Morteza Tavanarad
- * @contributors []
- * @since 8/10/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.home", ["binary.pages.home.controllers"]);
-
-  angular.module("binary.pages.home.controllers", []);
-})();
-"use strict";
-
-/**
  * @name Financial Assessment module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -117,6 +102,21 @@
   angular.module("binary.pages.financial-assessment", ["binary.pages.financial-assessment.controllers"]);
 
   angular.module("binary.pages.financial-assessment.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name Home Module
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 8/10/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.home", ["binary.pages.home.controllers"]);
+
+  angular.module("binary.pages.home.controllers", []);
 })();
 "use strict";
 
@@ -733,25 +733,6 @@
 "use strict";
 
 /**
- * @name chart module
- * @author morteza tavnarad
- * @contributors []
- * @since 08/29/2016
- * @copyright binary ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart", ["binary.pages.trade.components.chart.controllers", "binary.pages.trade.components.chart.directives", "binary.pages.trade.components.chart.services"]);
-
-    angular.module("binary.pages.trade.components.chart.controllers", []);
-
-    angular.module("binary.pages.trade.components.chart.directives", []);
-
-    angular.module("binary.pages.trade.components.chart.services", []);
-})();
-"use strict";
-
-/**
  * @name longcode module
  * @author Morteza Tavnarad
  * @contributors []
@@ -765,23 +746,6 @@
     angular.module("binary.pages.trade.components.longcode.controllers", []);
 
     angular.module("binary.pages.trade.components.longcode.directives", []);
-})();
-"use strict";
-
-/**
- * @name payout module
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/27/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.payout", ["binary.pages.trade.components.payout.controllers", "binary.pages.trade.components.payout.directives"]);
-
-    angular.module("binary.pages.trade.components.payout.controllers", []);
-
-    angular.module("binary.pages.trade.components.payout.directives", []);
 })();
 "use strict";
 
@@ -805,6 +769,23 @@
 "use strict";
 
 /**
+ * @name payout module
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 08/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.payout", ["binary.pages.trade.components.payout.controllers", "binary.pages.trade.components.payout.directives"]);
+
+    angular.module("binary.pages.trade.components.payout.controllers", []);
+
+    angular.module("binary.pages.trade.components.payout.directives", []);
+})();
+"use strict";
+
+/**
  * @name purchase module
  * @author Morteza Tavnarad
  * @contributors []
@@ -818,6 +799,25 @@
     angular.module("binary.pages.trade.components.purchase.controllers", []);
 
     angular.module("binary.pages.trade.components.purchase.directives", []);
+})();
+"use strict";
+
+/**
+ * @name chart module
+ * @author morteza tavnarad
+ * @contributors []
+ * @since 08/29/2016
+ * @copyright binary ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart", ["binary.pages.trade.components.chart.controllers", "binary.pages.trade.components.chart.directives", "binary.pages.trade.components.chart.services"]);
+
+    angular.module("binary.pages.trade.components.chart.controllers", []);
+
+    angular.module("binary.pages.trade.components.chart.directives", []);
+
+    angular.module("binary.pages.trade.components.chart.services", []);
 })();
 "use strict";
 
@@ -2592,58 +2592,6 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
- * @name HomeController
- * @author Morteza Tavanarad
- * @contributors []
- * @since 8/9/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.home.controllers").controller("HomeController", Home);
-
-    Home.$inject = ["$scope", "$state", "accountService", "analyticsService", "appStateService"];
-
-    function Home($scope, $state, accountService, analyticsService, appStateService) {
-        var vm = this;
-        /**
-        * wait untile authorization and decide
-        * to redirect user  to the proper page
-        */
-        $scope.$on("authorize", function (e, response) {
-            if (response) {
-                setTimeout(function () {
-                    $state.go("trade");
-                }, 1000);
-            } else {
-                $state.go("signin");
-            }
-        });
-
-        var init = function init() {
-            // send track view to Google Analytics
-            analyticsService.google.trackView("Home");
-
-            // Check that is saved any default account or not
-            if (accountService.hasDefault()) {
-                // Login to the server if there is any default account
-                if (!appStateService.isLoggedin) {
-                    accountService.validate();
-                } else {
-                    $state.go("trade");
-                }
-            } else {
-                accountService.removeAll();
-                $state.go("signin");
-            }
-        };
-
-        init();
-    }
-})();
-"use strict";
-
-/**
  * @name Financial Assessment controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2731,6 +2679,58 @@ angular.module("binary").constant("financialInformationOptions", {
                 _.assign(vm.data, financialAssessmentData);
             }
             websocketService.sendRequestFor.getFinancialAssessment();
+        };
+
+        init();
+    }
+})();
+"use strict";
+
+/**
+ * @name HomeController
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 8/9/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.home.controllers").controller("HomeController", Home);
+
+    Home.$inject = ["$scope", "$state", "accountService", "analyticsService", "appStateService"];
+
+    function Home($scope, $state, accountService, analyticsService, appStateService) {
+        var vm = this;
+        /**
+        * wait untile authorization and decide
+        * to redirect user  to the proper page
+        */
+        $scope.$on("authorize", function (e, response) {
+            if (response) {
+                setTimeout(function () {
+                    $state.go("trade");
+                }, 1000);
+            } else {
+                $state.go("signin");
+            }
+        });
+
+        var init = function init() {
+            // send track view to Google Analytics
+            analyticsService.google.trackView("Home");
+
+            // Check that is saved any default account or not
+            if (accountService.hasDefault()) {
+                // Login to the server if there is any default account
+                if (!appStateService.isLoggedin) {
+                    accountService.validate();
+                } else {
+                    $state.go("trade");
+                }
+            } else {
+                accountService.removeAll();
+                $state.go("signin");
+            }
         };
 
         init();
@@ -11360,299 +11360,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name chart controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 08/29/2015
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.controllers").controller("ChartController", Chart);
-
-    Chart.$inject = ["$scope", "chartService", "websocketService"];
-
-    function Chart($scope, chartService, websocketService) {
-        var vm = this;
-
-        $scope.$on("$destroy", function (e, value) {
-            websocketService.sendRequestFor.forgetTicks();
-            chartService.destroy();
-        });
-
-        $scope.$on("portfolio", function (e, portfolio) {
-            var contractId = vm.purchasedContract.contractId;
-
-            if (!_.isEmpty(contractId)) {
-                portfolio.contracts.forEach(function (contract) {
-                    if (contract.contract_id.toString() === contractId) {
-                        chartService.addContract({
-                            startTime: contract.date_start + 1,
-                            duration: parseInt(vm.proposal.duration),
-                            type: vm.proposal.tradeType === "Higher/Lower" ? contract.contract_type + "HL" : contract.contract_type,
-                            selectedTick: vm.proposal.tradeType === "High/Low Ticks" ? vm.proposal.selected_tick : null,
-                            barrier: vm.proposal.barrier
-                        });
-                    }
-                });
-            }
-        });
-
-        $scope.$on("tick", function (e, feed) {
-            if (feed && feed.echo_req.ticks_history === vm.proposal.symbol) {
-                chartService.historyInterface.addTick(feed.tick);
-            } else {
-                websocketService.sendRequestFor.forgetStream(feed.tick.id);
-            }
-        });
-
-        $scope.$on("history", function (e, feed) {
-            if (feed && feed.echo_req.ticks_history === vm.proposal.symbol) {
-                chartService.historyInterface.addHistory(feed.history);
-            }
-        });
-
-        $scope.$on("candles", function (e, feed) {
-            if (feed) {
-                chartService.historyInterface.addCandles(feed.candles);
-            }
-        });
-
-        $scope.$on("ohlc", function (e, feed) {
-            if (feed) {
-                chartService.historyInterface.addOhlc(feed.ohlc);
-            }
-        });
-
-        $scope.$on("connection:ready", function (e) {
-            sendTickHistoryRequest();
-        });
-
-        $scope.$watch(function () {
-            return vm.proposal.symbol;
-        }, function (newValue, oldValue) {
-            if (vm.proposal.symbol) {
-                // && newValue !== oldValue){
-                sendTickHistoryRequest();
-            }
-        });
-
-        function init() {
-            var chartId = "tradeChart";
-
-            vm.chartDragLeft = chartService.dragLeft;
-            vm.chartDragRight = chartService.dragRight;
-            vm.chartTouch = chartService.dragStart;
-            vm.chartRelease = chartService.dragEnd;
-            vm.chartPinchIn = chartService.zoomOut;
-            vm.chartPinchOut = chartService.zoomIn;
-            vm.chartPinchStart = chartService.zoomStart;
-            vm.chartPinchEnd = chartService.zoomEnd;
-
-            chartService.drawChart(chartId);
-            sendTickHistoryRequest();
-        }
-
-        function sendTickHistoryRequest() {
-            if (_.isEmpty(vm.proposal.symbol)) {
-                return;
-            }
-
-            var symbol = vm.proposal.symbol;
-            websocketService.sendRequestFor.forgetTicks();
-            websocketService.sendRequestFor.ticksHistory({
-                ticks_history: symbol,
-                end: "latest",
-                count: chartService.getCapacity(),
-                subscribe: 1
-            });
-        }
-
-        init();
-    }
-})();
-"use strict";
-
-/**
- * @name chart directive
- * @author Morteza Tavanarad
- * @contributors []
- * @since 08/29/2015
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.directives").directive("bgChart", Chart);
-
-    function Chart() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/pages/trade/components/chart/chart.template.html",
-            controller: "ChartController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {
-                proposal: "=",
-                purchasedContract: "="
-            }
-        };
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
- * @name digit-result controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 10/01/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.controllers").controller("DigitResultController", Result);
-
-    Result.$inject = ["$scope"];
-
-    function Result($scope) {
-        var vm = this;
-
-        vm.spots = [];
-        vm.reset = true;
-        vm.counter = 0;
-
-        $scope.$on("contract:spot", function (e, contract, lastPrice) {
-            if (vm.reset) {
-                // vm.spots = new Array(contract.duration+1).fill().map((e, i) => { return {}});
-                vm.spots = new Array(contract.duration + 1);
-                for (var i = 0; i < vm.spots.length; i++) {
-                    vm.spots[i] = {};
-                }
-                vm.reset = false;
-                vm.counter = 0;
-            }
-
-            var localContract = _.clone(contract);
-
-            $scope.$applyAsync(function () {
-                vm.spots[vm.counter++] = {
-                    result: localContract.result,
-                    value: lastPrice.toString().slice(-1)
-                };
-            });
-        });
-
-        $scope.$on("contract:finished", function (e, contract) {
-            vm.reset = true;
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name digit-result directive
- * @author Morteza Tavanarad
- * @contributors []
- * @since 10/01/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.directives").directive("bgDigitResult", Result);
-
-    function Result() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/pages/trade/components/chart/digit-result.template.html",
-            controller: "DigitResultController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
- * @name tick result controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 06/30/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.controllers").controller("TickResultController", TickResult);
-
-    TickResult.$inject = ["$scope"];
-
-    function TickResult($scope) {
-        var vm = this;
-
-        vm.spots = [];
-        vm.reset = true;
-        vm.counter = 0;
-        vm.selectedTick = 0;
-
-        $scope.$on("contract:spot", function (e, contract, lastPrice) {
-            if (vm.reset) {
-                vm.spots = new Array(contract.duration + 1);
-                _.map(vm.spots, function (val, i) {
-                    vm.spots[i] = {};
-                });
-                vm.reset = false;
-                vm.counter = 0;
-            }
-            var localContract = _.clone(contract);
-
-            $scope.$applyAsync(function () {
-                vm.selectedTick = contract.selectedTick - 1;
-                if (vm.counter < vm.spots.length) {
-                    vm.spots[vm.counter++] = {
-                        result: localContract.result,
-                        value: lastPrice
-                    };
-                }
-            });
-        });
-
-        $scope.$on("contract:finished", function (e, contract) {
-            vm.reset = true;
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name tick result directive
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 06/30/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.chart.directives").directive("bgTickResult", TickResult);
-
-    function TickResult() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/pages/trade/components/chart/tick-result.template.html",
-            controller: "TickResultController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
  * @name longcode controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -11693,128 +11400,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
         };
 
         return direciive;
-    }
-})();
-"use strict";
-
-/**
- * @name payout controller
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/27/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.payout.controllers").controller("PayoutController", Payout);
-
-    Payout.$inject = ["$scope", "appStateService", "proposalService"];
-
-    function Payout($scope, appStateService, proposalService) {
-        var vm = this;
-        vm.amount = vm.proposal.amount;
-        vm.isIOS = ionic.Platform.isIOS();
-        vm.marketsClosed = false;
-
-        setCurrecyPattern();
-
-        $scope.$watch(function () {
-            return vm.proposal.amount;
-        }, function (newVal, oldVal) {
-            if (newVal !== vm.amount) {
-                vm.amount = newVal;
-            }
-        });
-
-        $scope.$on("authorize", function (e, account) {
-            setCurrecyPattern(account.currency);
-        });
-
-        vm.changePayoutType = function () {
-            if (vm.proposal.basis === "payout") {
-                vm.proposal.basis = "stake";
-            } else {
-                vm.proposal.basis = "payout";
-            }
-            proposalService.setPropertyValue("basis", vm.proposal.basis);
-        };
-
-        vm.changeAmount = function () {
-            if (_.isEmpty(vm.amount) || vm.amount === "NaN" || Number(vm.amount) === 0) {
-                vm.proposal.amount = vm.amount;
-            } else {
-                if (/^\.\d+$/.test(vm.amount)) {
-                    vm.amount = "0" + vm.amount;
-                }
-                vm.proposal.amount = vm.amount;
-            }
-            proposalService.setPropertyValue("amount", vm.proposal.amount);
-        };
-
-        vm.add = function () {
-            vm.amount = Number(vm.amount) + 1;
-        };
-
-        vm.subtract = function () {
-            vm.amount = Number(vm.amount) - 1 >= 1 ? Number(vm.amount) - 1 : 1;
-        };
-
-        vm.stopLongPress = function () {
-            vm.proposal.amount = vm.amount;
-            proposalService.setPropertyValue("amount", vm.proposal.amount);
-        };
-
-        $scope.$on("symbols:updated", function (e, openMarkets) {
-            if (_.isEmpty(openMarkets)) {
-                vm.marketsClosed = true;
-            } else {
-                vm.marketsClosed = false;
-            }
-        });
-
-        function init() {}
-
-        function setCurrecyPattern(currency) {
-            if (_.isEmpty(currency)) {
-                currency = sessionStorage.currency;
-            }
-            var currencyConfig = appStateService.currenciesConfig[currency];
-            $scope.$applyAsync(function () {
-                vm.regex = "^(\\d*\\.?\\d{0," + (currencyConfig ? currencyConfig.fractional_digits : 2) + "})";
-                vm.amount = new RegExp(vm.regex).exec(vm.amount)[0];
-            });
-            return vm.regex;
-        }
-
-        init();
-    }
-})();
-"use strict";
-
-/**
- * @name payout directive
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/27/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.payout.directives").directive("bgPayout", Payout);
-
-    function Payout() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/pages/trade/components/payout/payout.template.html",
-            controller: "PayoutController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {
-                proposal: "="
-            }
-        };
-
-        return directive;
     }
 })();
 "use strict";
@@ -12719,6 +12304,128 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
+ * @name payout controller
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 08/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.payout.controllers").controller("PayoutController", Payout);
+
+    Payout.$inject = ["$scope", "appStateService", "proposalService"];
+
+    function Payout($scope, appStateService, proposalService) {
+        var vm = this;
+        vm.amount = vm.proposal.amount;
+        vm.isIOS = ionic.Platform.isIOS();
+        vm.marketsClosed = false;
+
+        setCurrecyPattern();
+
+        $scope.$watch(function () {
+            return vm.proposal.amount;
+        }, function (newVal, oldVal) {
+            if (newVal !== vm.amount) {
+                vm.amount = newVal;
+            }
+        });
+
+        $scope.$on("authorize", function (e, account) {
+            setCurrecyPattern(account.currency);
+        });
+
+        vm.changePayoutType = function () {
+            if (vm.proposal.basis === "payout") {
+                vm.proposal.basis = "stake";
+            } else {
+                vm.proposal.basis = "payout";
+            }
+            proposalService.setPropertyValue("basis", vm.proposal.basis);
+        };
+
+        vm.changeAmount = function () {
+            if (_.isEmpty(vm.amount) || vm.amount === "NaN" || Number(vm.amount) === 0) {
+                vm.proposal.amount = vm.amount;
+            } else {
+                if (/^\.\d+$/.test(vm.amount)) {
+                    vm.amount = "0" + vm.amount;
+                }
+                vm.proposal.amount = vm.amount;
+            }
+            proposalService.setPropertyValue("amount", vm.proposal.amount);
+        };
+
+        vm.add = function () {
+            vm.amount = Number(vm.amount) + 1;
+        };
+
+        vm.subtract = function () {
+            vm.amount = Number(vm.amount) - 1 >= 1 ? Number(vm.amount) - 1 : 1;
+        };
+
+        vm.stopLongPress = function () {
+            vm.proposal.amount = vm.amount;
+            proposalService.setPropertyValue("amount", vm.proposal.amount);
+        };
+
+        $scope.$on("symbols:updated", function (e, openMarkets) {
+            if (_.isEmpty(openMarkets)) {
+                vm.marketsClosed = true;
+            } else {
+                vm.marketsClosed = false;
+            }
+        });
+
+        function init() {}
+
+        function setCurrecyPattern(currency) {
+            if (_.isEmpty(currency)) {
+                currency = sessionStorage.currency;
+            }
+            var currencyConfig = appStateService.currenciesConfig[currency];
+            $scope.$applyAsync(function () {
+                vm.regex = "^(\\d*\\.?\\d{0," + (currencyConfig ? currencyConfig.fractional_digits : 2) + "})";
+                vm.amount = new RegExp(vm.regex).exec(vm.amount)[0];
+            });
+            return vm.regex;
+        }
+
+        init();
+    }
+})();
+"use strict";
+
+/**
+ * @name payout directive
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 08/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.payout.directives").directive("bgPayout", Payout);
+
+    function Payout() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/payout/payout.template.html",
+            controller: "PayoutController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {
+                proposal: "="
+            }
+        };
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
  * @name contract-summary controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -13051,6 +12758,299 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
                 purchasedContract: "=",
                 showSummary: "=inPurchaseMode"
             }
+        };
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name chart controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 08/29/2015
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.controllers").controller("ChartController", Chart);
+
+    Chart.$inject = ["$scope", "chartService", "websocketService"];
+
+    function Chart($scope, chartService, websocketService) {
+        var vm = this;
+
+        $scope.$on("$destroy", function (e, value) {
+            websocketService.sendRequestFor.forgetTicks();
+            chartService.destroy();
+        });
+
+        $scope.$on("portfolio", function (e, portfolio) {
+            var contractId = vm.purchasedContract.contractId;
+
+            if (!_.isEmpty(contractId)) {
+                portfolio.contracts.forEach(function (contract) {
+                    if (contract.contract_id.toString() === contractId) {
+                        chartService.addContract({
+                            startTime: contract.date_start + 1,
+                            duration: parseInt(vm.proposal.duration),
+                            type: vm.proposal.tradeType === "Higher/Lower" ? contract.contract_type + "HL" : contract.contract_type,
+                            selectedTick: vm.proposal.tradeType === "High/Low Ticks" ? vm.proposal.selected_tick : null,
+                            barrier: vm.proposal.barrier
+                        });
+                    }
+                });
+            }
+        });
+
+        $scope.$on("tick", function (e, feed) {
+            if (feed && feed.echo_req.ticks_history === vm.proposal.symbol) {
+                chartService.historyInterface.addTick(feed.tick);
+            } else {
+                websocketService.sendRequestFor.forgetStream(feed.tick.id);
+            }
+        });
+
+        $scope.$on("history", function (e, feed) {
+            if (feed && feed.echo_req.ticks_history === vm.proposal.symbol) {
+                chartService.historyInterface.addHistory(feed.history);
+            }
+        });
+
+        $scope.$on("candles", function (e, feed) {
+            if (feed) {
+                chartService.historyInterface.addCandles(feed.candles);
+            }
+        });
+
+        $scope.$on("ohlc", function (e, feed) {
+            if (feed) {
+                chartService.historyInterface.addOhlc(feed.ohlc);
+            }
+        });
+
+        $scope.$on("connection:ready", function (e) {
+            sendTickHistoryRequest();
+        });
+
+        $scope.$watch(function () {
+            return vm.proposal.symbol;
+        }, function (newValue, oldValue) {
+            if (vm.proposal.symbol) {
+                // && newValue !== oldValue){
+                sendTickHistoryRequest();
+            }
+        });
+
+        function init() {
+            var chartId = "tradeChart";
+
+            vm.chartDragLeft = chartService.dragLeft;
+            vm.chartDragRight = chartService.dragRight;
+            vm.chartTouch = chartService.dragStart;
+            vm.chartRelease = chartService.dragEnd;
+            vm.chartPinchIn = chartService.zoomOut;
+            vm.chartPinchOut = chartService.zoomIn;
+            vm.chartPinchStart = chartService.zoomStart;
+            vm.chartPinchEnd = chartService.zoomEnd;
+
+            chartService.drawChart(chartId);
+            sendTickHistoryRequest();
+        }
+
+        function sendTickHistoryRequest() {
+            if (_.isEmpty(vm.proposal.symbol)) {
+                return;
+            }
+
+            var symbol = vm.proposal.symbol;
+            websocketService.sendRequestFor.forgetTicks();
+            websocketService.sendRequestFor.ticksHistory({
+                ticks_history: symbol,
+                end: "latest",
+                count: chartService.getCapacity(),
+                subscribe: 1
+            });
+        }
+
+        init();
+    }
+})();
+"use strict";
+
+/**
+ * @name chart directive
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 08/29/2015
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.directives").directive("bgChart", Chart);
+
+    function Chart() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/chart/chart.template.html",
+            controller: "ChartController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {
+                proposal: "=",
+                purchasedContract: "="
+            }
+        };
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name digit-result controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 10/01/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.controllers").controller("DigitResultController", Result);
+
+    Result.$inject = ["$scope"];
+
+    function Result($scope) {
+        var vm = this;
+
+        vm.spots = [];
+        vm.reset = true;
+        vm.counter = 0;
+
+        $scope.$on("contract:spot", function (e, contract, lastPrice) {
+            if (vm.reset) {
+                // vm.spots = new Array(contract.duration+1).fill().map((e, i) => { return {}});
+                vm.spots = new Array(contract.duration + 1);
+                for (var i = 0; i < vm.spots.length; i++) {
+                    vm.spots[i] = {};
+                }
+                vm.reset = false;
+                vm.counter = 0;
+            }
+
+            var localContract = _.clone(contract);
+
+            $scope.$applyAsync(function () {
+                vm.spots[vm.counter++] = {
+                    result: localContract.result,
+                    value: lastPrice.toString().slice(-1)
+                };
+            });
+        });
+
+        $scope.$on("contract:finished", function (e, contract) {
+            vm.reset = true;
+        });
+    }
+})();
+"use strict";
+
+/**
+ * @name digit-result directive
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 10/01/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.directives").directive("bgDigitResult", Result);
+
+    function Result() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/chart/digit-result.template.html",
+            controller: "DigitResultController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
+        };
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name tick result controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 06/30/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.controllers").controller("TickResultController", TickResult);
+
+    TickResult.$inject = ["$scope"];
+
+    function TickResult($scope) {
+        var vm = this;
+
+        vm.spots = [];
+        vm.reset = true;
+        vm.counter = 0;
+        vm.selectedTick = 0;
+
+        $scope.$on("contract:spot", function (e, contract, lastPrice) {
+            if (vm.reset) {
+                vm.spots = new Array(contract.duration + 1);
+                _.map(vm.spots, function (val, i) {
+                    vm.spots[i] = {};
+                });
+                vm.reset = false;
+                vm.counter = 0;
+            }
+            var localContract = _.clone(contract);
+
+            $scope.$applyAsync(function () {
+                vm.selectedTick = contract.selectedTick - 1;
+                if (vm.counter < vm.spots.length) {
+                    vm.spots[vm.counter++] = {
+                        result: localContract.result,
+                        value: lastPrice
+                    };
+                }
+            });
+        });
+
+        $scope.$on("contract:finished", function (e, contract) {
+            vm.reset = true;
+        });
+    }
+})();
+"use strict";
+
+/**
+ * @name tick result directive
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 06/30/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.chart.directives").directive("bgTickResult", TickResult);
+
+    function TickResult() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/chart/tick-result.template.html",
+            controller: "TickResultController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
         };
 
         return directive;
