@@ -437,23 +437,6 @@
 "use strict";
 
 /**
- * @name app version module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 12/19/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.app-version", ["binary.share.components.app-version.controllers", "binary.share.components.app-version.directives"]);
-
-    angular.module("binary.share.components.app-version.controllers", []);
-
-    angular.module("binary.share.components.app-version.directives", []);
-})();
-"use strict";
-
-/**
  * @name balance module
  * @author Morteza Tavnarad
  * @contributors []
@@ -471,17 +454,19 @@
 "use strict";
 
 /**
- * @name big number Module
- * @author Morteza Tavanarad
+ * @name app version module
+ * @author Nazanin Reihani Haghighi
  * @contributors []
- * @since 06/09/2017
+ * @since 12/19/2016
  * @copyright Binary Ltd
  */
 
 (function () {
-  angular.module("binary.share.components.big-number", ["binary.share.components.big-number.directives"]);
+    angular.module("binary.share.components.app-version", ["binary.share.components.app-version.controllers", "binary.share.components.app-version.directives"]);
 
-  angular.module("binary.share.components.big-number.directives", []);
+    angular.module("binary.share.components.app-version.controllers", []);
+
+    angular.module("binary.share.components.app-version.directives", []);
 })();
 "use strict";
 
@@ -499,6 +484,21 @@
     angular.module("binary.share.components.check-user-status.controllers", []);
 
     angular.module("binary.share.components.check-user-status.directives", []);
+})();
+"use strict";
+
+/**
+ * @name big number Module
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 06/09/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.share.components.big-number", ["binary.share.components.big-number.directives"]);
+
+  angular.module("binary.share.components.big-number.directives", []);
 })();
 "use strict";
 
@@ -555,6 +555,21 @@
 "use strict";
 
 /**
+ * @name long-press module
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/05/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.share.components.long-press", ["binary.share.components.long-press.directives"]);
+
+  angular.module("binary.share.components.long-press.directives", []);
+})();
+"use strict";
+
+/**
  * @name logout module
  * @author
  * @contributors []
@@ -568,21 +583,6 @@
     angular.module("binary.share.components.logout.controllers", []);
 
     angular.module("binary.share.components.logout.directives", []);
-})();
-"use strict";
-
-/**
- * @name long-press module
- * @author Morteza Tavnarad
- * @contributors []
- * @since 09/05/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.share.components.long-press", ["binary.share.components.long-press.directives"]);
-
-  angular.module("binary.share.components.long-press.directives", []);
 })();
 "use strict";
 
@@ -1023,7 +1023,7 @@ angular.module("binary").controller("MainLayoutController", ["$scope", "$state",
             });
         };
 
-        if (canUpgradeToLandingCompany(['costarica', 'malta', 'iom']) && !canUpgradeMultiAccount) {
+        if (canUpgradeToLandingCompany(['costarica', 'svg', 'malta', 'iom']) && !canUpgradeMultiAccount) {
             typeOfNextAccount = 'real';
             upgradeLink = 'real-account-opening';
             currencyOptions = landingCompanyObj.gaming_company ? landingCompanyObj.gaming_company.legal_allowed_currencies : landingCompanyObj.financial_company.legal_allowed_currencies;
@@ -2202,7 +2202,7 @@ angular.module("binary").constant("financialInformationOptions", {
             vm.accounts = accountService.getAll();
             vm.currentAccount = accountService.getDefault();
             var landingCompany = vm.currentAccount.landing_company_name;
-            vm.isMultiAccount = clientService.isLandingCompanyOf('costarica', landingCompany);
+            vm.isMultiAccount = clientService.isLandingCompanyOf('costarica', landingCompany) || clientService.isLandingCompanyOf('svg', landingCompany);
             vm.selectCurrencyError = false;
             getAvailableAccounts();
             vm.existingAccounts = getExistingAccounts();
@@ -2780,7 +2780,7 @@ angular.module("binary").constant("financialInformationOptions", {
                     vm.fullyAuthenticated = false;
                     vm.crAccount = false;
                     vm.otherAccount = false;
-                } else if (isLandingCompanyOf('costarica', landingCompany)) {
+                } else if (isLandingCompanyOf('costarica', landingCompany) || isLandingCompanyOf('svg', landingCompany)) {
                     // CR accounts
                     vm.crAccount = true;
                     vm.fullyAuthenticated = false;
@@ -3236,7 +3236,7 @@ angular.module("binary").constant("financialInformationOptions", {
             if (isEligible()) {
                 var _accounts = accountService.getAll();
                 vm.hasRealAccount = !!_.find(_accounts, function (obj) {
-                    return _.indexOf(['malta', 'costarica', 'iom', 'maltainvest'], obj.landing_company_name) > -1;
+                    return _.indexOf(['malta', 'costarica', 'svg', 'iom', 'maltainvest'], obj.landing_company_name) > -1;
                 });
                 if (!vm.hasRealAccount && appStateService.upgrade && appStateService.upgrade.upgradeLink) {
                     vm.showUpgradeToRealButton = true;
@@ -4156,9 +4156,9 @@ angular.module("binary").constant("financialInformationOptions", {
 (function () {
     angular.module("binary.pages.self-exclusion.controllers").controller("SelfExclusionController", SelfExclusion);
 
-    SelfExclusion.$inject = ["$scope", "$translate", "alertService", "websocketService", "accountService", "validationService"];
+    SelfExclusion.$inject = ["$scope", "$translate", "alertService", "websocketService", "validationService"];
 
-    function SelfExclusion($scope, $translate, alertService, websocketService, accountService, validationService) {
+    function SelfExclusion($scope, $translate, alertService, websocketService, validationService) {
         var vm = this;
         vm.hasError = false;
         vm.validation = validationService;
@@ -4172,8 +4172,6 @@ angular.module("binary").constant("financialInformationOptions", {
         vm.isDataLoaded = false;
         vm.disableForZeroValues = false;
         vm.data = {};
-        var account = accountService.getDefault();
-        vm.country = account.country;
         var noZeroValues = ['max_balance', 'max_turnover', 'max_losses', 'max_7day_turnover', 'max_7day_losses', 'max_30day_turnover', 'max_30day_losses', 'max_open_bets'];
 
         $scope.$on("get-self-exclusion", function (e, response) {
@@ -4373,7 +4371,7 @@ angular.module("binary").constant("financialInformationOptions", {
         var accounts = accountService.getAll();
         var currentAccount = accountService.getDefault();
         var landingCompany = currentAccount.landing_company_name;
-        vm.isCRAccount = clientService.isLandingCompanyOf('costarica', landingCompany);
+        vm.isCRAccount = clientService.isLandingCompanyOf('costarica', landingCompany) || clientService.isLandingCompanyOf('svg', landingCompany);
         vm.currenciesOptions = [];
 
         vm.getCurrenciesOptions = function () {
@@ -9389,71 +9387,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
-		 * @name app version controller
-		 * @author Nazanin Reihani Haghighi
-		 * @contributors []
-		 * @since 12/19/2016
-		 * @copyright Binary Ltd
-		 */
-
-(function () {
-    angular.module("binary.share.components.app-version.controllers").controller("AppVersionController", AppVersion);
-
-    AppVersion.$inject = ["$scope", "$ionicPlatform", "appVersionService"];
-
-    function AppVersion($scope, $ionicPlatform, appVersionService) {
-        var vm = this;
-        vm.appVersion = '0.0.0';
-        $ionicPlatform.ready(function () {
-            $scope.$applyAsync(function () {
-                if (window.cordova) {
-                    cordova.getAppVersion(function (version) {
-                        vm.appVersion = version;
-                        window._trackJs.version = vm.appVersion;
-                    }, function (err) {
-                        // console.log(err);
-                    });
-                } else {
-                    appVersionService.getAppVersion().success(function (data) {
-                        vm.appVersion = data.version;
-                        window._trackJs.version = vm.appVersion;
-                    }).error(function (data) {
-                        vm.appVersion = "0.0.0";
-                        window._trackJs.version = vm.appVersion;
-                    });
-                }
-            });
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name app version directive
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 12/19/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.app-version.directives").directive("bgAppVersion", AppVersion);
-
-    function AppVersion() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/share/components/app-version/app-version.template.html",
-            controller: "AppVersionController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
-        return directive;
-    }
-})();
-"use strict";
-
-/**
  * @name balance controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -9550,68 +9483,65 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name big number Controller
- * @author Morteza Tavanarad
+		 * @name app version controller
+		 * @author Nazanin Reihani Haghighi
+		 * @contributors []
+		 * @since 12/19/2016
+		 * @copyright Binary Ltd
+		 */
+
+(function () {
+    angular.module("binary.share.components.app-version.controllers").controller("AppVersionController", AppVersion);
+
+    AppVersion.$inject = ["$scope", "$ionicPlatform", "appVersionService"];
+
+    function AppVersion($scope, $ionicPlatform, appVersionService) {
+        var vm = this;
+        vm.appVersion = '0.0.0';
+        $ionicPlatform.ready(function () {
+            $scope.$applyAsync(function () {
+                if (window.cordova) {
+                    cordova.getAppVersion(function (version) {
+                        vm.appVersion = version;
+                        window._trackJs.version = vm.appVersion;
+                    }, function (err) {
+                        // console.log(err);
+                    });
+                } else {
+                    appVersionService.getAppVersion().success(function (data) {
+                        vm.appVersion = data.version;
+                        window._trackJs.version = vm.appVersion;
+                    }).error(function (data) {
+                        vm.appVersion = "0.0.0";
+                        window._trackJs.version = vm.appVersion;
+                    });
+                }
+            });
+        });
+    }
+})();
+"use strict";
+
+/**
+ * @name app version directive
+ * @author Nazanin Reihani Haghighi
  * @contributors []
- * @since 06/09/2017
+ * @since 12/19/2016
  * @copyright Binary Ltd
  */
 
 (function () {
-    angular.module("binary.share.components.big-number.directives").directive("bgBigNumber", BigNumber);
+    angular.module("binary.share.components.app-version.directives").directive("bgAppVersion", AppVersion);
 
-    BigNumber.$inject = [];
-
-    function BigNumber() {
+    function AppVersion() {
         var directive = {
-            restrict: "A",
-            require: "?ngModel",
-            link: link
+            restrict: "E",
+            templateUrl: "js/share/components/app-version/app-version.template.html",
+            controller: "AppVersionController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
         };
-
-        function link(scope, element, attr, ctrl) {
-            if (ctrl) {
-                ctrl.$formatters.push(function (modelValue) {
-                    if (angular.isDefined(modelValue) && _.isEmpty(modelValue.toString())) {
-                        return null;
-                    }
-                    return modelValue;
-                });
-
-                ctrl.$parsers.push(function (viewValue) {
-                    if (!viewValue) {
-                        return null;
-                    }
-                    return viewValue;
-                });
-
-                var minVal = void 0;
-                var maxVal = void 0;
-
-                if (angular.isDefined(attr.min) || attr.ngMin) {
-                    ctrl.$validators.min = function (value) {
-                        return ctrl.$isEmpty(value) || angular.isUndefined(minVal) || value >= parseFloat(minVal);
-                    };
-
-                    attr.$observe("min", function (val) {
-                        minVal = val;
-                        ctrl.$validate();
-                    });
-                }
-
-                if (angular.isDefined(attr.max) || attr.ngMax) {
-                    ctrl.$validators.max = function (value) {
-                        return ctrl.$isEmpty(value) || angular.isUndefined(maxVal) || value <= parseFloat(maxVal);
-                    };
-
-                    attr.$observe("max", function (val) {
-                        maxVal = val;
-                        ctrl.$validate();
-                    });
-                }
-            }
-        }
-
         return directive;
     }
 })();
@@ -9633,7 +9563,7 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
     function CheckUserStatus($scope, $timeout, websocketService, appStateService, accountService, notificationService, clientService) {
         var vm = this;
         var isMaltainvest = false;
-        var isCostarica = false;
+        var isCR = false;
         var isMalta = false;
         var isIom = false;
         var isVirtual = false;
@@ -9652,7 +9582,7 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
         var checkAccountType = function checkAccountType(landingCompany) {
             isMaltainvest = isLandingCompanyOf('maltainvest', landingCompany);
             isMalta = isLandingCompanyOf('malta', landingCompany);
-            isCostarica = isLandingCompanyOf('costarica', landingCompany);
+            isCR = isLandingCompanyOf('costarica', landingCompany) || isLandingCompanyOf('svg', landingCompany);
             isIom = isLandingCompanyOf('iom', landingCompany);
             isVirtual = isLandingCompanyOf('virtual', landingCompany);
         };
@@ -9741,7 +9671,7 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 
         var unwelcomeStatus = function unwelcomeStatus(status) {
             var unwelcomed = status.indexOf("unwelcome") > -1;
-            if (unwelcomed && (isMalta || isMaltainvest || isIom || isCostarica)) {
+            if (unwelcomed && (isMalta || isMaltainvest || isIom || isCR)) {
                 if (!appStateService.hasRestrictedMessage) {
                     appStateService.hasRestrictedMessage = true;
                     notificationService.notices.push(notificationMessages.restrictedMessage);
@@ -9751,7 +9681,7 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 
         var cashierStatus = function cashierStatus(status) {
             var cashierLocked = status.indexOf("cashier_locked") > -1;
-            if (cashierLocked && (isMalta || isMaltainvest || isIom || isCostarica)) {
+            if (cashierLocked && (isMalta || isMaltainvest || isIom || isCR)) {
                 if (!appStateService.hasRestrictedMessage) {
                     appStateService.hasRestrictedMessage = true;
                     notificationService.notices.push(notificationMessages.restrictedMessage);
@@ -9761,7 +9691,7 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 
         var withdrawalStatus = function withdrawalStatus(status) {
             var withdrawalLocked = status.indexOf("withdrawal_locked") > -1;
-            if (withdrawalLocked && (isMalta || isMaltainvest || isIom || isCostarica)) {
+            if (withdrawalLocked && (isMalta || isMaltainvest || isIom || isCR)) {
                 if (!appStateService.hasRestrictedMessage) {
                     appStateService.hasRestrictedMessage = true;
                     notificationService.notices.push(notificationMessages.restrictedMessage);
@@ -9888,6 +9818,74 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             bindToController: true,
             scope: {}
         };
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name big number Controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 06/09/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.big-number.directives").directive("bgBigNumber", BigNumber);
+
+    BigNumber.$inject = [];
+
+    function BigNumber() {
+        var directive = {
+            restrict: "A",
+            require: "?ngModel",
+            link: link
+        };
+
+        function link(scope, element, attr, ctrl) {
+            if (ctrl) {
+                ctrl.$formatters.push(function (modelValue) {
+                    if (angular.isDefined(modelValue) && _.isEmpty(modelValue.toString())) {
+                        return null;
+                    }
+                    return modelValue;
+                });
+
+                ctrl.$parsers.push(function (viewValue) {
+                    if (!viewValue) {
+                        return null;
+                    }
+                    return viewValue;
+                });
+
+                var minVal = void 0;
+                var maxVal = void 0;
+
+                if (angular.isDefined(attr.min) || attr.ngMin) {
+                    ctrl.$validators.min = function (value) {
+                        return ctrl.$isEmpty(value) || angular.isUndefined(minVal) || value >= parseFloat(minVal);
+                    };
+
+                    attr.$observe("min", function (val) {
+                        minVal = val;
+                        ctrl.$validate();
+                    });
+                }
+
+                if (angular.isDefined(attr.max) || attr.ngMax) {
+                    ctrl.$validators.max = function (value) {
+                        return ctrl.$isEmpty(value) || angular.isUndefined(maxVal) || value <= parseFloat(maxVal);
+                    };
+
+                    attr.$observe("max", function (val) {
+                        maxVal = val;
+                        ctrl.$validate();
+                    });
+                }
+            }
+        }
+
         return directive;
     }
 })();
@@ -10403,61 +10401,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 })();
 "use strict";
 
-/**
- * @name logout controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/15/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.logout.controllers").controller("LogoutController", Logout);
-
-    Logout.$inject = ["websocketService", "alertService"];
-
-    function Logout(websocketService, alertService) {
-        var vm = this;
-        vm.logout = function (res) {
-            alertService.confirmRemoveAllAccount(function (res) {
-                if (typeof res !== "boolean") {
-                    if (res === 1) res = true;else res = false;
-                }
-
-                if (res) {
-                    websocketService.logout();
-                }
-            });
-        };
-    }
-})();
-"use strict";
-
-/**
- * @name logout directive
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.logout.directives").directive("bgLogout", Logout);
-
-    function Logout() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/share/components/logout/logout.template.html",
-            controller: "LogoutController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
-        return directive;
-    }
-})();
-"use strict";
-
 (function () {
     angular.module("binary.share.components.long-press.directives").directive("onLongPress", LongPress);
 
@@ -10529,6 +10472,61 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             elm.bind("mouseup", endPress);
         }
 
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name logout controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/15/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.logout.controllers").controller("LogoutController", Logout);
+
+    Logout.$inject = ["websocketService", "alertService"];
+
+    function Logout(websocketService, alertService) {
+        var vm = this;
+        vm.logout = function (res) {
+            alertService.confirmRemoveAllAccount(function (res) {
+                if (typeof res !== "boolean") {
+                    if (res === 1) res = true;else res = false;
+                }
+
+                if (res) {
+                    websocketService.logout();
+                }
+            });
+        };
+    }
+})();
+"use strict";
+
+/**
+ * @name logout directive
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/14/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.logout.directives").directive("bgLogout", Logout);
+
+    function Logout() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/share/components/logout/logout.template.html",
+            controller: "LogoutController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
+        };
         return directive;
     }
 })();
