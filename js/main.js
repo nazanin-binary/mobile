@@ -61,21 +61,6 @@
 "use strict";
 
 /**
- * @name Change Password module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/11/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.change-password", ["binary.pages.change-password.controllers"]);
-
-  angular.module("binary.pages.change-password.controllers", []);
-})();
-"use strict";
-
-/**
  * @name Contact module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -87,6 +72,21 @@
   angular.module("binary.pages.contact", ["binary.pages.contact.controllers"]);
 
   angular.module("binary.pages.contact.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name Change Password module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/11/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.change-password", ["binary.pages.change-password.controllers"]);
+
+  angular.module("binary.pages.change-password.controllers", []);
 })();
 "use strict";
 
@@ -136,21 +136,6 @@
 "use strict";
 
 /**
- * @name new-account-maltainvest module
- * @author Nazanin Reihanib Haghighi
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.maltainvest-account-opening", []);
-
-  angular.module("binary.pages.maltainvest-account-opening.controllers", []);
-})();
-"use strict";
-
-/**
  * @name MetaTrader Module
  * @author Morteza Tavanarad
  * @contributors []
@@ -164,6 +149,21 @@
     angular.module("binary.pages.meta-trader.controllers", []);
 
     angular.module("binary.pages.meta-trader.directives", []);
+})();
+"use strict";
+
+/**
+ * @name new-account-maltainvest module
+ * @author Nazanin Reihanib Haghighi
+ * @contributors []
+ * @since 08/14/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.maltainvest-account-opening", []);
+
+  angular.module("binary.pages.maltainvest-account-opening.controllers", []);
 })();
 "use strict";
 
@@ -2435,76 +2435,6 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
- * @name Change Password controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/11/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.change-password.controllers").controller("ChangePasswordController", ChangePassword);
-
-    ChangePassword.$inject = ["$scope", "$timeout", "websocketService", "appStateService", "alertService", "validationService"];
-
-    function ChangePassword($scope, $timeout, websocketService, appStateService, alertService, validationService) {
-        var vm = this;
-        vm.validation = validationService;
-        vm.passwordEqual = false;
-        vm.newPasswordHasError = false;
-        vm.oldPasswordHasError = false;
-        vm.hideInput = false;
-        vm.hideChangedPasswordText = true;
-
-        vm.checkPassword = function () {
-            $scope.$applyAsync(function () {
-                vm.passwordEqual = vm.newPassword === vm.repeatNewPassword;
-            });
-        };
-
-        vm.changePass = function () {
-            websocketService.sendRequestFor.changePassword(vm.currentPassword, vm.newPassword);
-            vm.newPasswordHasError = false;
-            vm.oldPasswordHasError = false;
-            vm.passwordUpdating = true;
-        };
-
-        $scope.$on("change_password:success", function (e, change_password) {
-            appStateService.passwordChanged = true;
-            vm.passwordUpdating = false;
-            $scope.$applyAsync(function () {
-                vm.hideInput = true;
-                vm.hideChangedPasswordText = false;
-            });
-            $timeout(function () {
-                websocketService.logout();
-            }, 5000);
-        });
-
-        $scope.$on("change_password:error", function (e, error) {
-            vm.passwordUpdating = false;
-            if (error.hasOwnProperty("details")) {
-                if (error.details.hasOwnProperty("new_password")) {
-                    $scope.$applyAsync(function () {
-                        vm.newPasswordHasError = true;
-                        vm.newPasswordError = error.details.new_password;
-                    });
-                }
-                if (error.details.hasOwnProperty("old_password")) {
-                    $scope.$applyAsync(function () {
-                        vm.oldPasswordHasError = true;
-                        vm.oldPasswordError = error.details.old_password;
-                    });
-                }
-            } else {
-                alertService.displayError(error.message);
-            }
-        });
-    }
-})();
-"use strict";
-
-/**
  * @name Contact controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2587,6 +2517,76 @@ angular.module("binary").constant("financialInformationOptions", {
                 }
             }
         };
+    }
+})();
+"use strict";
+
+/**
+ * @name Change Password controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/11/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.change-password.controllers").controller("ChangePasswordController", ChangePassword);
+
+    ChangePassword.$inject = ["$scope", "$timeout", "websocketService", "appStateService", "alertService", "validationService"];
+
+    function ChangePassword($scope, $timeout, websocketService, appStateService, alertService, validationService) {
+        var vm = this;
+        vm.validation = validationService;
+        vm.passwordEqual = false;
+        vm.newPasswordHasError = false;
+        vm.oldPasswordHasError = false;
+        vm.hideInput = false;
+        vm.hideChangedPasswordText = true;
+
+        vm.checkPassword = function () {
+            $scope.$applyAsync(function () {
+                vm.passwordEqual = vm.newPassword === vm.repeatNewPassword;
+            });
+        };
+
+        vm.changePass = function () {
+            websocketService.sendRequestFor.changePassword(vm.currentPassword, vm.newPassword);
+            vm.newPasswordHasError = false;
+            vm.oldPasswordHasError = false;
+            vm.passwordUpdating = true;
+        };
+
+        $scope.$on("change_password:success", function (e, change_password) {
+            appStateService.passwordChanged = true;
+            vm.passwordUpdating = false;
+            $scope.$applyAsync(function () {
+                vm.hideInput = true;
+                vm.hideChangedPasswordText = false;
+            });
+            $timeout(function () {
+                websocketService.logout();
+            }, 5000);
+        });
+
+        $scope.$on("change_password:error", function (e, error) {
+            vm.passwordUpdating = false;
+            if (error.hasOwnProperty("details")) {
+                if (error.details.hasOwnProperty("new_password")) {
+                    $scope.$applyAsync(function () {
+                        vm.newPasswordHasError = true;
+                        vm.newPasswordError = error.details.new_password;
+                    });
+                }
+                if (error.details.hasOwnProperty("old_password")) {
+                    $scope.$applyAsync(function () {
+                        vm.oldPasswordHasError = true;
+                        vm.oldPasswordError = error.details.old_password;
+                    });
+                }
+            } else {
+                alertService.displayError(error.message);
+            }
+        });
     }
 })();
 "use strict";
@@ -2810,6 +2810,192 @@ angular.module("binary").constant("financialInformationOptions", {
         vm.getLanguageId = function (title) {
             return "limits." + title.replace(/[\s]/g, '_').toLowerCase();
         };
+    }
+})();
+"use strict";
+
+/**
+ * @name MetaTrader Controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 04/15/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.meta-trader.controllers").controller("MetaTraderController", MetaTrader);
+
+    MetaTrader.$inject = ["$scope", "$translate", "$state", "accountService", "websocketService", "clientService", "appStateService"];
+
+    function MetaTrader($scope, $translate, $state, accountService, websocketService, clientService, appStateService) {
+        var vm = this;
+        vm.isLoaded = false;
+        vm.hasAccount = false;
+        vm.accountsList = {};
+        vm.hasMTAccess = false;
+        vm.canUpgrade = false;
+        vm.showUpgradeToRealButton = false;
+        var accounts = {};
+        var accountsInfo = {};
+        var mtCompany = {};
+        var landingCompanyObject = JSON.parse(localStorage.getItem('landingCompanyObject'));
+
+        var mtCompanies = {
+            financial: {
+                standard: { mt5_account_type: 'standard', max_leverage: 1000, title: $translate.instant('mt.standard') },
+                advanced: { mt5_account_type: 'advanced', max_leverage: 300, title: $translate.instant('mt.advanced') },
+                mamm: { mt5_account_type: 'mamm_advanced', max_leverage: 300, title: $translate.instant('mt.mam_advanced'), is_real_only: 1 }
+            },
+            gaming: {
+                volatility: { mt5_account_type: '', max_leverage: 500, title: $translate.instant('mt.volatility_indices') },
+                mamm: { mt5_account_type: 'mamm', max_leverage: 500, title: $translate.instant('mt.mam_volatility_indices'), is_real_only: 1 }
+            }
+        };
+
+        var addAccount = function addAccount(company) {
+            _.forEach(['demo', 'real'], function (type) {
+                _.forEach(_.keys(mtCompanies[company]), function (accType) {
+                    var companyInfo = mtCompanies[company][accType];
+                    var mt5AccountType = companyInfo.mt5_account_type;
+                    // add translate to this later
+                    var title = companyInfo.title;
+                    var isDemo = type === 'demo';
+
+                    if (!(isDemo && companyInfo.is_real_only)) {
+                        accountsInfo[type + "_" + mtCompany[company] + (mt5AccountType ? "_" + mt5AccountType : '')] = {
+                            title: title,
+                            isDemo: isDemo,
+                            mt5AccountType: mt5AccountType,
+                            accountType: isDemo ? 'demo' : company,
+                            maxLeverage: companyInfo.max_leverage,
+                            shortTitle: companyInfo.title
+                        };
+                    }
+                });
+            });
+        };
+
+        var getMT5AccountType = function getMT5AccountType(group) {
+            return group ? group.replace('\\', '_').replace(/_(\d+|master)/, '') : '';
+        }; // remove manager id or master distinction from group
+
+        var getMT5LoginList = function getMT5LoginList() {
+            return websocketService.sendRequestFor.mt5LoginList();
+        };
+
+        var getAllAccountsInfo = function getAllAccountsInfo(list) {
+            // Ignore old accounts which are not linked to any group or has deprecated group
+            var mt5LoginList = _.filter(list, function (obj) {
+                return obj.group && getMT5AccountType(obj.group) in accountsInfo;
+            });
+
+            _.forEach(mt5LoginList, function (obj) {
+                if (obj) {
+                    var accountType = getMT5AccountType(obj.group);
+                    accountsInfo[accountType].info = obj;
+                    var account = obj;
+                    account.isDemo = accountsInfo[accountType].isDemo;
+                    account.shortTitle = accountsInfo[accountType].shortTitle;
+                    accounts[account.login] = account;
+                }
+            });
+
+            $scope.$applyAsync(function () {
+                vm.canUpgrade = !!_.find(accountsInfo, function (acc) {
+                    return !acc.hasOwnProperty('info');
+                });
+                vm.accountsList = clientService.groupMT5Accounts(accounts);
+                vm.isLoaded = true;
+                vm.hasAccount = !_.isEmpty(vm.accountsList);
+            });
+        };
+
+        var isEligible = function isEligible() {
+            var hasMTCompany = false;
+            _.forEach(_.keys(mtCompanies), function (company) {
+                var landingCompany = "mt_" + company + "_company";
+                if (landingCompanyObject.hasOwnProperty(landingCompany)) {
+                    mtCompany[company] = landingCompanyObject[landingCompany].shortcode;
+                    if (mtCompany[company]) {
+                        hasMTCompany = true;
+                        addAccount(company);
+                    }
+                }
+            });
+            return hasMTCompany;
+        };
+
+        $scope.$on('mt5_login_list:success', function (e, list) {
+            getAllAccountsInfo(list);
+        });
+
+        vm.createMTAccount = function () {
+            window.open("https://www.binary.com/en/user/metatrader.html", "_system");
+        };
+
+        vm.openMT5 = function (type) {
+            type = type || "_blank";
+            if (["android", "ios"].indexOf(ionic.Platform.platform()) > -1) {
+                $state.go("mt5-web");
+                return;
+            }
+
+            var url = "https://trade.mql5.com/trade?servers=Binary.com-Server&trade_server=Binary.com-Server";
+            window.open(url, type);
+        };
+
+        vm.redirectToUpgrade = function () {
+            var linkToUpgrade = appStateService.upgrade.upgradeLink;
+            $state.go(linkToUpgrade);
+        };
+
+        var init = function init() {
+            if (isEligible()) {
+                var _accounts = accountService.getAll();
+                vm.hasRealAccount = !!_.find(_accounts, function (obj) {
+                    return _.indexOf(['malta', 'costarica', 'svg', 'iom', 'maltainvest'], obj.landing_company_name) > -1;
+                });
+                if (!vm.hasRealAccount && appStateService.upgrade && appStateService.upgrade.upgradeLink) {
+                    vm.showUpgradeToRealButton = true;
+                }
+                $scope.$applyAsync(function () {
+                    vm.hasMTAccess = true;
+                });
+                getMT5LoginList();
+            } else {
+                $scope.$applyAsync(function () {
+                    vm.hasMTAccess = false;
+                    vm.isLoaded = true;
+                });
+                //  show feature not available error
+            }
+        };
+
+        init();
+    }
+})();
+"use strict";
+
+/**
+ * @name MT5 Web Controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 04/15/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.meta-trader.controllers").controller("MT5WebController", MTWeb);
+
+    MTWeb.$inject = ["$sce", "$stateParams"];
+
+    function MTWeb($sce, $stateParams) {
+        var vm = this;
+        vm.url = "https://trade.mql5.com/trade?servers=Binary.com-Server&trade_server=Binary.com-Server&login=";
+
+        vm.url += $stateParams.id;
+
+        vm.url = $sce.trustAsResourceUrl(vm.url);
     }
 })();
 "use strict";
@@ -3093,192 +3279,6 @@ angular.module("binary").constant("financialInformationOptions", {
         };
 
         init();
-    }
-})();
-"use strict";
-
-/**
- * @name MetaTrader Controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 04/15/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.meta-trader.controllers").controller("MetaTraderController", MetaTrader);
-
-    MetaTrader.$inject = ["$scope", "$translate", "$state", "accountService", "websocketService", "clientService", "appStateService"];
-
-    function MetaTrader($scope, $translate, $state, accountService, websocketService, clientService, appStateService) {
-        var vm = this;
-        vm.isLoaded = false;
-        vm.hasAccount = false;
-        vm.accountsList = {};
-        vm.hasMTAccess = false;
-        vm.canUpgrade = false;
-        vm.showUpgradeToRealButton = false;
-        var accounts = {};
-        var accountsInfo = {};
-        var mtCompany = {};
-        var landingCompanyObject = JSON.parse(localStorage.getItem('landingCompanyObject'));
-
-        var mtCompanies = {
-            financial: {
-                standard: { mt5_account_type: 'standard', max_leverage: 1000, title: $translate.instant('mt.standard') },
-                advanced: { mt5_account_type: 'advanced', max_leverage: 300, title: $translate.instant('mt.advanced') },
-                mamm: { mt5_account_type: 'mamm_advanced', max_leverage: 300, title: $translate.instant('mt.mam_advanced'), is_real_only: 1 }
-            },
-            gaming: {
-                volatility: { mt5_account_type: '', max_leverage: 500, title: $translate.instant('mt.volatility_indices') },
-                mamm: { mt5_account_type: 'mamm', max_leverage: 500, title: $translate.instant('mt.mam_volatility_indices'), is_real_only: 1 }
-            }
-        };
-
-        var addAccount = function addAccount(company) {
-            _.forEach(['demo', 'real'], function (type) {
-                _.forEach(_.keys(mtCompanies[company]), function (accType) {
-                    var companyInfo = mtCompanies[company][accType];
-                    var mt5AccountType = companyInfo.mt5_account_type;
-                    // add translate to this later
-                    var title = companyInfo.title;
-                    var isDemo = type === 'demo';
-
-                    if (!(isDemo && companyInfo.is_real_only)) {
-                        accountsInfo[type + "_" + mtCompany[company] + (mt5AccountType ? "_" + mt5AccountType : '')] = {
-                            title: title,
-                            isDemo: isDemo,
-                            mt5AccountType: mt5AccountType,
-                            accountType: isDemo ? 'demo' : company,
-                            maxLeverage: companyInfo.max_leverage,
-                            shortTitle: companyInfo.title
-                        };
-                    }
-                });
-            });
-        };
-
-        var getMT5AccountType = function getMT5AccountType(group) {
-            return group ? group.replace('\\', '_').replace(/_(\d+|master)/, '') : '';
-        }; // remove manager id or master distinction from group
-
-        var getMT5LoginList = function getMT5LoginList() {
-            return websocketService.sendRequestFor.mt5LoginList();
-        };
-
-        var getAllAccountsInfo = function getAllAccountsInfo(list) {
-            // Ignore old accounts which are not linked to any group or has deprecated group
-            var mt5LoginList = _.filter(list, function (obj) {
-                return obj.group && getMT5AccountType(obj.group) in accountsInfo;
-            });
-
-            _.forEach(mt5LoginList, function (obj) {
-                if (obj) {
-                    var accountType = getMT5AccountType(obj.group);
-                    accountsInfo[accountType].info = obj;
-                    var account = obj;
-                    account.isDemo = accountsInfo[accountType].isDemo;
-                    account.shortTitle = accountsInfo[accountType].shortTitle;
-                    accounts[account.login] = account;
-                }
-            });
-
-            $scope.$applyAsync(function () {
-                vm.canUpgrade = !!_.find(accountsInfo, function (acc) {
-                    return !acc.hasOwnProperty('info');
-                });
-                vm.accountsList = clientService.groupMT5Accounts(accounts);
-                vm.isLoaded = true;
-                vm.hasAccount = !_.isEmpty(vm.accountsList);
-            });
-        };
-
-        var isEligible = function isEligible() {
-            var hasMTCompany = false;
-            _.forEach(_.keys(mtCompanies), function (company) {
-                var landingCompany = "mt_" + company + "_company";
-                if (landingCompanyObject.hasOwnProperty(landingCompany)) {
-                    mtCompany[company] = landingCompanyObject[landingCompany].shortcode;
-                    if (mtCompany[company]) {
-                        hasMTCompany = true;
-                        addAccount(company);
-                    }
-                }
-            });
-            return hasMTCompany;
-        };
-
-        $scope.$on('mt5_login_list:success', function (e, list) {
-            getAllAccountsInfo(list);
-        });
-
-        vm.createMTAccount = function () {
-            window.open("https://www.binary.com/en/user/metatrader.html", "_system");
-        };
-
-        vm.openMT5 = function (type) {
-            type = type || "_blank";
-            if (["android", "ios"].indexOf(ionic.Platform.platform()) > -1) {
-                $state.go("mt5-web");
-                return;
-            }
-
-            var url = "https://trade.mql5.com/trade?servers=Binary.com-Server&trade_server=Binary.com-Server";
-            window.open(url, type);
-        };
-
-        vm.redirectToUpgrade = function () {
-            var linkToUpgrade = appStateService.upgrade.upgradeLink;
-            $state.go(linkToUpgrade);
-        };
-
-        var init = function init() {
-            if (isEligible()) {
-                var _accounts = accountService.getAll();
-                vm.hasRealAccount = !!_.find(_accounts, function (obj) {
-                    return _.indexOf(['malta', 'costarica', 'svg', 'iom', 'maltainvest'], obj.landing_company_name) > -1;
-                });
-                if (!vm.hasRealAccount && appStateService.upgrade && appStateService.upgrade.upgradeLink) {
-                    vm.showUpgradeToRealButton = true;
-                }
-                $scope.$applyAsync(function () {
-                    vm.hasMTAccess = true;
-                });
-                getMT5LoginList();
-            } else {
-                $scope.$applyAsync(function () {
-                    vm.hasMTAccess = false;
-                    vm.isLoaded = true;
-                });
-                //  show feature not available error
-            }
-        };
-
-        init();
-    }
-})();
-"use strict";
-
-/**
- * @name MT5 Web Controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 04/15/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.meta-trader.controllers").controller("MT5WebController", MTWeb);
-
-    MTWeb.$inject = ["$sce", "$stateParams"];
-
-    function MTWeb($sce, $stateParams) {
-        var vm = this;
-        vm.url = "https://trade.mql5.com/trade?servers=Binary.com-Server&trade_server=Binary.com-Server&login=";
-
-        vm.url += $stateParams.id;
-
-        vm.url = $sce.trustAsResourceUrl(vm.url);
     }
 })();
 "use strict";
