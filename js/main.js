@@ -1192,7 +1192,7 @@ angular.module("ngIOS9UIWebViewPatch", ["ng"]).config(["$provide", function ($pr
 var isBinaryMe = window.location.host === 'ticktrade.binary.me';
 
 angular.module("binary").constant("config", {
-    app_id: isBinaryMe ? "15488" : "16035",
+    app_id: isBinaryMe ? "15488" : "10",
     serverUrl: "frontend.binaryws.com",
     serverCertFP: "",
     qaMachinesCertFP: "",
