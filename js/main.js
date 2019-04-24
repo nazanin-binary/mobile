@@ -1,21 +1,6 @@
 "use strict";
 
 /**
- * @name account categorisation module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 06/17/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.account-categorisation", ["binary.pages.account-categorisation.controllers"]);
-
-  angular.module("binary.pages.account-categorisation.controllers", []);
-})();
-"use strict";
-
-/**
  * @name Account management module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -46,6 +31,21 @@
 "use strict";
 
 /**
+ * @name account categorisation module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 06/17/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.account-categorisation", ["binary.pages.account-categorisation.controllers"]);
+
+  angular.module("binary.pages.account-categorisation.controllers", []);
+})();
+"use strict";
+
+/**
  * @name authentication module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -61,21 +61,6 @@
 "use strict";
 
 /**
- * @name Change Password module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/11/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.change-password", ["binary.pages.change-password.controllers"]);
-
-  angular.module("binary.pages.change-password.controllers", []);
-})();
-"use strict";
-
-/**
  * @name Contact module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -87,6 +72,21 @@
   angular.module("binary.pages.contact", ["binary.pages.contact.controllers"]);
 
   angular.module("binary.pages.contact.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name Change Password module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/11/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.change-password", ["binary.pages.change-password.controllers"]);
+
+  angular.module("binary.pages.change-password.controllers", []);
 })();
 "use strict";
 
@@ -195,6 +195,23 @@
 
   angular.module("binary.pages.profile.controllers", []);
 })();
+"use strict";
+
+/**
+ * @name profit-table module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/14/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.profit-table", ["binary.pages.profit-table.controllers", "binary.pages.profit-table.filters"]);
+
+    angular.module("binary.pages.profit-table.controllers", []);
+
+    angular.module("binary.pages.profit-table.filters", []);
+})();
 'use strict';
 
 /**
@@ -213,23 +230,6 @@
     angular.module('binary.pages.qa-settings.controllers', []);
 
     angular.module('binary.pages.qa-settings.directives', []);
-})();
-"use strict";
-
-/**
- * @name profit-table module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.profit-table", ["binary.pages.profit-table.controllers", "binary.pages.profit-table.filters"]);
-
-    angular.module("binary.pages.profit-table.controllers", []);
-
-    angular.module("binary.pages.profit-table.filters", []);
 })();
 "use strict";
 
@@ -473,21 +473,6 @@
 "use strict";
 
 /**
- * @name big number Module
- * @author Morteza Tavanarad
- * @contributors []
- * @since 06/09/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.share.components.big-number", ["binary.share.components.big-number.directives"]);
-
-  angular.module("binary.share.components.big-number.directives", []);
-})();
-"use strict";
-
-/**
  * @name balance module
  * @author Morteza Tavnarad
  * @contributors []
@@ -501,6 +486,21 @@
     angular.module("binary.share.components.balance.controllers", []);
 
     angular.module("binary.share.components.balance.directives", []);
+})();
+"use strict";
+
+/**
+ * @name big number Module
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 06/09/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.share.components.big-number", ["binary.share.components.big-number.directives"]);
+
+  angular.module("binary.share.components.big-number.directives", []);
 })();
 "use strict";
 
@@ -574,21 +574,6 @@
 "use strict";
 
 /**
- * @name long-press module
- * @author Morteza Tavnarad
- * @contributors []
- * @since 09/05/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.share.components.long-press", ["binary.share.components.long-press.directives"]);
-
-  angular.module("binary.share.components.long-press.directives", []);
-})();
-"use strict";
-
-/**
  * @name logout module
  * @author
  * @contributors []
@@ -602,6 +587,21 @@
     angular.module("binary.share.components.logout.controllers", []);
 
     angular.module("binary.share.components.logout.directives", []);
+})();
+"use strict";
+
+/**
+ * @name long-press module
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/05/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.share.components.long-press", ["binary.share.components.long-press.directives"]);
+
+  angular.module("binary.share.components.long-press.directives", []);
 })();
 "use strict";
 
@@ -1970,132 +1970,6 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
- * @name account categorisation controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 06/17/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.account-categorisation.controllers").controller("AccountCategorisationController", AccountCategorisation);
-
-    AccountCategorisation.$inject = ["$scope", "$state", "$timeout", "$translate", "websocketService", "accountService", "clientService", "alertService"];
-
-    function AccountCategorisation($scope, $state, $timeout, $translate, websocketService, accountService, clientService, alertService) {
-        var vm = this;
-        var loginid = '';
-        var params = {
-            request_professional_status: 0,
-            tax_identification_number: '',
-            tax_residence: ''
-        };
-
-        var hasValueIn = function hasValueIn(arr, val) {
-            return _.indexOf(arr, val) > -1;
-        };
-        var isLandingCompanyOf = function isLandingCompanyOf(targetLandingCompany, accountLandingCompany) {
-            return clientService.isLandingCompanyOf(targetLandingCompany, accountLandingCompany);
-        };
-
-        $scope.$on('set-settings:error', function (e, error) {
-            if (error.code === 'InputValidationFailed') {
-                $state.go('profile');
-            } else {
-                alertService.displayError(error.message);
-            }
-        });
-
-        $scope.$on('set-settings', function (e, message) {
-            init();
-        });
-
-        $scope.$on('get_settings', function (e, get_settings) {
-            _.forEach(params, function (val, k) {
-                if (get_settings[k]) params[k] = get_settings[k];
-            });
-            params.request_professional_status = 1;
-            websocketService.sendRequestFor.setAccountSettings(params);
-        });
-
-        $scope.$on('authorize', function (e, authorize) {
-            if (authorize && authorize.loginid !== loginid) {
-                loginid = authorize.loginid;
-                var isFinancial = isLandingCompanyOf('maltainvest', authorize.landing_company_name);
-                if (!isFinancial) {
-                    $state.go('trade');
-                } else {
-                    init();
-                }
-            }
-        });
-
-        vm.openProfessionalClientInformation = function () {
-            alertService.showProfessioanlClientInformation($scope);
-        };
-
-        vm.updateClientType = function () {
-            websocketService.sendRequestFor.accountSetting();
-        };
-
-        vm.showConfirmProfessionalClient = function () {
-            if (vm.client_type) {
-                alertService.displayProfessionalClientConfirmation($translate.instant('professional-client-confirmation.professional_clients'), 'information-popup', $scope, 'js/share/templates/professional-client/professional-client-confirmation.template.html', [{
-                    text: $translate.instant("professional-client-confirmation.decline"),
-                    onTap: function onTap() {
-                        return vm.client_type = 0;
-                    }
-                }, {
-                    text: $translate.instant("professional-client-confirmation.accept"),
-                    type: "button-positive",
-                    onTap: function onTap() {
-                        return true;
-                    }
-                }]);
-            }
-        };
-
-        $scope.$on('get_account_status', function (e, message) {
-            vm.isDataLoaded = true;
-            var status = message.status;
-            if (status) {
-                if (hasValueIn(status, 'professional')) {
-                    vm.userState = 'professional';
-                } else if (hasValueIn(status, 'professional_requested')) {
-                    vm.userState = 'processing';
-                } else {
-                    vm.userState = 'retail';
-                }
-            } else {
-                vm.hasError = true;
-            }
-            $scope.$apply();
-        });
-
-        var init = function init() {
-            vm.isDataLoaded = false;
-            vm.userState = '';
-            var account = accountService.getDefault();
-            if (account) {
-                loginid = account.id;
-                var landingcompany = account.landing_company_name;
-                var isFinancial = isLandingCompanyOf('maltainvest', landingcompany);
-                if (isFinancial) {
-                    websocketService.sendRequestFor.getAccountStatus();
-                } else {
-                    $state.go('trade');
-                }
-            } else {
-                $timeout(init, 1000);
-            }
-        };
-
-        init();
-    }
-})();
-"use strict";
-
-/**
  * @name Accounts management controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2441,6 +2315,132 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
+ * @name account categorisation controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 06/17/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.account-categorisation.controllers").controller("AccountCategorisationController", AccountCategorisation);
+
+    AccountCategorisation.$inject = ["$scope", "$state", "$timeout", "$translate", "websocketService", "accountService", "clientService", "alertService"];
+
+    function AccountCategorisation($scope, $state, $timeout, $translate, websocketService, accountService, clientService, alertService) {
+        var vm = this;
+        var loginid = '';
+        var params = {
+            request_professional_status: 0,
+            tax_identification_number: '',
+            tax_residence: ''
+        };
+
+        var hasValueIn = function hasValueIn(arr, val) {
+            return _.indexOf(arr, val) > -1;
+        };
+        var isLandingCompanyOf = function isLandingCompanyOf(targetLandingCompany, accountLandingCompany) {
+            return clientService.isLandingCompanyOf(targetLandingCompany, accountLandingCompany);
+        };
+
+        $scope.$on('set-settings:error', function (e, error) {
+            if (error.code === 'InputValidationFailed') {
+                $state.go('profile');
+            } else {
+                alertService.displayError(error.message);
+            }
+        });
+
+        $scope.$on('set-settings', function (e, message) {
+            init();
+        });
+
+        $scope.$on('get_settings', function (e, get_settings) {
+            _.forEach(params, function (val, k) {
+                if (get_settings[k]) params[k] = get_settings[k];
+            });
+            params.request_professional_status = 1;
+            websocketService.sendRequestFor.setAccountSettings(params);
+        });
+
+        $scope.$on('authorize', function (e, authorize) {
+            if (authorize && authorize.loginid !== loginid) {
+                loginid = authorize.loginid;
+                var isFinancial = isLandingCompanyOf('maltainvest', authorize.landing_company_name);
+                if (!isFinancial) {
+                    $state.go('trade');
+                } else {
+                    init();
+                }
+            }
+        });
+
+        vm.openProfessionalClientInformation = function () {
+            alertService.showProfessioanlClientInformation($scope);
+        };
+
+        vm.updateClientType = function () {
+            websocketService.sendRequestFor.accountSetting();
+        };
+
+        vm.showConfirmProfessionalClient = function () {
+            if (vm.client_type) {
+                alertService.displayProfessionalClientConfirmation($translate.instant('professional-client-confirmation.professional_clients'), 'information-popup', $scope, 'js/share/templates/professional-client/professional-client-confirmation.template.html', [{
+                    text: $translate.instant("professional-client-confirmation.decline"),
+                    onTap: function onTap() {
+                        return vm.client_type = 0;
+                    }
+                }, {
+                    text: $translate.instant("professional-client-confirmation.accept"),
+                    type: "button-positive",
+                    onTap: function onTap() {
+                        return true;
+                    }
+                }]);
+            }
+        };
+
+        $scope.$on('get_account_status', function (e, message) {
+            vm.isDataLoaded = true;
+            var status = message.status;
+            if (status) {
+                if (hasValueIn(status, 'professional')) {
+                    vm.userState = 'professional';
+                } else if (hasValueIn(status, 'professional_requested')) {
+                    vm.userState = 'processing';
+                } else {
+                    vm.userState = 'retail';
+                }
+            } else {
+                vm.hasError = true;
+            }
+            $scope.$apply();
+        });
+
+        var init = function init() {
+            vm.isDataLoaded = false;
+            vm.userState = '';
+            var account = accountService.getDefault();
+            if (account) {
+                loginid = account.id;
+                var landingcompany = account.landing_company_name;
+                var isFinancial = isLandingCompanyOf('maltainvest', landingcompany);
+                if (isFinancial) {
+                    websocketService.sendRequestFor.getAccountStatus();
+                } else {
+                    $state.go('trade');
+                }
+            } else {
+                $timeout(init, 1000);
+            }
+        };
+
+        init();
+    }
+})();
+"use strict";
+
+/**
  * @name authentication controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2455,76 +2455,6 @@ angular.module("binary").constant("financialInformationOptions", {
 
     function Authentication() {
         var vm = this;
-    }
-})();
-"use strict";
-
-/**
- * @name Change Password controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/11/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.change-password.controllers").controller("ChangePasswordController", ChangePassword);
-
-    ChangePassword.$inject = ["$scope", "$timeout", "websocketService", "appStateService", "alertService", "validationService"];
-
-    function ChangePassword($scope, $timeout, websocketService, appStateService, alertService, validationService) {
-        var vm = this;
-        vm.validation = validationService;
-        vm.passwordEqual = false;
-        vm.newPasswordHasError = false;
-        vm.oldPasswordHasError = false;
-        vm.hideInput = false;
-        vm.hideChangedPasswordText = true;
-
-        vm.checkPassword = function () {
-            $scope.$applyAsync(function () {
-                vm.passwordEqual = vm.newPassword === vm.repeatNewPassword;
-            });
-        };
-
-        vm.changePass = function () {
-            websocketService.sendRequestFor.changePassword(vm.currentPassword, vm.newPassword);
-            vm.newPasswordHasError = false;
-            vm.oldPasswordHasError = false;
-            vm.passwordUpdating = true;
-        };
-
-        $scope.$on("change_password:success", function (e, change_password) {
-            appStateService.passwordChanged = true;
-            vm.passwordUpdating = false;
-            $scope.$applyAsync(function () {
-                vm.hideInput = true;
-                vm.hideChangedPasswordText = false;
-            });
-            $timeout(function () {
-                websocketService.logout();
-            }, 5000);
-        });
-
-        $scope.$on("change_password:error", function (e, error) {
-            vm.passwordUpdating = false;
-            if (error.hasOwnProperty("details")) {
-                if (error.details.hasOwnProperty("new_password")) {
-                    $scope.$applyAsync(function () {
-                        vm.newPasswordHasError = true;
-                        vm.newPasswordError = error.details.new_password;
-                    });
-                }
-                if (error.details.hasOwnProperty("old_password")) {
-                    $scope.$applyAsync(function () {
-                        vm.oldPasswordHasError = true;
-                        vm.oldPasswordError = error.details.old_password;
-                    });
-                }
-            } else {
-                alertService.displayError(error.message);
-            }
-        });
     }
 })();
 "use strict";
@@ -2612,6 +2542,76 @@ angular.module("binary").constant("financialInformationOptions", {
                 }
             }
         };
+    }
+})();
+"use strict";
+
+/**
+ * @name Change Password controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/11/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.change-password.controllers").controller("ChangePasswordController", ChangePassword);
+
+    ChangePassword.$inject = ["$scope", "$timeout", "websocketService", "appStateService", "alertService", "validationService"];
+
+    function ChangePassword($scope, $timeout, websocketService, appStateService, alertService, validationService) {
+        var vm = this;
+        vm.validation = validationService;
+        vm.passwordEqual = false;
+        vm.newPasswordHasError = false;
+        vm.oldPasswordHasError = false;
+        vm.hideInput = false;
+        vm.hideChangedPasswordText = true;
+
+        vm.checkPassword = function () {
+            $scope.$applyAsync(function () {
+                vm.passwordEqual = vm.newPassword === vm.repeatNewPassword;
+            });
+        };
+
+        vm.changePass = function () {
+            websocketService.sendRequestFor.changePassword(vm.currentPassword, vm.newPassword);
+            vm.newPasswordHasError = false;
+            vm.oldPasswordHasError = false;
+            vm.passwordUpdating = true;
+        };
+
+        $scope.$on("change_password:success", function (e, change_password) {
+            appStateService.passwordChanged = true;
+            vm.passwordUpdating = false;
+            $scope.$applyAsync(function () {
+                vm.hideInput = true;
+                vm.hideChangedPasswordText = false;
+            });
+            $timeout(function () {
+                websocketService.logout();
+            }, 5000);
+        });
+
+        $scope.$on("change_password:error", function (e, error) {
+            vm.passwordUpdating = false;
+            if (error.hasOwnProperty("details")) {
+                if (error.details.hasOwnProperty("new_password")) {
+                    $scope.$applyAsync(function () {
+                        vm.newPasswordHasError = true;
+                        vm.newPasswordError = error.details.new_password;
+                    });
+                }
+                if (error.details.hasOwnProperty("old_password")) {
+                    $scope.$applyAsync(function () {
+                        vm.oldPasswordHasError = true;
+                        vm.oldPasswordError = error.details.old_password;
+                    });
+                }
+            } else {
+                alertService.displayError(error.message);
+            }
+        });
     }
 })();
 "use strict";
@@ -3601,55 +3601,6 @@ angular.module("binary").constant("financialInformationOptions", {
         vm.init();
     }
 })();
-'use strict';
-
-/**
- * @name qa-settings controller
- * @author Morteza Tavnarad
- * @contributors []
- * @since 10/14/2016
- * @copyright Binary Ltd
- * Application Header
- */
-
-(function () {
-
-    angular.module('binary.pages.qa-settings.controllers').controller('QASettingsController', QASettings);
-
-    QASettings.$inject = ['$state', 'appStateService', 'config', 'websocketService'];
-
-    function QASettings($state, appStateService, config, websocketService) {
-        var vm = this;
-
-        vm.saveSettings = function () {
-            var settings = {};
-            config.wsUrl = vm.wsUrl;
-            settings.wsUrl = vm.wsUrl;
-            config.app_id = vm.appId.toString();
-            settings.appId = vm.appId.toString();
-            config.oauthUrl = vm.oauthUrl;
-            settings.oauthUrl = vm.oauthUrl;
-
-            localStorage.qaSettings = JSON.stringify(settings);
-
-            websocketService.closeConnection();
-            $state.go('home');
-        };
-
-        function init() {
-            var settings = {};
-            if (!_.isEmpty(localStorage.qaSettings)) {
-                settings = JSON.parse(localStorage.qaSettings);
-            }
-
-            vm.wsUrl = settings.wsUrl || config.wsUrl;
-            vm.oauthUrl = settings.oauthUrl || config.oauthUrl;
-            vm.appId = Number(settings.appId) || Number(config.app_id);
-        }
-
-        init();
-    }
-})();
 "use strict";
 
 /**
@@ -3999,6 +3950,55 @@ angular.module("binary").constant("financialInformationOptions", {
             return filtered;
         }
         return DataChange;
+    }
+})();
+'use strict';
+
+/**
+ * @name qa-settings controller
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 10/14/2016
+ * @copyright Binary Ltd
+ * Application Header
+ */
+
+(function () {
+
+    angular.module('binary.pages.qa-settings.controllers').controller('QASettingsController', QASettings);
+
+    QASettings.$inject = ['$state', 'appStateService', 'config', 'websocketService'];
+
+    function QASettings($state, appStateService, config, websocketService) {
+        var vm = this;
+
+        vm.saveSettings = function () {
+            var settings = {};
+            config.wsUrl = vm.wsUrl;
+            settings.wsUrl = vm.wsUrl;
+            config.app_id = vm.appId.toString();
+            settings.appId = vm.appId.toString();
+            config.oauthUrl = vm.oauthUrl;
+            settings.oauthUrl = vm.oauthUrl;
+
+            localStorage.qaSettings = JSON.stringify(settings);
+
+            websocketService.closeConnection();
+            $state.go('home');
+        };
+
+        function init() {
+            var settings = {};
+            if (!_.isEmpty(localStorage.qaSettings)) {
+                settings = JSON.parse(localStorage.qaSettings);
+            }
+
+            vm.wsUrl = settings.wsUrl || config.wsUrl;
+            vm.oauthUrl = settings.oauthUrl || config.oauthUrl;
+            vm.appId = Number(settings.appId) || Number(config.app_id);
+        }
+
+        init();
     }
 })();
 "use strict";
@@ -9541,74 +9541,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name big number Controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 06/09/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.big-number.directives").directive("bgBigNumber", BigNumber);
-
-    BigNumber.$inject = [];
-
-    function BigNumber() {
-        var directive = {
-            restrict: "A",
-            require: "?ngModel",
-            link: link
-        };
-
-        function link(scope, element, attr, ctrl) {
-            if (ctrl) {
-                ctrl.$formatters.push(function (modelValue) {
-                    if (angular.isDefined(modelValue) && _.isEmpty(modelValue.toString())) {
-                        return null;
-                    }
-                    return modelValue;
-                });
-
-                ctrl.$parsers.push(function (viewValue) {
-                    if (!viewValue) {
-                        return null;
-                    }
-                    return viewValue;
-                });
-
-                var minVal = void 0;
-                var maxVal = void 0;
-
-                if (angular.isDefined(attr.min) || attr.ngMin) {
-                    ctrl.$validators.min = function (value) {
-                        return ctrl.$isEmpty(value) || angular.isUndefined(minVal) || value >= parseFloat(minVal);
-                    };
-
-                    attr.$observe("min", function (val) {
-                        minVal = val;
-                        ctrl.$validate();
-                    });
-                }
-
-                if (angular.isDefined(attr.max) || attr.ngMax) {
-                    ctrl.$validators.max = function (value) {
-                        return ctrl.$isEmpty(value) || angular.isUndefined(maxVal) || value <= parseFloat(maxVal);
-                    };
-
-                    attr.$observe("max", function (val) {
-                        maxVal = val;
-                        ctrl.$validate();
-                    });
-                }
-            }
-        }
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
  * @name balance controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -9697,6 +9629,74 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
                     websocketService.sendRequestFor.forgetStream(vm.balance.id);
                 }
             });
+        }
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name big number Controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 06/09/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.big-number.directives").directive("bgBigNumber", BigNumber);
+
+    BigNumber.$inject = [];
+
+    function BigNumber() {
+        var directive = {
+            restrict: "A",
+            require: "?ngModel",
+            link: link
+        };
+
+        function link(scope, element, attr, ctrl) {
+            if (ctrl) {
+                ctrl.$formatters.push(function (modelValue) {
+                    if (angular.isDefined(modelValue) && _.isEmpty(modelValue.toString())) {
+                        return null;
+                    }
+                    return modelValue;
+                });
+
+                ctrl.$parsers.push(function (viewValue) {
+                    if (!viewValue) {
+                        return null;
+                    }
+                    return viewValue;
+                });
+
+                var minVal = void 0;
+                var maxVal = void 0;
+
+                if (angular.isDefined(attr.min) || attr.ngMin) {
+                    ctrl.$validators.min = function (value) {
+                        return ctrl.$isEmpty(value) || angular.isUndefined(minVal) || value >= parseFloat(minVal);
+                    };
+
+                    attr.$observe("min", function (val) {
+                        minVal = val;
+                        ctrl.$validate();
+                    });
+                }
+
+                if (angular.isDefined(attr.max) || attr.ngMax) {
+                    ctrl.$validators.max = function (value) {
+                        return ctrl.$isEmpty(value) || angular.isUndefined(maxVal) || value <= parseFloat(maxVal);
+                    };
+
+                    attr.$observe("max", function (val) {
+                        maxVal = val;
+                        ctrl.$validate();
+                    });
+                }
+            }
         }
 
         return directive;
@@ -10490,6 +10490,61 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 })();
 "use strict";
 
+/**
+ * @name logout controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/15/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.logout.controllers").controller("LogoutController", Logout);
+
+    Logout.$inject = ["websocketService", "alertService"];
+
+    function Logout(websocketService, alertService) {
+        var vm = this;
+        vm.logout = function (res) {
+            alertService.confirmRemoveAllAccount(function (res) {
+                if (typeof res !== "boolean") {
+                    if (res === 1) res = true;else res = false;
+                }
+
+                if (res) {
+                    websocketService.logout();
+                }
+            });
+        };
+    }
+})();
+"use strict";
+
+/**
+ * @name logout directive
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/14/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.logout.directives").directive("bgLogout", Logout);
+
+    function Logout() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/share/components/logout/logout.template.html",
+            controller: "LogoutController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
+        };
+        return directive;
+    }
+})();
+"use strict";
+
 (function () {
     angular.module("binary.share.components.long-press.directives").directive("onLongPress", LongPress);
 
@@ -10561,61 +10616,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             elm.bind("mouseup", endPress);
         }
 
-        return directive;
-    }
-})();
-"use strict";
-
-/**
- * @name logout controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/15/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.logout.controllers").controller("LogoutController", Logout);
-
-    Logout.$inject = ["websocketService", "alertService"];
-
-    function Logout(websocketService, alertService) {
-        var vm = this;
-        vm.logout = function (res) {
-            alertService.confirmRemoveAllAccount(function (res) {
-                if (typeof res !== "boolean") {
-                    if (res === 1) res = true;else res = false;
-                }
-
-                if (res) {
-                    websocketService.logout();
-                }
-            });
-        };
-    }
-})();
-"use strict";
-
-/**
- * @name logout directive
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.logout.directives").directive("bgLogout", Logout);
-
-    function Logout() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/share/components/logout/logout.template.html",
-            controller: "LogoutController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
         return directive;
     }
 })();
