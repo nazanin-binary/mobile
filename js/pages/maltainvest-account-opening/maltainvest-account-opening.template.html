@@ -3,10 +3,7 @@
     <div class="row center spinner-container" ng-if="!vm.receivedSettings">
       <ion-spinner></ion-spinner>
     </div>
-    <form name="newAccountMaltainvestForm"
-          class="new-real-account"
-          ng-show="vm.receivedSettings && !vm.showRiskDisclaimer"
-          novalidate>
+    <form name="newAccountMaltainvestForm" class="new-real-account" ng-show="vm.receivedSettings" novalidate>
       <div class="row">
         <div class="col">
           <h1 class="page-title">
@@ -17,21 +14,12 @@
       <div class="row">
         <div class="col">
           <div class="row">
-            <div class="col sub-title">
-              {{ 'new-account-maltainvest.details' | translate }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
             <div class="col input-title">
               {{ 'new-account-maltainvest.salutation' | translate }}
             </div>
           </div>
           <div class="row">
-            <div class="col item-input item-select">
+            <div class="col item-select">
               <select name="salutation"
                       ng-options="option.value as option.text | translate
                       for option in vm.options.salutation"
@@ -72,10 +60,10 @@
                            ng-if="newAccountMaltainvestForm.first_name.$dirty"
                            ng-hide="vm.errors.first_name">
                 <ng-message when="pattern">
-                  {{ 'new-account-maltainvest.general_pattern_error' | translate }}
+                  {{ 'new-account-maltainvest.general-pattern-error' | translate }}
                 </ng-message>
                 <ng-message when="minlength, maxlength">
-                  {{ 'new-account-maltainvest.length_range_error' | translate :
+                  {{ 'newaccountreal.length-range-error' | translate :
                   { min: vm.validation.length.name.min, max: vm.validation.length.name.max } }}
                 </ng-message>
                 <ng-message when="required">
@@ -111,10 +99,10 @@
                            ng-if="newAccountMaltainvestForm.last_name.$dirty"
                            ng-hide="vm.errors.last_name">
                 <ng-message when="pattern">
-                  {{ 'new-account-maltainvest.general_pattern_error' | translate }}
+                  {{ 'new-account-maltainvest.general-pattern-error' | translate }}
                 </ng-message>
                 <ng-message when="minlength, maxlength">
-                  {{ 'new-account-maltainvest.length_range_error' | translate :
+                  {{ 'newaccountreal.length-range-error' | translate :
                   {min: vm.validation.length.name.min, max: vm.validation.length.name.max} }}
                 </ng-message>
                 <ng-message when="required">
@@ -154,31 +142,6 @@
           </ng-messages>
           <div class="help-block error" ng-if="vm.errors.date_of_birth">
             {{ vm.errors.date_of_birth }}
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.citizenship' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <label class="col item-input item-select">
-              <select name="citizen"
-                      ng-model="vm.data.citizen"
-                      ng-options="residence.value as residence.text for residence in vm.residenceList"
-                      ng-disabled="vm.hasCitizen"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </label>
-          </div>
-          <div class="help-block error" ng-if="vm.errors.citizen">
-            {{ vm.errors.citizen }}
           </div>
         </div>
       </div>
@@ -236,54 +199,6 @@
         <div class="col">
           <div class="row">
             <div class="col input-title">
-              {{ 'new-account-maltainvest.account_opening_reason' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="account_opening_reason"
-                      ng-options="option.value as option.text | translate
-                      for option in vm.options.account_opening_reason"
-                      ng-model="vm.data.account_opening_reason"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-              <div class="help-block error" ng-if="vm.errors.account_opening_reason">
-                {{ vm.errors.account_opening_reason }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col sub-title">
-              {{ 'new-account-maltainvest.tax_information' | translate }}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col info-container">
-          <div class="row">
-            <div class="col">
-              {{ 'new-account-maltainvest.required_to_collect_tin' | translate }}
-              <a ng-click="vm.openTaxInformation()">
-                {{ 'new-account-maltainvest.read_more' | translate }}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
               {{ 'new-account-maltainvest.tax_residence' | translate }}
             </div>
           </div>
@@ -326,7 +241,7 @@
                   { max: vm.validation.length.tin.max } }}
                 </ng-message>
                 <ng-message when="pattern">
-                  {{ 'new-account-maltainvest.tax_identification_number_pattern_error' | translate }}
+                  {{ 'new-account-maltainvest.tax-identification-number-pattern-error' | translate }}
                 </ng-message>
                 <ng-message when="required">
                   {{ 'new-account-maltainvest.required' | translate }}
@@ -335,38 +250,6 @@
               <div class="help-block error" ng-if="vm.errors.tax_identification_number">
                 {{ vm.errors.tax_identification_number }}
               </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <div class="row">
-                <div class="col accept center">
-                  <input name="taxConfirm"
-                         type="checkbox"
-                         ng-model="vm.taxInfoConfirmed"
-                         class="checkbox"
-                         required />
-                  {{ 'new-account-maltainvest.confirm_tax_info' | translate }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col info-container">
-              <div class="row">
-                <div class="col">
-                  {{ 'new-account-maltainvest.multi_tax_residence_info' | translate }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col sub-title">
-              {{ 'new-account-maltainvest.address' | translate }}
             </div>
           </div>
         </div>
@@ -391,14 +274,14 @@
                            ng-if="newAccountMaltainvestForm.address_line_1.$dirty"
                            ng-hide="vm.errors.address_line_1">
                 <ng-message when="maxlength">
-                  {{ 'new-account-maltainvest.length_range_error' | translate :
+                  {{ 'new-account-maltainvest.length-range-error' | translate :
                   { min: 2, max: vm.validation.length.address.max } }}
                 </ng-message>
                 <ng-message when="required">
                   {{ 'new-account-maltainvest.required' | translate }}
                 </ng-message>
                 <ng-message when="pattern">
-                  {{ 'new-account-maltainvest.address_pattern_error' | translate }}
+                  {{ 'new-account-maltainvest.address-pattern-error' | translate }}
                 </ng-message>
               </ng-messages>
               <div class="help-block error" ng-if="vm.errors.address_line_1">
@@ -413,7 +296,7 @@
           <div class="row">
             <div class="col input-title">
               {{ 'new-account-maltainvest.address_line_2' | translate }}
-              <span>{{ 'new-account-maltainvest.is_optional' | translate }}</span>
+              <span>{{ 'new-account-maltainvest.isoptional' | translate }}</span>
             </div>
           </div>
           <div class="row">
@@ -432,7 +315,7 @@
                   { max: vm.validation.length.address.max } }}
                 </ng-message>
                 <ng-message when="pattern">
-                  {{ 'new-account-maltainvest.address_pattern_error' | translate }}
+                  {{ 'new-account-maltainvest.address-pattern-error' | translate }}
                 </ng-message>
               </ng-messages>
               <div class="help-block error" ng-if="vm.errors.address_line_2">
@@ -466,7 +349,7 @@
                   { max: vm.validation.length.city.max } }}
                 </ng-message>
                 <ng-message when="pattern">
-                  {{ 'new-account-maltainvest.general_pattern_error' | translate }}
+                  {{ 'new-account-maltainvest.general-pattern-error' | translate }}
                 </ng-message>
                 <ng-message when="required">
                   {{ 'new-account-maltainvest.required' | translate }}
@@ -484,11 +367,11 @@
           <div class="row">
             <div class="col input-title">
               {{ 'new-account-maltainvest.address_state' | translate }}
-              <span>{{ 'new-account-maltainvest.is_optional' | translate }}</span>
+              <span>{{ 'new-account-maltainvest.isoptional' | translate }}</span>
             </div>
           </div>
           <div class="row">
-            <div class="col item-input item-select">
+            <div class="col item-select">
               <select name="address_state"
                       ng-model="vm.data.address_state"
                       ng-options="state.value as state.text for state in vm.statesList">
@@ -508,7 +391,7 @@
           <div class="row">
             <div class="col input-title">
               {{ 'new-account-maltainvest.address_postcode' | translate }}
-              <span ng-if="!vm.hasIOM">{{ 'new-account-maltainvest.is_optional' | translate }}</span>
+              <span>{{ 'new-account-maltainvest.isoptional' | translate }}</span>
             </div>
           </div>
           <div class="row">
@@ -516,23 +399,18 @@
               <input name="address_postcode"
                      ng-model="vm.data.address_postcode"
                      ng-pattern="vm.validation.validatePostcode"
-                     ng-maxlength="vm.validation.length.postcode.max"
-                     ng-required="vm.hasIOM"
-              />
+                     ng-maxlength="vm.validation.length.postcode.max"/>
               <ng-messages class="help-block error"
                            for="newAccountMaltainvestForm.address_postcode.$error"
                            role="alert"
                            ng-if="newAccountMaltainvestForm.address_postcode.$dirty"
                            ng-hide="vm.errors.address_postcode">
                 <ng-message when="pattern">
-                  {{ 'new-account-maltainvest.postcode_pattern_error' | translate }}
+                  {{ 'new-account-maltainvest.postcode-pattern-error' | translate }}
                 </ng-message>
                 <ng-message when="maxlength">
                   {{ 'new-account-maltainvest.maxlength_error' | translate :
                   { max: vm.validation.length.postcode.max } }}
-                </ng-message>
-                <ng-message when="required">
-                  {{ 'new-account-maltainvest.required' | translate }}
                 </ng-message>
               </ng-messages>
               <div class="help-block error" ng-if="vm.errors.address_postcode">
@@ -563,10 +441,10 @@
                            ng-if="newAccountMaltainvestForm.phone.$dirty"
                            ng-hide="vm.errors.phone">
                 <ng-message when="pattern">
-                  {{ 'new-account-maltainvest.phone_pattern_error' | translate }}
+                  {{ 'new-account-maltainvest.phone-pattern-error' | translate }}
                 </ng-message>
                 <ng-message when="minlength, maxlength">
-                  {{ 'new-account-maltainvest.length_range_error' | translate :
+                  {{ 'newaccountreal.length-range-error' | translate :
                   {min: vm.validation.length.phone.min, max: vm.validation.length.phone.max} }}
                 </ng-message>
                 <ng-message when="required">
@@ -580,11 +458,504 @@
           </div>
         </div>
       </div>
-      <div class="row" ng-if="!vm.readOnly">
+      <div class="row">
         <div class="col">
           <div class="row">
-            <div class="col sub-title">
-              {{ 'new-account-maltainvest.security' | translate }}
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.forex_trading_experience' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="forex_trading_experience"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.experienceOptions"
+                      ng-model="vm.data.forex_trading_experience"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.forex_trading_frequency' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="forex_trading_frequency"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.frequencyOptions"
+                      ng-model="vm.data.forex_trading_frequency"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.indices_trading_experience' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="indices_trading_experience"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.experienceOptions"
+                      ng-model="vm.data.indices_trading_experience"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.indices_trading_frequency' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="indices_trading_frequency"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.frequencyOptions"
+                      ng-model="vm.data.indices_trading_frequency"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.commodities_trading_experience' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="commodities_trading_experience"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.experienceOptions"
+                      ng-model="vm.data.commodities_trading_experience"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.commodities_trading_frequency' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="commodities_trading_frequency"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.frequencyOptions"
+                      ng-model="vm.data.commodities_trading_frequency"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.stocks_trading_experience' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="stocks_trading_experience"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.experienceOptions"
+                      ng-model="vm.data.stocks_trading_experience"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.stocks_trading_frequency' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="stocks_trading_frequency"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.frequencyOptions"
+                      ng-model="vm.data.stocks_trading_frequency"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.other_derivatives_trading_experience' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="other_derivatives_trading_experience"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.experienceOptions"
+                      ng-model="vm.data.other_derivatives_trading_experience"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.other_derivatives_trading_frequency' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="other_derivatives_trading_frequency"
+                      ng-options="option.value as option.text | translate
+                                     for option in vm.options.frequencyOptions"
+                      ng-model="vm.data.other_derivatives_trading_frequency"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.other_instruments_trading_experience' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="other_instruments_trading_experience"
+                      ng-options="option.value as option.text | translate
+                                     for option in vm.options.experienceOptions"
+                      ng-model="vm.data.other_instruments_trading_experience"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.other_instruments_trading_frequency' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="other_instruments_trading_frequency"
+                      ng-options="option.value as option.text | translate
+                                     for option in vm.options.frequencyOptions"
+                      ng-model="vm.data.other_instruments_trading_frequency"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.employment_industry' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="employment_industry"
+                      ng-options="option.value as option.text | translate
+                                     for option in vm.options.employment_industry"
+                      ng-model="vm.data.employment_industry"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.education_level' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="education_level"
+                      ng-options="option.value as option.text | translate
+                                     for option in vm.options.education_level"
+                      ng-model="vm.data.education_level"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.income_source' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="income_source"
+                      ng-options="option.value as option.text | translate
+                                     for option in vm.options.income_source"
+                      ng-model="vm.data.income_source"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.employment_status' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="employment_status"
+                      ng-options="option.value as option.text | translate
+                                     for option in vm.options.employment_status"
+                      ng-model="vm.data.employment_status"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+              <span class="help-block error" ng-show="vm.errors.employment_status">
+                                {{ vm.errors.employment_status }}
+                            </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col">
+              <div class="input-title">
+                {{ 'new-account-maltainvest.occupation' | translate }}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="occupation"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.occupation"
+                      ng-model="vm.data.occupation"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+              <span class="help-block error" ng-show="vm.errors.occupation">
+                {{ vm.errors.occupation }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col">
+              <div class="input-title">
+                {{ 'new-account-maltainvest.source_of_wealth' | translate }}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="source_of_wealth"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.source_of_wealth"
+                      ng-model="vm.data.source_of_wealth"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+              <span class="help-block error" ng-show="vm.errors.source_of_wealth">
+                {{ vm.errors.source_of_wealth }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.net_income' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="net_income"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.net_income"
+                      ng-model="vm.data.net_income"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.estimated_worth' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="estimated_worth"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.estimated_worth"
+                      ng-model="vm.data.estimated_worth"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col input-title">
+              {{ 'new-account-maltainvest.account_opening_reason' | translate }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="account_opening_reason"
+                      ng-options="option.value as option.text | translate
+                      for option in vm.options.account_opening_reason"
+                      ng-model="vm.data.account_opening_reason"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
+              <div class="help-block error" ng-if="vm.errors.account_opening_reason">
+                {{ vm.errors.account_opening_reason }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col">
+              <div class="input-title">
+                {{ 'new-account-maltainvest.account_turnover' | translate }}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col item-select">
+              <select name="account_turnover"
+                      ng-options="option.value as option.text | translate
+                                     for option in vm.options.account_turnover"
+                      ng-model="vm.data.account_turnover"
+                      required>
+                <option value="" disabled>
+                  {{ 'new-account-maltainvest.select' | translate }}
+                </option>
+              </select>
             </div>
           </div>
         </div>
@@ -597,7 +968,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col item-input item-select">
+            <div class="col item-select">
               <select name="secret_question"
                       ng-options="option.value as option.text | translate
                       for option in vm.options.secret_question"
@@ -635,10 +1006,10 @@
                            ng-if="newAccountMaltainvestForm.secret_answer.$dirty"
                            ng-hide="vm.errors.secret_answer">
                 <ng-message when="pattern">
-                  {{ 'new-account-maltainvest.secret_answer_pattern_error' | translate }}
+                  {{ 'newaccountreal.secretanswer-pattern-error' | translate }}
                 </ng-message>
                 <ng-message when="maxlength, minlength">
-                  {{ 'new-account-maltainvest.length_range_error' | translate :
+                  {{ 'newaccountreal.length-range-error' | translate :
                   {min: vm.validation.length.secret_answer.min, max: vm.validation.length.secret_answer.max} }}
                 </ng-message>
                 <ng-message when="required">
@@ -648,484 +1019,6 @@
               <div class="help-block error" ng-if="vm.errors.secret_answer">
                 {{ vm.errors.secret_answer }}
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col sub-title">
-              {{ 'new-account-maltainvest.professional_client' | translate }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col info-container">
-          <div class="row">
-            <div class="col">
-              {{ 'new-account-maltainvest.professional_client_info' | translate }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col accept center">
-              <input name="professional_client"
-                     type="checkbox"
-                     ng-model="vm.client_type"
-                     ng-change="vm.showConfirmProfessionalClient()"
-                     class="checkbox" />
-              {{ 'new-account-maltainvest.professional_client_verify' | translate }}
-              <a ng-click="vm.openProfessionalClientInformation()">
-                {{ 'new-account-maltainvest.what_is_this' | translate }}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col sub-title">
-              {{ 'new-account-maltainvest.trading_experience' | translate }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.forex_trading_experience' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="forex_trading_experience"
-                      ng-options="option.value as option.text | translate
-                      for option in vm.options.experienceOptions"
-                      ng-model="vm.data.forex_trading_experience"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.forex_trading_frequency' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="forex_trading_frequency"
-                      ng-options="option.value as option.text | translate
-                      for option in vm.options.frequencyOptions"
-                      ng-model="vm.data.forex_trading_frequency"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.binary_options_trading_experience' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="binary_options_trading_experience"
-                      ng-options="option.value as option.text | translate
-                      for option in vm.options.experienceOptions"
-                      ng-model="vm.data.binary_options_trading_experience"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.binary_options_trading_frequency' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="binary_options_trading_frequency"
-                      ng-options="option.value as option.text | translate
-                      for option in vm.options.frequencyOptions"
-                      ng-model="vm.data.binary_options_trading_frequency"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.cfd_trading_experience' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="cfd_trading_experience"
-                      ng-options="option.value as option.text | translate
-                      for option in vm.options.experienceOptions"
-                      ng-model="vm.data.cfd_trading_experience"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.cfd_trading_frequency' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="cfd_trading_frequency"
-                      ng-options="option.value as option.text | translate
-                                     for option in vm.options.frequencyOptions"
-                      ng-model="vm.data.cfd_trading_frequency"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.other_instruments_trading_experience' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="other_instruments_trading_experience"
-                      ng-options="option.value as option.text | translate
-                                     for option in vm.options.experienceOptions"
-                      ng-model="vm.data.other_instruments_trading_experience"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.other_instruments_trading_frequency' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="other_instruments_trading_frequency"
-                      ng-options="option.value as option.text | translate
-                                     for option in vm.options.frequencyOptions"
-                      ng-model="vm.data.other_instruments_trading_frequency"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col sub-title">
-              {{ 'new-account-maltainvest.financial_info' | translate }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.income_source' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="income_source"
-                      ng-options="option.value as option.text | translate
-                                     for option in vm.options.income_source"
-                      ng-model="vm.data.income_source"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.employment_status' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="employment_status"
-                      ng-options="option.value as option.text | translate
-                                     for option in vm.options.employment_status"
-                      ng-model="vm.data.employment_status"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-              <span class="help-block error" ng-show="vm.errors.employment_status">
-                {{ vm.errors.employment_status }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.employment_industry' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="employment_industry"
-                      ng-options="option.value as option.text | translate
-                                     for option in vm.options.employment_industry"
-                      ng-model="vm.data.employment_industry"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col">
-              <div class="input-title">
-                {{ 'new-account-maltainvest.occupation' | translate }}
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="occupation"
-                      ng-options="option.value as option.text | translate
-                      for option in vm.options.occupation"
-                      ng-model="vm.data.occupation"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-              <span class="help-block error" ng-show="vm.errors.occupation">
-                {{ vm.errors.occupation }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col">
-              <div class="input-title">
-                {{ 'new-account-maltainvest.source_of_wealth' | translate }}
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="source_of_wealth"
-                      ng-options="option.value as option.text | translate
-                      for option in vm.options.source_of_wealth"
-                      ng-model="vm.data.source_of_wealth"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-              <span class="help-block error" ng-show="vm.errors.source_of_wealth">
-                {{ vm.errors.source_of_wealth }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.education_level' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="education_level"
-                      ng-options="option.value as option.text | translate
-                                     for option in vm.options.education_level"
-                      ng-model="vm.data.education_level"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.net_income' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="net_income"
-                      ng-options="option.value as option.text | translate
-                      for option in vm.options.net_income"
-                      ng-model="vm.data.net_income"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col input-title">
-              {{ 'new-account-maltainvest.estimated_worth' | translate }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="estimated_worth"
-                      ng-options="option.value as option.text | translate
-                      for option in vm.options.estimated_worth"
-                      ng-model="vm.data.estimated_worth"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col">
-              <div class="input-title">
-                {{ 'new-account-maltainvest.account_turnover' | translate }}
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col item-input item-select">
-              <select name="account_turnover"
-                      ng-options="option.value as option.text | translate
-                                     for option in vm.options.account_turnover"
-                      ng-model="vm.data.account_turnover"
-                      required>
-                <option value="" disabled>
-                  {{ 'new-account-maltainvest.select' | translate }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col sub-title">
-              {{ 'new-account-maltainvest.pep_declaration' | translate }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col info-container">
-          <div class="row">
-            <div class="col">
-              {{ 'new-account-maltainvest.pep_info' | translate }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col accept center">
-              <input name="pep"
-                     type="checkbox"
-                     ng-model="vm.pep"
-                     class="checkbox"
-                     required/>
-              {{ 'new-account-maltainvest.not_pep_verify' | translate }}
-              <a ng-click="vm.openPEPInformation()">
-                {{ 'new-account-maltainvest.what_is_this' | translate }}
-              </a>
             </div>
           </div>
         </div>
@@ -1143,16 +1036,21 @@
         <div class="col">
           <div class="row">
             <div class="col accept center">
-              <input name="TnC"
+              <input name="pep"
                      type="checkbox"
-                     ng-model="vm.tncAccepted"
+                     ng-model="vm.pep"
                      class="checkbox"
                      required/>
-              {{ 'new-account-maltainvest.read_and_agreed_to' | translate }}
-              <a ng-click="vm.openTermsAndConditions()">
-                {{ 'new-account-maltainvest.terms_and_conditions' | translate }}
-              </a>
-              {{ 'new-account-maltainvest.of_the_site' | translate }}
+              {{ 'new-account-maltainvest.not-pep-verify' | translate }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col info-container">
+          <div class="row">
+            <div class="col">
+              {{ 'new-account-maltainvest.pep-info' | translate }}
             </div>
           </div>
         </div>
@@ -1160,60 +1058,37 @@
       <div class="row">
         <div class="col">
           <div class="row">
-            <div class="col center">
-              <button class="button button-positive"
-                      ng-hide="vm.showRiskDisclaimer"
-                      ng-click="vm.submitAccountOpening()"
-                      ng-class="{'button-default' : newAccountMaltainvestForm.$invalid}"
-                      ng-disabled="newAccountMaltainvestForm.$invalid || !vm.data.tax_residence
-                                || vm.disableUpdatebutton || !vm.tncAccepted">
-                {{ 'new-account-maltainvest.open_account' | translate }}
-              </button>
+            <div class="col accept center">
+              <input name="TnC"
+                     type="checkbox"
+                     ng-model="vm.accept_risk"
+                     class="checkbox"
+                     required/>
+              {{ 'new-account-maltainvest.read_and_agreed_to' | translate }}
+              <a ng-click="vm.openTermsAndConditions()">
+                {{ 'new-account-maltainvest.terms_and_conditions' | translate }}
+              </a>
+              {{ 'new-account-maltainvest.of_the_site' | translate }}
+              <div class="help-block error" ng-if="vm.errors.accept_risk">
+                {{ vm.errors.accept_risk }}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </form>
-    <div class="row" ng-if="vm.showRiskDisclaimer">
-      <div class="col">
-        <div class="row">
-          <div class="col">
-            <span class="bold">
-              {{ 'new-account-maltainvest.appropriateness_test' | translate }}
-            </span>
-            <span class="bold">
-              {{ 'new-account-maltainvest.warning' | translate }}
-            </span>
-            <p>
-              {{ 'new-account-maltainvest.required_to_obtain_information' | translate }}
-            </p>
-            <p>
-              {{ 'new-account-maltainvest.on_the_basis_of_information' | translate }}
-            </p>
-            <p>
-              {{ 'new-account-maltainvest.by_clicking' | translate }}
-              <span class="bold">
-                  {{ 'new-account-maltainvest.accept' | translate }}
-                </span>
-              {{ 'new-account-maltainvest.exposing_at_risk' | translate }}
-            </p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <button class="button button-block button-positive"
-                    ng-click="vm.acceptRisk()">
-              {{ 'new-account-maltainvest.accept' | translate }}
-            </button>
-          </div>
-          <div class="col">
-            <button class="button button-block button-default"
-                    ng-click="vm.declineRisk()">
-              {{ 'new-account-maltainvest.decline' | translate }}
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <button class="button button-block"
+                    ng-click="vm.submitAccountOpening()"
+                    ng-class="{'button-default' : newAccountMaltainvestForm.$invalid}"
+                    ng-disabled="newAccountMaltainvestForm.$invalid || vm.data.tax_residence  == null
+                                || vm.disableUpdatebutton">
+              {{ 'new-account-maltainvest.open_account' | translate }}
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   </ion-content>
 </ion-view>
