@@ -16,21 +16,6 @@
 "use strict";
 
 /**
- * @name Asset Index module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/26/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.asset-index", ["binary.pages.asset-index.controllers"]);
-
-  angular.module("binary.pages.asset-index.controllers", []);
-})();
-"use strict";
-
-/**
  * @name Account management module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -42,6 +27,21 @@
   angular.module("binary.pages.accounts-management", ["binary.pages.accounts-management.controllers"]);
 
   angular.module("binary.pages.accounts-management.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name Asset Index module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/26/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.asset-index", ["binary.pages.asset-index.controllers"]);
+
+  angular.module("binary.pages.asset-index.controllers", []);
 })();
 "use strict";
 
@@ -91,21 +91,6 @@
 "use strict";
 
 /**
- * @name Home Module
- * @author Morteza Tavanarad
- * @contributors []
- * @since 8/10/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.home", ["binary.pages.home.controllers"]);
-
-  angular.module("binary.pages.home.controllers", []);
-})();
-"use strict";
-
-/**
  * @name Financial Assessment module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -117,6 +102,21 @@
   angular.module("binary.pages.financial-assessment", ["binary.pages.financial-assessment.controllers"]);
 
   angular.module("binary.pages.financial-assessment.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name Home Module
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 8/10/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.home", ["binary.pages.home.controllers"]);
+
+  angular.module("binary.pages.home.controllers", []);
 })();
 "use strict";
 
@@ -456,23 +456,6 @@
 "use strict";
 
 /**
- * @name balance module
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/15/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.balance", ["binary.share.components.balance.directives", "binary.share.components.balance.controllers"]);
-
-    angular.module("binary.share.components.balance.controllers", []);
-
-    angular.module("binary.share.components.balance.directives", []);
-})();
-"use strict";
-
-/**
  * @name app version module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -486,6 +469,23 @@
     angular.module("binary.share.components.app-version.controllers", []);
 
     angular.module("binary.share.components.app-version.directives", []);
+})();
+"use strict";
+
+/**
+ * @name balance module
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 08/15/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.balance", ["binary.share.components.balance.directives", "binary.share.components.balance.controllers"]);
+
+    angular.module("binary.share.components.balance.controllers", []);
+
+    angular.module("binary.share.components.balance.directives", []);
 })();
 "use strict";
 
@@ -788,23 +788,6 @@
 "use strict";
 
 /**
- * @name payout module
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/27/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.payout", ["binary.pages.trade.components.payout.controllers", "binary.pages.trade.components.payout.directives"]);
-
-    angular.module("binary.pages.trade.components.payout.controllers", []);
-
-    angular.module("binary.pages.trade.components.payout.directives", []);
-})();
-"use strict";
-
-/**
  * @name options module
  * @author Morteza Tavnarad
  * @contributors []
@@ -820,6 +803,23 @@
     angular.module("binary.pages.trade.components.options.directives", []);
 
     angular.module("binary.pages.trade.components.options.services", []);
+})();
+"use strict";
+
+/**
+ * @name payout module
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 08/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.payout", ["binary.pages.trade.components.payout.controllers", "binary.pages.trade.components.payout.directives"]);
+
+    angular.module("binary.pages.trade.components.payout.controllers", []);
+
+    angular.module("binary.pages.trade.components.payout.directives", []);
 })();
 "use strict";
 
@@ -1724,256 +1724,6 @@ angular.module("binary").config(["$translateProvider", function ($translateProvi
 }]);
 "use strict";
 
-angular.module("binary").constant("accountOptions", {
-    salutation: [{
-        text: 'account-options.mr',
-        value: 'Mr'
-    }, {
-        text: 'account-options.mrs',
-        value: 'Mrs'
-    }, {
-        text: 'account-options.miss',
-        value: 'Miss'
-    }, {
-        text: 'account-options.ms',
-        value: 'Ms'
-    }],
-    account_opening_reason: [{
-        text: 'account-options.speculative',
-        value: 'Speculative'
-    }, {
-        text: 'account-options.income_earning',
-        value: 'Income Earning'
-    }, {
-        text: 'account-options.hedging',
-        value: 'Hedging'
-    }],
-    secret_question: [{
-        text: 'account-options.secret_question_1',
-        value: 'Mother\'s maiden name'
-    }, {
-        text: 'account-options.secret_question_2',
-        value: 'Name of your pet'
-    }, {
-        text: 'account-options.secret_question_3',
-        value: 'Name of first love'
-    }, {
-        text: 'account-options.secret_question_4',
-        value: 'Memorable town/city'
-    }, {
-        text: 'account-options.secret_question_5',
-        value: 'Memorable date'
-    }, {
-        text: 'account-options.secret_question_6',
-        value: 'Favourite dish'
-    }, {
-        text: 'account-options.secret_question_7',
-        value: 'Brand of first car'
-    }, {
-        text: 'account-options.secret_question_8',
-        value: 'Favourite artist'
-    }]
-});
-"use strict";
-
-angular.module("binary").constant("financialInformationOptions", {
-    experienceOptions: [{
-        text: 'financial-information-options.under_1_year',
-        value: '0-1 year'
-    }, {
-        text: 'financial-information-options.1_2_years',
-        value: '1-2 years'
-    }, {
-        text: 'financial-information-options.over_3_years',
-        value: 'Over 3 years'
-    }],
-    frequencyOptions: [{
-        text: 'financial-information-options.0_5_transactions',
-        value: '0-5 transactions in the past 12 months'
-    }, {
-        text: 'financial-information-options.6_10_transactions',
-        value: '6-10 transactions in the past 12 months'
-    }, {
-        text: 'financial-information-options.transactions_more',
-        value: '40 transactions or more in the past 12 months'
-    }],
-    employment_industry: [{
-        text: 'financial-information-options.construction',
-        value: 'Construction'
-    }, {
-        text: 'financial-information-options.education',
-        value: 'Education'
-    }, {
-        text: 'financial-information-options.finance',
-        value: 'Finance'
-    }, {
-        text: 'financial-information-options.health',
-        value: 'Health'
-    }, {
-        text: 'financial-information-options.tourism',
-        value: 'Tourism'
-    }, {
-        text: 'financial-information-options.other',
-        value: 'Other'
-    }],
-    education_level: [{
-        text: 'financial-information-options.primary',
-        value: 'Primary'
-    }, {
-        text: 'financial-information-options.secondary',
-        value: 'Secondary'
-    }, {
-        text: 'financial-information-options.tertiary',
-        value: 'Tertiary'
-    }],
-    income_source: [{
-        text: 'financial-information-options.salaried',
-        value: 'Salaried Employee'
-    }, {
-        text: 'financial-information-options.self_employed',
-        value: 'Self-Employed'
-    }, {
-        text: 'financial-information-options.investment',
-        value: 'Investments & Dividends'
-    }, {
-        text: 'financial-information-options.pension',
-        value: 'Pension'
-    }, {
-        text: 'financial-information-options.other',
-        value: 'Other'
-    }],
-    employment_status: [{
-        text: 'financial-information-options.employed',
-        value: 'Employed'
-    }, {
-        text: 'financial-information-options.pensioner',
-        value: 'Pensioner'
-    }, {
-        text: 'financial-information-options.self_employed',
-        value: 'Self-Employed'
-    }, {
-        text: 'financial-information-options.student',
-        value: 'Student'
-    }, {
-        text: 'financial-information-options.unemployed',
-        value: 'Unemployed'
-    }],
-    occupation: [{
-        text: 'financial-information-options.chief_executives',
-        value: 'Chief Executives, Senior Officials and Legislators'
-    }, {
-        text: 'financial-information-options.managers',
-        value: 'Managers'
-    }, {
-        text: 'financial-information-options.professionals',
-        value: 'Professionals'
-    }, {
-        text: 'financial-information-options.clerks',
-        value: 'Clerks'
-    }, {
-        text: 'financial-information-options.personal_care',
-        value: 'Personal Care, Sales and Service Workers'
-    }, {
-        text: 'financial-information-options.agricultural',
-        value: 'Agricultural, Forestry and Fishery Workers'
-    }, {
-        text: 'financial-information-options.craft',
-        value: 'Craft, Metal, Electrical and Electronics Workers'
-    }, {
-        text: 'financial-information-options.machine',
-        value: 'Plant and Machine Operators and Assemblers'
-    }, {
-        text: 'financial-information-options.helpers',
-        value: 'Cleaners and Helpers'
-    }, {
-        text: 'financial-information-options.mining',
-        value: 'Mining, Construction, Manufacturing and Transport Workers'
-    }, {
-        text: 'financial-information-options.armed_forces',
-        value: 'Armed Forces'
-    }, {
-        text: 'financial-information-options.government_officers',
-        value: 'Government Officers'
-    }, {
-        text: 'financial-information-options.others',
-        value: 'Others'
-    }],
-    source_of_wealth: [{
-        text: 'financial-information-options.accumulation_of_income_savings',
-        value: 'Accumulation of Income/Savings'
-    }, {
-        text: 'financial-information-options.cash_business',
-        value: 'Cash Business'
-    }, {
-        text: 'financial-information-options.company_ownership',
-        value: 'Company Ownership'
-    }, {
-        text: 'financial-information-options.divorce_settlement',
-        value: 'Divorce Settlement'
-    }, {
-        text: 'financial-information-options.inheritance',
-        value: 'Inheritance'
-    }, {
-        text: 'financial-information-options.investment_income',
-        value: 'Investment Income'
-    }, {
-        text: 'financial-information-options.sale_of_property',
-        value: 'Sale of Property'
-    }, {
-        text: 'financial-information-options.other',
-        value: 'Other'
-    }],
-    net_income: [{
-        text: 'financial-information-options.net_income_1',
-        value: 'Less than $25,000'
-    }, {
-        text: 'financial-information-options.net_income_2',
-        value: '$25,000 - $50,000'
-    }, {
-        text: 'financial-information-options.net_income_3',
-        value: '$50,001 - $100,000'
-    }, {
-        text: 'financial-information-options.net_income_4',
-        value: '$100,001 - $500,000'
-    }, {
-        text: 'financial-information-options.net_income_5',
-        value: 'Over $500,000'
-    }],
-    estimated_worth: [{
-        text: 'financial-information-options.estimated_worth_1',
-        value: 'Less than $100,000'
-    }, {
-        text: 'financial-information-options.estimated_worth_2',
-        value: '$100,000 - $250,000'
-    }, {
-        text: 'financial-information-options.estimated_worth_3',
-        value: '$250,001 - $500,000'
-    }, {
-        text: 'financial-information-options.estimated_worth_4',
-        value: '$500,001 - $1,000,000'
-    }, {
-        text: 'financial-information-options.estimated_worth_5',
-        value: 'Over $1,000,000'
-    }],
-    account_turnover: [{
-        text: 'financial-information-options.account_turnover_1',
-        value: 'Less than $25,000'
-    }, {
-        text: 'financial-information-options.account_turnover_2',
-        value: '$25,000 - $50,000'
-    }, {
-        text: 'financial-information-options.account_turnover_3',
-        value: '$50,001 - $100,000'
-    }, {
-        text: 'financial-information-options.account_turnover_4',
-        value: '$100,001 - $500,000'
-    }, {
-        text: 'financial-information-options.account_turnover_5',
-        value: 'Over $500,000'
-    }]
-});
-"use strict";
-
 /**
  * @name account categorisation controller
  * @author Nazanin Reihani Haghighi
@@ -2096,124 +1846,6 @@ angular.module("binary").constant("financialInformationOptions", {
         };
 
         init();
-    }
-})();
-"use strict";
-
-/**
- * @name Asset Index controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/26/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.asset-index.controllers").controller("AssetIndexController", AssetIndex);
-
-    AssetIndex.$inject = ["$scope", "$q"];
-
-    function AssetIndex($scope, $q) {
-        var vm = this;
-        vm.hasError = false;
-        vm.assetIndex = JSON.parse(sessionStorage.asset_index || null);
-        vm.activeSymbols = JSON.parse(sessionStorage.all_active_symbols);
-
-        vm.getSymbolInfo = function (qSymbol, activeSymbols) {
-            return _.filter(activeSymbols, function (sy, id) {
-                return sy.symbol === qSymbol;
-            });
-        };
-
-        vm.getAssetIndexData = function (assetIndex, activeSymbols) {
-            if (!assetIndex || !activeSymbols) {
-                return false;
-            }
-
-            vm.marketColumns = {};
-
-            var idx = {
-                symbol: 0,
-                displayName: 1,
-                cells: 2,
-                cellName: 0,
-                cellDisplayName: 1,
-                cellFrom: 2,
-                cellTo: 3,
-                symInfo: 3,
-                values: 4
-            };
-
-            for (var i = 0; i < assetIndex.length; i++) {
-                vm.assetItem = assetIndex[i];
-                vm.symbolInfo = vm.getSymbolInfo(vm.assetItem[idx.symbol], activeSymbols)[0];
-                if (vm.symbolInfo) {
-                    var market = vm.symbolInfo.market;
-
-                    vm.assetItem.push(vm.symbolInfo);
-
-                    if (!(market in vm.marketColumns)) {
-                        vm.marketColumns[market] = {
-                            header: [],
-                            columns: [],
-                            sub: [],
-                            displayName: vm.symbolInfo.market_display_name
-                        };
-                    }
-
-                    vm.assetCells = vm.assetItem[idx.cells];
-                    var values = {};
-                    for (var j = 0; j < vm.assetCells.length; j++) {
-                        var col = vm.assetCells[j][idx.displayName];
-                        values[col] = vm.assetCells[j][idx.cellFrom] + " - " + vm.assetCells[j][idx.cellTo];
-                        var marketCols = vm.marketColumns[market];
-                        if (marketCols.columns.indexOf(col) < 0) {
-                            marketCols.header.push(vm.assetCells[j][idx.cellDisplayName]);
-                            marketCols.columns.push(col);
-                        }
-                    }
-                    vm.assetItem.push(values);
-                }
-            }
-            vm.assetIndex = assetIndex;
-            return vm.assetIndex;
-        };
-        vm.getMarketColumns = function () {
-            $scope.$applyAsync(function () {
-                if (vm.marketColumns) {
-                    vm.selectedMarket = Object.getOwnPropertyNames(vm.marketColumns)[0];
-                }
-            });
-            vm.hasError = false;
-            return vm.marketColumns;
-        };
-
-        vm.getSubmarketTable = function (marketColumns, assetIndex) {
-            vm.submarketNames = {};
-            if (assetIndex) {
-                for (var i = 0; i < assetIndex.length; i++) {
-                    var assetItem = assetIndex[i];
-                    if (assetItem[3]) {
-                        var symInfo = assetItem[3];
-                        var marketId = symInfo.market;
-                        var subMarketId = symInfo.submarket;
-                        var submarketDisplayName = symInfo.submarket_display_name;
-                        if (marketColumns[marketId].sub.indexOf(subMarketId) < 0) {
-                            marketColumns[marketId].sub.push(subMarketId);
-                            vm.submarketNames[subMarketId] = submarketDisplayName;
-                        }
-                    }
-                }
-            }
-        };
-        vm.getAssetIndexData(vm.assetIndex, vm.activeSymbols);
-        var promise = $q(function (resolve) {
-            if (vm.getMarketColumns()) resolve();
-        });
-        promise.then(function () {
-            vm.getSubmarketTable(vm.marketColumns, vm.assetIndex);
-            vm.hasError = false;
-        });
     }
 })();
 "use strict";
@@ -2446,6 +2078,124 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
+ * @name Asset Index controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/26/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.asset-index.controllers").controller("AssetIndexController", AssetIndex);
+
+    AssetIndex.$inject = ["$scope", "$q"];
+
+    function AssetIndex($scope, $q) {
+        var vm = this;
+        vm.hasError = false;
+        vm.assetIndex = JSON.parse(sessionStorage.asset_index || null);
+        vm.activeSymbols = JSON.parse(sessionStorage.all_active_symbols);
+
+        vm.getSymbolInfo = function (qSymbol, activeSymbols) {
+            return _.filter(activeSymbols, function (sy, id) {
+                return sy.symbol === qSymbol;
+            });
+        };
+
+        vm.getAssetIndexData = function (assetIndex, activeSymbols) {
+            if (!assetIndex || !activeSymbols) {
+                return false;
+            }
+
+            vm.marketColumns = {};
+
+            var idx = {
+                symbol: 0,
+                displayName: 1,
+                cells: 2,
+                cellName: 0,
+                cellDisplayName: 1,
+                cellFrom: 2,
+                cellTo: 3,
+                symInfo: 3,
+                values: 4
+            };
+
+            for (var i = 0; i < assetIndex.length; i++) {
+                vm.assetItem = assetIndex[i];
+                vm.symbolInfo = vm.getSymbolInfo(vm.assetItem[idx.symbol], activeSymbols)[0];
+                if (vm.symbolInfo) {
+                    var market = vm.symbolInfo.market;
+
+                    vm.assetItem.push(vm.symbolInfo);
+
+                    if (!(market in vm.marketColumns)) {
+                        vm.marketColumns[market] = {
+                            header: [],
+                            columns: [],
+                            sub: [],
+                            displayName: vm.symbolInfo.market_display_name
+                        };
+                    }
+
+                    vm.assetCells = vm.assetItem[idx.cells];
+                    var values = {};
+                    for (var j = 0; j < vm.assetCells.length; j++) {
+                        var col = vm.assetCells[j][idx.displayName];
+                        values[col] = vm.assetCells[j][idx.cellFrom] + " - " + vm.assetCells[j][idx.cellTo];
+                        var marketCols = vm.marketColumns[market];
+                        if (marketCols.columns.indexOf(col) < 0) {
+                            marketCols.header.push(vm.assetCells[j][idx.cellDisplayName]);
+                            marketCols.columns.push(col);
+                        }
+                    }
+                    vm.assetItem.push(values);
+                }
+            }
+            vm.assetIndex = assetIndex;
+            return vm.assetIndex;
+        };
+        vm.getMarketColumns = function () {
+            $scope.$applyAsync(function () {
+                if (vm.marketColumns) {
+                    vm.selectedMarket = Object.getOwnPropertyNames(vm.marketColumns)[0];
+                }
+            });
+            vm.hasError = false;
+            return vm.marketColumns;
+        };
+
+        vm.getSubmarketTable = function (marketColumns, assetIndex) {
+            vm.submarketNames = {};
+            if (assetIndex) {
+                for (var i = 0; i < assetIndex.length; i++) {
+                    var assetItem = assetIndex[i];
+                    if (assetItem[3]) {
+                        var symInfo = assetItem[3];
+                        var marketId = symInfo.market;
+                        var subMarketId = symInfo.submarket;
+                        var submarketDisplayName = symInfo.submarket_display_name;
+                        if (marketColumns[marketId].sub.indexOf(subMarketId) < 0) {
+                            marketColumns[marketId].sub.push(subMarketId);
+                            vm.submarketNames[subMarketId] = submarketDisplayName;
+                        }
+                    }
+                }
+            }
+        };
+        vm.getAssetIndexData(vm.assetIndex, vm.activeSymbols);
+        var promise = $q(function (resolve) {
+            if (vm.getMarketColumns()) resolve();
+        });
+        promise.then(function () {
+            vm.getSubmarketTable(vm.marketColumns, vm.assetIndex);
+            vm.hasError = false;
+        });
+    }
+})();
+"use strict";
+
+/**
  * @name authentication controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2622,58 +2372,6 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
- * @name HomeController
- * @author Morteza Tavanarad
- * @contributors []
- * @since 8/9/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.home.controllers").controller("HomeController", Home);
-
-    Home.$inject = ["$scope", "$state", "accountService", "analyticsService", "appStateService"];
-
-    function Home($scope, $state, accountService, analyticsService, appStateService) {
-        var vm = this;
-        /**
-        * wait untile authorization and decide
-        * to redirect user  to the proper page
-        */
-        $scope.$on("authorize", function (e, response) {
-            if (response) {
-                setTimeout(function () {
-                    $state.go("trade");
-                }, 1000);
-            } else {
-                $state.go("signin");
-            }
-        });
-
-        var init = function init() {
-            // send track view to Google Analytics
-            analyticsService.google.trackView("Home");
-
-            // Check that is saved any default account or not
-            if (accountService.hasDefault()) {
-                // Login to the server if there is any default account
-                if (!appStateService.isLoggedin) {
-                    accountService.validate();
-                } else {
-                    $state.go("trade");
-                }
-            } else {
-                accountService.removeAll();
-                $state.go("signin");
-            }
-        };
-
-        init();
-    }
-})();
-"use strict";
-
-/**
  * @name Financial Assessment controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2761,6 +2459,58 @@ angular.module("binary").constant("financialInformationOptions", {
                 _.assign(vm.data, financialAssessmentData);
             }
             websocketService.sendRequestFor.getFinancialAssessment();
+        };
+
+        init();
+    }
+})();
+"use strict";
+
+/**
+ * @name HomeController
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 8/9/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.home.controllers").controller("HomeController", Home);
+
+    Home.$inject = ["$scope", "$state", "accountService", "analyticsService", "appStateService"];
+
+    function Home($scope, $state, accountService, analyticsService, appStateService) {
+        var vm = this;
+        /**
+        * wait untile authorization and decide
+        * to redirect user  to the proper page
+        */
+        $scope.$on("authorize", function (e, response) {
+            if (response) {
+                setTimeout(function () {
+                    $state.go("trade");
+                }, 1000);
+            } else {
+                $state.go("signin");
+            }
+        });
+
+        var init = function init() {
+            // send track view to Google Analytics
+            analyticsService.google.trackView("Home");
+
+            // Check that is saved any default account or not
+            if (accountService.hasDefault()) {
+                // Login to the server if there is any default account
+                if (!appStateService.isLoggedin) {
+                    accountService.validate();
+                } else {
+                    $state.go("trade");
+                }
+            } else {
+                accountService.removeAll();
+                $state.go("signin");
+            }
         };
 
         init();
@@ -9347,6 +9097,256 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 }]);
 "use strict";
 
+angular.module("binary").constant("accountOptions", {
+    salutation: [{
+        text: 'account-options.mr',
+        value: 'Mr'
+    }, {
+        text: 'account-options.mrs',
+        value: 'Mrs'
+    }, {
+        text: 'account-options.miss',
+        value: 'Miss'
+    }, {
+        text: 'account-options.ms',
+        value: 'Ms'
+    }],
+    account_opening_reason: [{
+        text: 'account-options.speculative',
+        value: 'Speculative'
+    }, {
+        text: 'account-options.income_earning',
+        value: 'Income Earning'
+    }, {
+        text: 'account-options.hedging',
+        value: 'Hedging'
+    }],
+    secret_question: [{
+        text: 'account-options.secret_question_1',
+        value: 'Mother\'s maiden name'
+    }, {
+        text: 'account-options.secret_question_2',
+        value: 'Name of your pet'
+    }, {
+        text: 'account-options.secret_question_3',
+        value: 'Name of first love'
+    }, {
+        text: 'account-options.secret_question_4',
+        value: 'Memorable town/city'
+    }, {
+        text: 'account-options.secret_question_5',
+        value: 'Memorable date'
+    }, {
+        text: 'account-options.secret_question_6',
+        value: 'Favourite dish'
+    }, {
+        text: 'account-options.secret_question_7',
+        value: 'Brand of first car'
+    }, {
+        text: 'account-options.secret_question_8',
+        value: 'Favourite artist'
+    }]
+});
+"use strict";
+
+angular.module("binary").constant("financialInformationOptions", {
+    experienceOptions: [{
+        text: 'financial-information-options.under_1_year',
+        value: '0-1 year'
+    }, {
+        text: 'financial-information-options.1_2_years',
+        value: '1-2 years'
+    }, {
+        text: 'financial-information-options.over_3_years',
+        value: 'Over 3 years'
+    }],
+    frequencyOptions: [{
+        text: 'financial-information-options.0_5_transactions',
+        value: '0-5 transactions in the past 12 months'
+    }, {
+        text: 'financial-information-options.6_10_transactions',
+        value: '6-10 transactions in the past 12 months'
+    }, {
+        text: 'financial-information-options.transactions_more',
+        value: '40 transactions or more in the past 12 months'
+    }],
+    employment_industry: [{
+        text: 'financial-information-options.construction',
+        value: 'Construction'
+    }, {
+        text: 'financial-information-options.education',
+        value: 'Education'
+    }, {
+        text: 'financial-information-options.finance',
+        value: 'Finance'
+    }, {
+        text: 'financial-information-options.health',
+        value: 'Health'
+    }, {
+        text: 'financial-information-options.tourism',
+        value: 'Tourism'
+    }, {
+        text: 'financial-information-options.other',
+        value: 'Other'
+    }],
+    education_level: [{
+        text: 'financial-information-options.primary',
+        value: 'Primary'
+    }, {
+        text: 'financial-information-options.secondary',
+        value: 'Secondary'
+    }, {
+        text: 'financial-information-options.tertiary',
+        value: 'Tertiary'
+    }],
+    income_source: [{
+        text: 'financial-information-options.salaried',
+        value: 'Salaried Employee'
+    }, {
+        text: 'financial-information-options.self_employed',
+        value: 'Self-Employed'
+    }, {
+        text: 'financial-information-options.investment',
+        value: 'Investments & Dividends'
+    }, {
+        text: 'financial-information-options.pension',
+        value: 'Pension'
+    }, {
+        text: 'financial-information-options.other',
+        value: 'Other'
+    }],
+    employment_status: [{
+        text: 'financial-information-options.employed',
+        value: 'Employed'
+    }, {
+        text: 'financial-information-options.pensioner',
+        value: 'Pensioner'
+    }, {
+        text: 'financial-information-options.self_employed',
+        value: 'Self-Employed'
+    }, {
+        text: 'financial-information-options.student',
+        value: 'Student'
+    }, {
+        text: 'financial-information-options.unemployed',
+        value: 'Unemployed'
+    }],
+    occupation: [{
+        text: 'financial-information-options.chief_executives',
+        value: 'Chief Executives, Senior Officials and Legislators'
+    }, {
+        text: 'financial-information-options.managers',
+        value: 'Managers'
+    }, {
+        text: 'financial-information-options.professionals',
+        value: 'Professionals'
+    }, {
+        text: 'financial-information-options.clerks',
+        value: 'Clerks'
+    }, {
+        text: 'financial-information-options.personal_care',
+        value: 'Personal Care, Sales and Service Workers'
+    }, {
+        text: 'financial-information-options.agricultural',
+        value: 'Agricultural, Forestry and Fishery Workers'
+    }, {
+        text: 'financial-information-options.craft',
+        value: 'Craft, Metal, Electrical and Electronics Workers'
+    }, {
+        text: 'financial-information-options.machine',
+        value: 'Plant and Machine Operators and Assemblers'
+    }, {
+        text: 'financial-information-options.helpers',
+        value: 'Cleaners and Helpers'
+    }, {
+        text: 'financial-information-options.mining',
+        value: 'Mining, Construction, Manufacturing and Transport Workers'
+    }, {
+        text: 'financial-information-options.armed_forces',
+        value: 'Armed Forces'
+    }, {
+        text: 'financial-information-options.government_officers',
+        value: 'Government Officers'
+    }, {
+        text: 'financial-information-options.others',
+        value: 'Others'
+    }],
+    source_of_wealth: [{
+        text: 'financial-information-options.accumulation_of_income_savings',
+        value: 'Accumulation of Income/Savings'
+    }, {
+        text: 'financial-information-options.cash_business',
+        value: 'Cash Business'
+    }, {
+        text: 'financial-information-options.company_ownership',
+        value: 'Company Ownership'
+    }, {
+        text: 'financial-information-options.divorce_settlement',
+        value: 'Divorce Settlement'
+    }, {
+        text: 'financial-information-options.inheritance',
+        value: 'Inheritance'
+    }, {
+        text: 'financial-information-options.investment_income',
+        value: 'Investment Income'
+    }, {
+        text: 'financial-information-options.sale_of_property',
+        value: 'Sale of Property'
+    }, {
+        text: 'financial-information-options.other',
+        value: 'Other'
+    }],
+    net_income: [{
+        text: 'financial-information-options.net_income_1',
+        value: 'Less than $25,000'
+    }, {
+        text: 'financial-information-options.net_income_2',
+        value: '$25,000 - $50,000'
+    }, {
+        text: 'financial-information-options.net_income_3',
+        value: '$50,001 - $100,000'
+    }, {
+        text: 'financial-information-options.net_income_4',
+        value: '$100,001 - $500,000'
+    }, {
+        text: 'financial-information-options.net_income_5',
+        value: 'Over $500,000'
+    }],
+    estimated_worth: [{
+        text: 'financial-information-options.estimated_worth_1',
+        value: 'Less than $100,000'
+    }, {
+        text: 'financial-information-options.estimated_worth_2',
+        value: '$100,000 - $250,000'
+    }, {
+        text: 'financial-information-options.estimated_worth_3',
+        value: '$250,001 - $500,000'
+    }, {
+        text: 'financial-information-options.estimated_worth_4',
+        value: '$500,001 - $1,000,000'
+    }, {
+        text: 'financial-information-options.estimated_worth_5',
+        value: 'Over $1,000,000'
+    }],
+    account_turnover: [{
+        text: 'financial-information-options.account_turnover_1',
+        value: 'Less than $25,000'
+    }, {
+        text: 'financial-information-options.account_turnover_2',
+        value: '$25,000 - $50,000'
+    }, {
+        text: 'financial-information-options.account_turnover_3',
+        value: '$50,001 - $100,000'
+    }, {
+        text: 'financial-information-options.account_turnover_4',
+        value: '$100,001 - $500,000'
+    }, {
+        text: 'financial-information-options.account_turnover_5',
+        value: 'Over $500,000'
+    }]
+});
+"use strict";
+
 /**
  * @name accounts controller
  * @author Morteza Tavnarad
@@ -9504,6 +9504,71 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
+		 * @name app version controller
+		 * @author Nazanin Reihani Haghighi
+		 * @contributors []
+		 * @since 12/19/2016
+		 * @copyright Binary Ltd
+		 */
+
+(function () {
+    angular.module("binary.share.components.app-version.controllers").controller("AppVersionController", AppVersion);
+
+    AppVersion.$inject = ["$scope", "$ionicPlatform", "appVersionService"];
+
+    function AppVersion($scope, $ionicPlatform, appVersionService) {
+        var vm = this;
+        vm.appVersion = '0.0.0';
+        $ionicPlatform.ready(function () {
+            $scope.$applyAsync(function () {
+                if (window.cordova) {
+                    cordova.getAppVersion(function (version) {
+                        vm.appVersion = version;
+                        window._trackJs.version = vm.appVersion;
+                    }, function (err) {
+                        // console.log(err);
+                    });
+                } else {
+                    appVersionService.getAppVersion().success(function (data) {
+                        vm.appVersion = data.version;
+                        window._trackJs.version = vm.appVersion;
+                    }).error(function (data) {
+                        vm.appVersion = "0.0.0";
+                        window._trackJs.version = vm.appVersion;
+                    });
+                }
+            });
+        });
+    }
+})();
+"use strict";
+
+/**
+ * @name app version directive
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 12/19/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.app-version.directives").directive("bgAppVersion", AppVersion);
+
+    function AppVersion() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/share/components/app-version/app-version.template.html",
+            controller: "AppVersionController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
+        };
+        return directive;
+    }
+})();
+"use strict";
+
+/**
  * @name balance controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -9594,71 +9659,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             });
         }
 
-        return directive;
-    }
-})();
-"use strict";
-
-/**
-		 * @name app version controller
-		 * @author Nazanin Reihani Haghighi
-		 * @contributors []
-		 * @since 12/19/2016
-		 * @copyright Binary Ltd
-		 */
-
-(function () {
-    angular.module("binary.share.components.app-version.controllers").controller("AppVersionController", AppVersion);
-
-    AppVersion.$inject = ["$scope", "$ionicPlatform", "appVersionService"];
-
-    function AppVersion($scope, $ionicPlatform, appVersionService) {
-        var vm = this;
-        vm.appVersion = '0.0.0';
-        $ionicPlatform.ready(function () {
-            $scope.$applyAsync(function () {
-                if (window.cordova) {
-                    cordova.getAppVersion(function (version) {
-                        vm.appVersion = version;
-                        window._trackJs.version = vm.appVersion;
-                    }, function (err) {
-                        // console.log(err);
-                    });
-                } else {
-                    appVersionService.getAppVersion().success(function (data) {
-                        vm.appVersion = data.version;
-                        window._trackJs.version = vm.appVersion;
-                    }).error(function (data) {
-                        vm.appVersion = "0.0.0";
-                        window._trackJs.version = vm.appVersion;
-                    });
-                }
-            });
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name app version directive
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 12/19/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.app-version.directives").directive("bgAppVersion", AppVersion);
-
-    function AppVersion() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/share/components/app-version/app-version.template.html",
-            controller: "AppVersionController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
         return directive;
     }
 })();
@@ -11817,128 +11817,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name payout controller
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/27/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.payout.controllers").controller("PayoutController", Payout);
-
-    Payout.$inject = ["$scope", "appStateService", "proposalService"];
-
-    function Payout($scope, appStateService, proposalService) {
-        var vm = this;
-        vm.amount = vm.proposal.amount;
-        vm.isIOS = ionic.Platform.isIOS();
-        vm.marketsClosed = false;
-
-        setCurrecyPattern();
-
-        $scope.$watch(function () {
-            return vm.proposal.amount;
-        }, function (newVal, oldVal) {
-            if (newVal !== vm.amount) {
-                vm.amount = newVal;
-            }
-        });
-
-        $scope.$on("authorize", function (e, account) {
-            setCurrecyPattern(account.currency);
-        });
-
-        vm.changePayoutType = function () {
-            if (vm.proposal.basis === "payout") {
-                vm.proposal.basis = "stake";
-            } else {
-                vm.proposal.basis = "payout";
-            }
-            proposalService.setPropertyValue("basis", vm.proposal.basis);
-        };
-
-        vm.changeAmount = function () {
-            if (_.isEmpty(vm.amount) || vm.amount === "NaN" || Number(vm.amount) === 0) {
-                vm.proposal.amount = vm.amount;
-            } else {
-                if (/^\.\d+$/.test(vm.amount)) {
-                    vm.amount = "0" + vm.amount;
-                }
-                vm.proposal.amount = +vm.amount;
-            }
-            proposalService.setPropertyValue("amount", vm.proposal.amount);
-        };
-
-        vm.add = function () {
-            vm.amount = Number(vm.amount) + 1;
-        };
-
-        vm.subtract = function () {
-            vm.amount = Number(vm.amount) - 1 >= 1 ? Number(vm.amount) - 1 : 1;
-        };
-
-        vm.stopLongPress = function () {
-            vm.proposal.amount = +vm.amount;
-            proposalService.setPropertyValue("amount", vm.proposal.amount);
-        };
-
-        $scope.$on("symbols:updated", function (e, openMarkets) {
-            if (_.isEmpty(openMarkets)) {
-                vm.marketsClosed = true;
-            } else {
-                vm.marketsClosed = false;
-            }
-        });
-
-        function init() {}
-
-        function setCurrecyPattern(currency) {
-            if (_.isEmpty(currency)) {
-                currency = sessionStorage.currency;
-            }
-            var currencyConfig = appStateService.currenciesConfig[currency];
-            $scope.$applyAsync(function () {
-                vm.regex = "^(\\d*\\.?\\d{0," + (currencyConfig ? currencyConfig.fractional_digits : 2) + "})";
-                vm.amount = new RegExp(vm.regex).exec(vm.amount)[0];
-            });
-            return vm.regex;
-        }
-
-        init();
-    }
-})();
-"use strict";
-
-/**
- * @name payout directive
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/27/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.payout.directives").directive("bgPayout", Payout);
-
-    function Payout() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/pages/trade/components/payout/payout.template.html",
-            controller: "PayoutController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {
-                proposal: "="
-            }
-        };
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
  * @name barrier controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -12829,6 +12707,128 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             scope: {
                 market: "=",
                 select: "&"
+            }
+        };
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name payout controller
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 08/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.payout.controllers").controller("PayoutController", Payout);
+
+    Payout.$inject = ["$scope", "appStateService", "proposalService"];
+
+    function Payout($scope, appStateService, proposalService) {
+        var vm = this;
+        vm.amount = vm.proposal.amount;
+        vm.isIOS = ionic.Platform.isIOS();
+        vm.marketsClosed = false;
+
+        setCurrecyPattern();
+
+        $scope.$watch(function () {
+            return vm.proposal.amount;
+        }, function (newVal, oldVal) {
+            if (newVal !== vm.amount) {
+                vm.amount = newVal;
+            }
+        });
+
+        $scope.$on("authorize", function (e, account) {
+            setCurrecyPattern(account.currency);
+        });
+
+        vm.changePayoutType = function () {
+            if (vm.proposal.basis === "payout") {
+                vm.proposal.basis = "stake";
+            } else {
+                vm.proposal.basis = "payout";
+            }
+            proposalService.setPropertyValue("basis", vm.proposal.basis);
+        };
+
+        vm.changeAmount = function () {
+            if (_.isEmpty(vm.amount) || vm.amount === "NaN" || Number(vm.amount) === 0) {
+                vm.proposal.amount = vm.amount;
+            } else {
+                if (/^\.\d+$/.test(vm.amount)) {
+                    vm.amount = "0" + vm.amount;
+                }
+                vm.proposal.amount = +vm.amount;
+            }
+            proposalService.setPropertyValue("amount", vm.proposal.amount);
+        };
+
+        vm.add = function () {
+            vm.amount = Number(vm.amount) + 1;
+        };
+
+        vm.subtract = function () {
+            vm.amount = Number(vm.amount) - 1 >= 1 ? Number(vm.amount) - 1 : 1;
+        };
+
+        vm.stopLongPress = function () {
+            vm.proposal.amount = +vm.amount;
+            proposalService.setPropertyValue("amount", vm.proposal.amount);
+        };
+
+        $scope.$on("symbols:updated", function (e, openMarkets) {
+            if (_.isEmpty(openMarkets)) {
+                vm.marketsClosed = true;
+            } else {
+                vm.marketsClosed = false;
+            }
+        });
+
+        function init() {}
+
+        function setCurrecyPattern(currency) {
+            if (_.isEmpty(currency)) {
+                currency = sessionStorage.currency;
+            }
+            var currencyConfig = appStateService.currenciesConfig[currency];
+            $scope.$applyAsync(function () {
+                vm.regex = "^(\\d*\\.?\\d{0," + (currencyConfig ? currencyConfig.fractional_digits : 2) + "})";
+                vm.amount = new RegExp(vm.regex).exec(vm.amount)[0];
+            });
+            return vm.regex;
+        }
+
+        init();
+    }
+})();
+"use strict";
+
+/**
+ * @name payout directive
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 08/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.payout.directives").directive("bgPayout", Payout);
+
+    function Payout() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/payout/payout.template.html",
+            controller: "PayoutController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {
+                proposal: "="
             }
         };
 
