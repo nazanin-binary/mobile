@@ -5267,7 +5267,7 @@ angular.module("binary").constant("financialInformationOptions", {
             var options = JSON.parse(localStorage.options);
             var proposal = create();
             proposal.symbol = options.underlying.symbol;
-            proposal.duration = parseInt(options.tick);
+            proposal.duration = options.tick;
             if (options.tradeType === "Higher/Lower") {
                 proposal.barrier = _.isEmpty(options.barrier) ? "" : options.barrier;
             } else {
@@ -5316,7 +5316,7 @@ angular.module("binary").constant("financialInformationOptions", {
             }
 
             proposal.symbol = options.underlying.symbol;
-            proposal.duration = parseInt(options.tick);
+            proposal.duration = options.tick;
             if (options.tradeType === "Higher/Lower") {
                 proposal.barrier = _.isEmpty(options.barrier) ? "" : options.barrier;
             } else {
@@ -5560,8 +5560,9 @@ angular.module("binary").constant("financialInformationOptions", {
         var vm = this;
         vm.currency = sessionStorage.getItem("currency");
         var id = sessionStorage.getItem("id");
+        var contractId = parseInt(id);
         var extraParams = {
-            req_id: id
+            req_id: contractId
         };
         var sendDetailsRequest = function sendDetailsRequest() {
             if (appStateService.isLoggedin) {
@@ -5574,7 +5575,7 @@ angular.module("binary").constant("financialInformationOptions", {
         $scope.$on("proposal:open-contract", function (e, proposal_open_contract, req_id) {
             var proposalOpenContract = proposal_open_contract;
             var reqId = req_id;
-            if (reqId === id) {
+            if (reqId === contractId) {
                 $scope.$applyAsync(function () {
                     vm.contract = proposalOpenContract;
                 });
@@ -11428,9 +11429,9 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
         $scope.$on("portfolio", function (e, portfolio) {
             var contractId = vm.purchasedContract.contractId;
 
-            if (typeof contractId === "string" && !_.isEmpty(contractId) || contractId) {
+            if (!_.isEmpty(contractId)) {
                 portfolio.contracts.forEach(function (contract) {
-                    if (typeof contractId === "string" && contract.contract_id.toString() === contractId || contract.contract_id === contractId) {
+                    if (contract.contract_id.toString() === contractId) {
                         chartService.addContract({
                             startTime: contract.date_start + 1,
                             duration: parseInt(vm.proposal.duration),
