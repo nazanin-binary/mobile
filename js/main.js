@@ -637,21 +637,6 @@
 "use strict";
 
 /**
- * @name Regex Validate Module
- * @author Morteza Tavnarad
- * @contributors []
- * @since 11/02/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.share.components.regex-validate", ["binary.share.components.regex-validate.directives"]);
-
-  angular.module("binary.share.components.regex-validate.directives", []);
-})();
-"use strict";
-
-/**
  * @name reality-check module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -665,6 +650,21 @@
     angular.module("binary.share.components.reality-check.controllers", []);
 
     angular.module("binary.share.components.reality-check.directives", []);
+})();
+"use strict";
+
+/**
+ * @name Regex Validate Module
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 11/02/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.share.components.regex-validate", ["binary.share.components.regex-validate.directives"]);
+
+  angular.module("binary.share.components.regex-validate.directives", []);
 })();
 "use strict";
 
@@ -733,23 +733,6 @@
 "use strict";
 
 /**
- * @name longcode module
- * @author Morteza Tavnarad
- * @contributors []
- * @since 09/22/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.longcode", ["binary.pages.trade.components.longcode.controllers", "binary.pages.trade.components.longcode.directives"]);
-
-    angular.module("binary.pages.trade.components.longcode.controllers", []);
-
-    angular.module("binary.pages.trade.components.longcode.directives", []);
-})();
-"use strict";
-
-/**
  * @name chart module
  * @author morteza tavnarad
  * @contributors []
@@ -765,6 +748,23 @@
     angular.module("binary.pages.trade.components.chart.directives", []);
 
     angular.module("binary.pages.trade.components.chart.services", []);
+})();
+"use strict";
+
+/**
+ * @name longcode module
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/22/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.longcode", ["binary.pages.trade.components.longcode.controllers", "binary.pages.trade.components.longcode.directives"]);
+
+    angular.module("binary.pages.trade.components.longcode.controllers", []);
+
+    angular.module("binary.pages.trade.components.longcode.directives", []);
 })();
 "use strict";
 
@@ -1947,3646 +1947,6 @@ angular.module("binary").constant("financialInformationOptions", {
         value: 'Over $500,000'
     }]
 });
-"use strict";
-
-/**
- * @name accountService
- * @author Massih Hazrati
- * @contributors []
- * @since 10/26/2015
- * @copyright Binary Ltd
- */
-
-angular.module("binary").service("accountService", ["websocketService", "appStateService", "delayService", function (websocketService, appStateService, delayService) {
-    var _this = this;
-
-    /**
-    * find a {key,value} in an array of objects and return its index
-    * returns -1 if not found
-    * @param  {Array of Objects} _accounts
-    * @param  {String} _key
-    * @param  {String, Number, Boolean} _value
-    * @return {Number} Index of the found array element
-    */
-
-    this.addedAccount = "";
-    var findIndex = function findIndex(_accounts, _key, _value) {
-        var index = -1;
-        _accounts.forEach(function (el, i) {
-            if (_accounts[i][_key] === _value) {
-                index = i;
-            }
-        });
-        return index;
-    };
-
-    /**
-    * Check if the 'accounts' localStorage exist
-    * @return {Boolean}
-    */
-    var storageExist = function storageExist() {
-        return localStorage.accounts && JSON.parse(localStorage.accounts) instanceof Array;
-    };
-
-    /**
-    * Returns the list of all accounts
-    * @return {Array}
-    */
-    this.getAll = function () {
-        var accounts = storageExist() ? JSON.parse(localStorage.accounts) : [];
-        if (accounts.length > 0) {
-            accounts = accounts.sort(function (a, b) {
-                if (a.currency === null) {
-                    return 1;
-                } else if (b.currency === null) {
-                    return -1;
-                } else if (a.currency === b.currency) {
-                    return 0;
-                } else if (a.currency < b.currency) {
-                    return -1;
-                }
-                return 1;
-            });
-        }
-        return accounts;
-    };
-
-    /**
-    * Removes the 'accounts' localStorage
-    */
-    this.removeAll = function () {
-        localStorage.removeItem("accounts");
-    };
-
-    /**
-    * Send a token for validation
-    * if '_token' param is not passed, validates the default token
-    * @param  {String} _token
-    */
-    var validate = function validate(_token, extraParams) {
-        // Remove the last delay queue of 'symbolsAndAssetIndexUpdate'
-        delayService.remove("symbolsAndAssetIndexUpdate");
-
-        if (_token) {
-            websocketService.authenticate(_token, extraParams);
-        } else {
-            var accountList = this.getAll();
-            var defaultAccountIndex = findIndex(accountList, "is_default", true);
-            // If default account exist
-            if (defaultAccountIndex > -1) {
-                var token = accountList[defaultAccountIndex].token;
-                websocketService.authenticate(token, extraParams);
-            }
-        }
-    };
-
-    this.validate = function (_token, extraParams) {
-        if (!_token) {
-            var accountList = this.getAll();
-            var defaultAccountIndex = findIndex(accountList, "is_default", true);
-            // If default account exist
-            if (defaultAccountIndex > -1) {
-                _token = accountList[defaultAccountIndex].token;
-            }
-        }
-
-        validate(_token, extraParams);
-    };
-
-    /**
-    * Add an account to the 'accounts' localStorage
-    * @param {Object} _account
-    */
-    this.add = function (_account) {
-        var account = {
-            id: _account.loginid,
-            token: _account.token,
-            currency: _account.currency,
-            email: _account.email,
-            country: _account.country,
-            is_disabled: _account.is_disabled,
-            is_ico_only: _account.is_ico_only,
-            is_virtual: _account.is_virtual,
-            excluded_until: _account.excluded_until,
-            landing_company_name: _account.landing_company_name
-        };
-
-        var accountList = this.getAll();
-
-        if (_.find(accountList, ["id", account.id])) {
-            return;
-        }
-
-        accountList.push(account);
-        localStorage.accounts = JSON.stringify(accountList);
-    };
-
-    /**
-    * Removes an account from 'accounts' localStorage
-    * Doesn't remove the default account
-    * @param  {String} _token
-    */
-    this.remove = function (_token) {
-        var accountList = this.getAll();
-        var index = findIndex(accountList, "token", _token);
-        // If the token exist and is not the default token
-        if (index > -1 && accountList[index].is_default !== true) {
-            accountList.splice(index, 1);
-            localStorage.accounts = JSON.stringify(accountList);
-        }
-    };
-
-    /**
-    * Set the passed token as the default account
-    * @param {String} _token
-    */
-    this.setDefault = function (_token) {
-        var accountList = this.getAll();
-        var index = findIndex(accountList, "token", _token);
-        // Make sure the token exist
-        if (index > -1) {
-            accountList.forEach(function (el, i) {
-                accountList[i].is_default = accountList[i].token === _token;
-            });
-            localStorage.accounts = JSON.stringify(accountList);
-        }
-    };
-
-    /**
-    * Check if the default account exist
-    * @return {Boolean}
-    */
-    this.hasDefault = function () {
-        var accountList = this.getAll();
-        var index = findIndex(accountList, "is_default", true);
-        return index > -1;
-    };
-
-    /**
-    * Returns the default account
-    * @return {Object}
-    */
-    this.getDefault = function () {
-        var accountList = this.getAll();
-        var index = findIndex(accountList, "is_default", true);
-        if (index === -1) {
-            return null;
-        }
-        return accountList[index];
-    };
-
-    /**
-    * Check if the token/account is unique
-    * Only one token for each account is allowed
-    * @param  {String}  _id : loginid
-    * @return {Boolean}
-    */
-    this.isUnique = function (_id) {
-        var accountList = this.getAll();
-        var index = findIndex(accountList, "id", _id);
-        return !(index > -1);
-    };
-
-    this.checkScope = function (_scope) {
-        var scopes = _.concat([], _scope);
-        var result = false;
-
-        if (appStateService.isLoggedin && !_.isEmpty(appStateService.scopes)) {
-            result = true;
-            scopes.some(function (value, index) {
-                if (appStateService.scopes.indexOf(value.toLowerCase()) < 0) {
-                    result = false;
-                    return true;
-                }
-                return false;
-            });
-        }
-        return result;
-    };
-
-    this.getAllloginids = function (_accounts) {
-        var allLoginids = [];
-        var accounts = _accounts || _this.getAll();
-        accounts.forEach(function (account) {
-            allLoginids.push(account.id);
-        });
-        return allLoginids;
-    };
-}]);
-"use strict";
-
-/**
- * @name alertService
- * @author Massih Hazrati
- * @contributors []
- * @since 10/26/2015
- * @copyright Binary Ltd
- */
-
-angular.module("binary").service("alertService", ["$translate", "$ionicPopup", "$rootScope", function ($translate, $ionicPopup, $rootScope) {
-    var _this = this;
-
-    var displayAlert = function displayAlert(_title, _message, _button, _callback) {
-        $translate(["alert.ok"]).then(function (translation) {
-            if (navigator.notification === undefined) {
-                var alertPopup = $ionicPopup.alert({
-                    title: _title,
-                    template: _message,
-                    buttons: [{
-                        type: "button-positive",
-                        text: _button || translation["alert.ok"]
-                    }]
-                });
-                alertPopup.then(_callback);
-            } else {
-                navigator.notification.alert(_message, _callback, _title, _button || translation["alert.ok"]);
-            }
-        });
-    };
-
-    var displayConfirmation = function displayConfirmation(_title, _message, _buttons, _callback) {
-        if (navigator.notification === undefined) {
-            var confirmPopup = $ionicPopup.confirm({
-                title: _title,
-                template: _message,
-                buttons: _buttons
-            });
-            confirmPopup.then(_callback);
-        } else {
-            navigator.notification.confirm(_message, _callback, _title, _buttons);
-        }
-    };
-
-    this.displayRealitCheckInterval = function (_title, _class, scope, _template, _buttons, _callback) {
-        var showPopup = $ionicPopup.show({
-            title: _title,
-            cssClass: _class,
-            scope: scope,
-            templateUrl: _template,
-            buttons: _buttons
-        });
-        showPopup.then(_callback);
-    };
-
-    this.displayRealityCheckResult = function (_title, _class, scope, _template, _buttons, _callback) {
-        var showPopup = $ionicPopup.show({
-            title: _title,
-            cssClass: _class,
-            scope: scope,
-            templateUrl: _template,
-            buttons: _buttons
-        });
-        showPopup.then(_callback);
-    };
-
-    this.displayIOSPWAPrompt = function (_title, _class, scope, _template, _buttons, _callback) {
-        var showPopup = $ionicPopup.show({
-            title: _title,
-            cssClass: _class,
-            scope: scope,
-            templateUrl: _template,
-            buttons: _buttons
-        });
-        showPopup.then(_callback);
-        return showPopup;
-    };
-
-    this.displayError = function (_message) {
-        $translate(["alert.error"]).then(function (translation) {
-            displayAlert(translation["alert.error"], _message);
-        });
-    };
-
-    this.displaySymbolWarning = function (_message, _callback) {
-        $translate(["alert.warning", _message]).then(function (translation) {
-            displayAlert(translation["alert.warning"], translation[_message]);
-        });
-    };
-
-    this.accountError = {
-        tokenNotValid: function tokenNotValid() {
-            $translate(["alert.error", "alert.not_valid"]).then(function (translation) {
-                displayAlert(translation["alert.error"], translation["alert.not_valid"]);
-                // navigator.notification.alert(translation['alert.not_valid'], null, translation['alert.error'], 'OK');
-            });
-        },
-        tokenNotAuthenticated: function tokenNotAuthenticated(message) {
-            $translate(["alert.error", "alert.not_auth"]).then(function (translation) {
-                displayAlert(translation["alert.error"], message || translation["alert.not_auth"]);
-            });
-        },
-        tokenNotUnique: function tokenNotUnique() {
-            $translate(["alert.error", "alert.not_unique"]).then(function (translation) {
-                displayAlert(translation["alert.error"], translation["alert.not_unique"]);
-            });
-        }
-    };
-
-    this.contractError = {
-        notAvailable: function notAvailable() {
-            $translate(["alert.error", "alert.contract_error"]).then(function (translation) {
-                displayAlert(translation["alert.error"], translation["alert.contract_error"]);
-            });
-        }
-    };
-
-    this.optionsError = {
-        noTick: function noTick() {
-            $translate(["alert.error", "alert.no_tick"]).then(function (translation) {
-                displayAlert(translation["alert.error"], translation["alert.no_tick"]);
-            });
-        }
-    };
-
-    this.displayAlert = displayAlert;
-
-    this.confirmAccountRemoval = function (_token) {
-        $translate(["alert.remove_token_title", "alert.remove_token_content"]).then(function (translation) {
-            displayConfirmation(translation["alert.remove_token_title"], translation["alert.remove_token_content"], ["Yes", "No"], function (res) {
-                if (!(typeof res === "boolean")) {
-                    if (res === 1) res = true;else res = false;
-                }
-
-                if (res) {
-                    $rootScope.$broadcast("token:remove", _token);
-                }
-            });
-        });
-    };
-
-    this.confirmRemoveAllAccount = function (_callback) {
-        $translate(["alert.remove_all_tokens_title", "alert.remove_all_tokens_content", "alert.yes", "alert.no"]).then(function (translation) {
-            var buttons = null;
-            if (navigator.notification) {
-                buttons = [translation["alert.yes"], translation["alert.no"]];
-            } else {
-                buttons = [{
-                    text: translation["alert.no"],
-                    onTap: function onTap() {
-                        return false;
-                    }
-                }, {
-                    text: translation["alert.yes"],
-                    type: "button-positive",
-                    onTap: function onTap() {
-                        return true;
-                    }
-                }];
-            }
-            displayConfirmation(translation["alert.remove_all_tokens_title"], translation["alert.remove_all_tokens_content"], buttons, _callback);
-        });
-    };
-
-    this.confirmExit = function (_callback) {
-        $translate(["app.exit_title", "app.exit_confirmation", "alert.yes", "alert.no"]).then(function (translation) {
-            displayConfirmation(translation["app.exit_title"], translation["app.exit_confirmation"], [translation["alert.yes"], translation["alert.no"]], _callback);
-        });
-    };
-
-    this.showInformation = function (scope, title, templateUrl) {
-        var showPopup = $ionicPopup.show({
-            title: title,
-            cssClass: 'information-popup',
-            scope: scope,
-            templateUrl: templateUrl,
-            buttons: [{
-                type: "button-positive",
-                text: $translate.instant("alert.ok")
-            }]
-        });
-        return showPopup;
-    };
-
-    this.showProfessioanlClientInformation = function (scope) {
-        return _this.showInformation(scope, $translate.instant('professional-client.professional_client'), 'js/share/templates/professional-client/professional-client-information.template.html');
-    };
-
-    this.showPEPInformation = function (scope) {
-        return _this.showInformation(scope, $translate.instant('pep-information.pep'), 'js/share/templates/pep-information/pep-information.template.html');
-    };
-
-    this.showTaxInformation = function (scope) {
-        return _this.showInformation(scope, $translate.instant('what-is-tax-information.tax_information_title'), 'js/share/templates/tax-information/tax-information.template.html');
-    };
-
-    this.displayProfessionalClientConfirmation = function (_title, _class, scope, _template, _buttons) {
-        var showPopup = $ionicPopup.show({
-            title: _title,
-            cssClass: _class,
-            scope: scope,
-            templateUrl: _template,
-            buttons: _buttons
-        });
-        return showPopup;
-    };
-}]);
-"use strict";
-
-/**
- * @name analyticsService
- * @author Morteza Tavanarad
- * @contributors []
- * @since 07/17/2016
- * @copyright Binary Ltd
- * Send information to all analytics services
- */
-
-angular.module("binary").factory("analyticsService", ["accountService", function (accountService) {
-    var factory = {};
-    factory.google = {
-        addUser: function addUser() {
-            var user = accountService.getDefault();
-            var userId = user && user.id ? user.id : null;
-            window.ga.setUserId(userId);
-        },
-        trackView: function trackView(_view) {
-            if (typeof ga !== "undefined") {
-                this.addUser();
-                ga.trackView(_view);
-            }
-        },
-        trackEvent: function trackEvent(market, contractType, symbole, payout) {
-            if (typeof ga !== "undefined") {
-                this.addUser();
-                ga.trackEvent(market, contractType, symbole, payout);
-            }
-        }
-    };
-
-    return factory;
-}]);
-"use strict";
-
-/**
- * @name appStateService
- * @author Morteza Tavanarad
- * @contributors []
- * @since 05/02/2016
- * @copyright Binary Ltd
- * Keeping state of the app in this factory
- */
-
-angular.module("binary").factory("appStateService", function () {
-    var factory = {};
-    factory.tradeMode = true;
-    factory.purchaseMode = false;
-    factory.isLoggedin = false;
-    factory.scopes = [];
-    factory.isChangedAccount = false;
-    factory.isRealityChecked = false;
-    factory.isPopupOpen = false;
-    factory.isProfitTableSet = false;
-    factory.profitTableRefresh = false;
-    factory.isStatementSet = false;
-    factory.statementRefresh = false;
-    factory.virtuality = 0;
-    factory.newAccountAdded = false;
-    factory.isLanguageReady = false;
-    factory.passwordChanged = false;
-    factory.limitsChange = false;
-    factory.realityCheckLogin = false;
-    factory.hasAuthenticateMessage = false;
-    factory.hasRestrictedMessage = false;
-    factory.hasMaxTurnoverMessage = false;
-    factory.hasCountryMessage = false;
-    factory.hasTnCMessage = false;
-    factory.hasTaxInfoMessage = false;
-    factory.hasFinancialAssessmentMessage = false;
-    factory.hasAgeVerificationMessage = false;
-    factory.hasCurrencyMessage = false;
-    factory.checkedAccountStatus = false;
-    factory.siteStatus = "up";
-    factory.modalIsOpen = false;
-    factory.currenciesConfig = {};
-    factory.balanceSubscribtionId = null;
-    factory.accountCurrencyChanged = false;
-    factory.selectedCurrency = false;
-    factory.upgrade = {};
-    factory.redirectedFromAccountsManagemenet = false;
-    factory.checkingUpgradeDone = false;
-    factory.upgradeableLandingCompanies = [];
-    factory.loginFinished = false;
-    factory.isMaltainvest = false;
-
-    return factory;
-});
-"use strict";
-
-/**
- * @name appVersionService
- * @author Morteza Tavanarad
- * @contributors []
- * @since 01/20/2016
- * @copyright Binary Ltd
- */
-
-angular.module("binary").factory("appVersionService", ["$http", function ($http) {
-    var appVersion = {};
-
-    function getAppVersion() {
-        return $http.get("js/config.json");
-    }
-
-    appVersion.getAppVersion = getAppVersion;
-
-    return appVersion;
-}]);
-"use strict";
-
-/**
- * @name chartService
- * @author Amin Marashi
- * @contributors []
- * @since 11/25/2015
- * @copyright Binary Ltd
- */
-
-angular.module("binary").factory("chartService", ["$rootScope", function ($rootScope) {
-    var localHistory = void 0;
-    var chartDrawer = void 0;
-    var contractCtrls = [];
-
-    /* Define ChartJS Options */
-    var reversedIndex = function reversedIndex(i) {
-        return chartGlobals.tickCount - 1 - i;
-    };
-
-    var distribute = function distribute(i) {
-        var distance = Math.ceil(chartGlobals.tickCount / chartGlobals.minTickCount);
-        if (reversedIndex(i) % distance === 0) {
-            return true;
-        }
-        return false;
-    };
-
-    var chartGlobals = void 0;
-    var setChartGlobals = function setChartGlobals() {
-        chartGlobals = {
-            chartJS: null,
-            capacity: 600,
-            maxTickCount: 50,
-            hideLabelsThreshold: 15,
-            tickCount: 15,
-            minTickCount: 5,
-            chartData: {
-                labels: [],
-                labelsFilter: function labelsFilter(index) {
-                    return !distribute(index);
-                },
-
-                datasets: [{
-                    strokeColor: "#7cb5ec",
-                    pointColor: "#7cb5ec",
-                    pointStrokeColor: "#7cb5ec",
-                    data: []
-                }]
-            },
-            chartOptions: {
-                animation: false,
-                bezierCurve: false,
-                datasetFill: false,
-                showTooltips: false,
-                keepAspectRatio: false,
-                scaleShowLabels: false,
-                scaleFontSize: 10,
-                pointDotRadius: 3, // original 4
-                datasetStrokeWidth: 2 // original 2
-            }
-        };
-    };
-    setChartGlobals();
-    /* End of Define ChartJS Options */
-
-    var utils = {
-        zeroPad: function zeroPad(num) {
-            if (num < 10) {
-                return "0" + num;
-            }
-            return num.toString();
-        },
-        getTickTime: function getTickTime(tick) {
-            var date = new Date(tick * 1000);
-            return date.getUTCHours() + ":" + utils.zeroPad(date.getUTCMinutes()) + ":" + utils.zeroPad(date.getUTCSeconds());
-        },
-        isDefined: function isDefined(obj) {
-            if (typeof obj === "undefined" || obj === null) {
-                return false;
-            }
-            return true;
-        },
-        setObjValue: function setObjValue(obj, attr, value, condition) {
-            if (utils.isDefined(obj)) {
-                if (utils.isDefined(condition)) {
-                    if (condition) {
-                        obj[attr] = value;
-                    }
-                } else if (typeof obj[attr] === "undefined") {
-                    obj[attr] = value;
-                }
-            }
-        },
-        fractionalLength: function fractionalLength(floatNumber) {
-            var stringNumber = floatNumber.toString();
-            var decimalLength = stringNumber.indexOf(".");
-            return stringNumber.length - decimalLength - 1;
-        },
-        maxFractionalLength: function maxFractionalLength(floatNumbers) {
-            var max = 0;
-            floatNumbers.forEach(function (number) {
-                max = max < utils.fractionalLength(number) ? utils.fractionalLength(number) : max;
-            });
-            return max;
-        },
-        lastDigit: function lastDigit(num) {
-            return parseInt(num.toString().slice(-1)[0]);
-        },
-        average: function average(list) {
-            var decimalPointLength = utils.fractionalLength(list[0]) + 1;
-            return parseFloat(list.reduce(function (a, b) {
-                return a + b;
-            }, 0) / list.length).toFixed(decimalPointLength);
-        },
-        conditions: {
-            CALL: function condition(barrier, price) {
-                return parseFloat(price) > parseFloat(barrier);
-            },
-            PUT: function condition(barrier, price) {
-                return parseFloat(price) < parseFloat(barrier);
-            },
-            CALLHL: function condition(barrier, price) {
-                // Higher/Lower CALL
-                return parseFloat(price) > parseFloat(barrier);
-            },
-            PUTHL: function condition(barrier, price) {
-                // Higher/Lower PUT
-                return parseFloat(price) < parseFloat(barrier);
-            },
-            DIGITMATCH: function condition(barrier, price) {
-                return utils.lastDigit(parseInt(barrier)) === utils.lastDigit(price);
-            },
-            DIGITDIFF: function condition(barrier, price) {
-                return utils.lastDigit(parseInt(barrier)) !== utils.lastDigit(price);
-            },
-            DIGITEVEN: function condition(barrier, price) {
-                return utils.lastDigit(price) % 2 === 0;
-            },
-            DIGITODD: function condition(barrier, price) {
-                return utils.lastDigit(price) % 2 !== 0;
-            },
-            DIGITUNDER: function condition(barrier, price) {
-                return utils.lastDigit(price) < parseInt(barrier);
-            },
-            DIGITOVER: function condition(barrier, price) {
-                return utils.lastDigit(price) > parseInt(barrier);
-            },
-            ASIANU: function condition(barrier, price, priceList) {
-                var avg = utils.average(priceList);
-
-                return parseFloat(price) > avg;
-            },
-            ASIAND: function condition(barrier, price, priceList) {
-                var avg = utils.average(priceList);
-
-                return parseFloat(price) < avg;
-            },
-            TICKHIGH: function condition(barrier, price, priceList, selectedTick) {
-                return priceList[selectedTick - 1] && !_.find(priceList, function (val) {
-                    return val > priceList[selectedTick - 1];
-                });
-            },
-            TICKLOW: function condition(barrier, price, priceList, selectedTick) {
-                return priceList[selectedTick - 1] && !_.find(priceList, function (val) {
-                    return val < priceList[selectedTick - 1];
-                });
-            }
-        },
-        digitTrade: function digitTrade(contract) {
-            if (contract.type.indexOf("DIGIT") === 0) {
-                return true;
-            }
-            return false;
-        },
-        asianGame: function asianGame(contract) {
-            if (contract.type.indexOf("ASIAN") === 0) {
-                return true;
-            }
-            return false;
-        },
-        higherLowerTrade: function higherLowerTrade(contract) {
-            if (["PUTHL", "CALLHL"].indexOf(contract.type) > -1 && !_.isEmpty(contract.barrier)) {
-                return true;
-            }
-            return false;
-        },
-        highLowTrade: function highLowTrade(contract) {
-            if (["TICKLOW", "TICKHIGH"].indexOf(contract.type) > -1) {
-                return true;
-            }
-            return false;
-        },
-        getRelativeIndex: function getRelativeIndex(absoluteIndex, dataIndex) {
-            return absoluteIndex - (chartDrawer.getCapacity() - (chartDrawer.getTickCount() + chartDrawer.getDataIndex()));
-        },
-        getAbsoluteIndex: function getAbsoluteIndex(relativeIndex, dataIndex) {
-            return relativeIndex + (chartDrawer.getCapacity() - (chartDrawer.getTickCount() + chartDrawer.getDataIndex()));
-        }
-    };
-
-    var Stepper = function Stepper() {
-        var tickDistance = 0;
-        var startingPosition = 0;
-        var startingDataIndex = 0;
-        var started = false;
-        var previousTime = 0;
-
-        var setStartPosition = function setStartPosition(dataIndex, position) {
-            startingPosition = position;
-            startingDataIndex = dataIndex;
-            started = true;
-        };
-
-        var stepCount = function stepCount(dataIndex, position) {
-            if (!started) {
-                return 0;
-            }
-            return startingDataIndex + Math.floor((position - startingPosition) / tickDistance) - dataIndex;
-        };
-
-        var setDistance = function setDistance(canvas, tickCount) {
-            if (canvas !== null) {
-                tickDistance = Math.ceil(canvas.offsetWidth / tickCount);
-            }
-        };
-
-        var getDistance = function getDistance() {
-            return tickDistance;
-        };
-
-        var isStep = function isStep(e, tickCount) {
-            if (e.timeStamp - previousTime > 100) {
-                previousTime = e.timeStamp;
-                return true;
-            }
-            return false;
-        };
-
-        var stop = function stop() {
-            started = false;
-        };
-
-        return {
-            isStep: isStep,
-            stop: stop,
-            setDistance: setDistance,
-            getDistance: getDistance,
-            setStartPosition: setStartPosition,
-            stepCount: stepCount
-        };
-    };
-
-    var LocalHistory = function LocalHistory(capacity) {
-        var historyData = [];
-
-        var addTick = function addTick(tick) {
-            var options = JSON.parse(localStorage.options);
-            var pip = options.underlying.pip;
-            var fractionalLength = utils.fractionalLength(pip);
-            if (parseInt(tick.epoch) > parseInt(historyData.slice(-1)[0].time)) {
-                historyData.push({
-                    time: tick.epoch,
-                    price: parseFloat(tick.quote).toFixed(fractionalLength)
-                });
-                historyData.shift();
-            }
-        };
-
-        var updateHistoryArray = function updateHistoryArray(historyArray, history) {
-            var times = history.times;
-            var prices = history.prices;
-            var compare = function compare(a, b) {
-                var timea = parseInt(a.time);
-                var timeb = parseInt(b.time);
-                if (timea < timeb) {
-                    return -1;
-                } else if (timea > timeb) {
-                    return 1;
-                }
-                return 0;
-            };
-            var seenTimes = [];
-            times.forEach(function (time, index) {
-                if (seenTimes.indexOf(time) < 0) {
-                    seenTimes.push(time);
-                    historyArray.push({
-                        time: time,
-                        price: prices[index]
-                    });
-                }
-            });
-            times.sort(compare);
-        };
-
-        var addHistory = function addHistory(history) {
-            historyData = [];
-            contractCtrls.forEach(function (contract) {
-                contract.removeRegion();
-            });
-            contractCtrls = [];
-            updateHistoryArray(historyData, history);
-        };
-
-        var getHistory = function getHistory(dataIndex, count, callback) {
-            var end = capacity - dataIndex;
-            var start = end - count;
-            if (start >= 0) {
-                callback(historyData.slice(start, end));
-            } else {
-                callback([]);
-            }
-        };
-
-        return {
-            getHistory: getHistory,
-            addTick: addTick,
-            addHistory: addHistory
-        };
-    };
-
-    var ContractCtrl = function ContractCtrl(contract) {
-        var broadcastable = true;
-        var tickPriceList = [];
-
-        var setNotBroadcastable = function setNotBroadcastable() {
-            return broadcastable = false;
-        };
-
-        var getBroadcastable = function getBroadcastable() {
-            return broadcastable;
-        };
-
-        var isFinished = function isFinished() {
-            return utils.isDefined(contract.exitSpot);
-        };
-
-        var getContract = function getContract() {
-            return contract;
-        };
-
-        var resetSpotShowing = function resetSpotShowing() {
-            contract.showingEntrySpot = false;
-            contract.showingExitSpot = false;
-        };
-
-        var hasEntrySpot = function hasEntrySpot() {
-            if (utils.isDefined(contract.entrySpotIndex)) {
-                return true;
-            }
-            return false;
-        };
-
-        var hasExitSpot = function hasExitSpot() {
-            if (utils.isDefined(contract.exitSpotIndex)) {
-                return true;
-            }
-            return false;
-        };
-
-        var betweenExistingSpots = function betweenExistingSpots(time) {
-            if (hasEntrySpot() && time >= contract.entrySpotTime && (!hasExitSpot() || time <= contract.exitSpot)) {
-                return true;
-            }
-            return false;
-        };
-
-        var isSpot = function isSpot(i) {
-            if (contract.showingEntrySpot && contract.entrySpotIndex === utils.getAbsoluteIndex(i)) {
-                return true;
-            }
-            if (contract.showingExitSpot && contract.exitSpotIndex === utils.getAbsoluteIndex(i)) {
-                return true;
-            }
-            return false;
-        };
-
-        var getEntrySpotPoint = function getEntrySpotPoint(points) {
-            var result = void 0;
-            if (contract.showingEntrySpot) {
-                result = points[utils.getRelativeIndex(contract.entrySpotIndex)];
-            }
-            return result;
-        };
-
-        var getExitSpotPoint = function getExitSpotPoint(points) {
-            var result = void 0;
-            if (contract.showingExitSpot) {
-                result = points[utils.getRelativeIndex(contract.exitSpotIndex)];
-            }
-            return result;
-        };
-
-        var isEntrySpot = function isEntrySpot(time) {
-            if (hasEntrySpot()) {
-                if (time === contract.entrySpotTime) {
-                    return true;
-                }
-                return false;
-            }
-            if (time >= contract.startTime) {
-                return true;
-            }
-            return false;
-        };
-
-        var isExitSpot = function isExitSpot(time, index) {
-            if (hasExitSpot()) {
-                if (time === contract.exitSpot) {
-                    return true;
-                }
-                return false;
-            }
-            if (hasEntrySpot() && index === contract.entrySpotIndex + contract.duration) {
-                return true;
-            }
-            return false;
-        };
-
-        var viewSpots = function viewSpots(index, tickTime) {
-            if (isEntrySpot(tickTime)) {
-                contract.showingEntrySpot = true;
-                if (!utils.digitTrade(contract) && !utils.asianGame(contract) && !hasExitSpot()) {
-                    chartDrawer.addGridLine({
-                        color: "#2E8836",
-                        label: "barrier: " + contract.barrier,
-                        orientation: "horizontal",
-                        type: "barrier",
-                        index: index
-                    });
-                } else if (utils.asianGame(contract) && tickPriceList.length > 0 && !hasExitSpot()) {
-                    chartDrawer.addGridLine({
-                        color: "#2E8836",
-                        label: "Average: " + utils.average(tickPriceList),
-                        orientation: "horizontal",
-                        type: "average",
-                        firstIndex: index,
-                        index: index + (tickPriceList.length - 1)
-                    });
-                }
-            }
-
-            if (isExitSpot(tickTime, utils.getAbsoluteIndex(index))) {
-                contract.showingExitSpot = true;
-            }
-        };
-
-        var addSpots = function addSpots(index, tickTime, tickPrice) {
-            if (isEntrySpot(tickTime) || betweenExistingSpots(tickTime)) {
-                if (isEntrySpot(tickTime)) {
-                    var barrier = tickPrice;
-                    if (utils.higherLowerTrade(contract)) {
-                        contract.offset = contract.offset || contract.barrier;
-                        barrier = Number(tickPrice) + Number(contract.offset);
-                        barrier = utils.digitTrade(contract) ? contract.barrier : barrier.toFixed(utils.fractionalLength(tickPrice));
-                    }
-                    utils.setObjValue(contract, "barrier", barrier, !utils.digitTrade(contract));
-                    utils.setObjValue(contract, "entrySpotPrice", tickPrice, true);
-                    utils.setObjValue(contract, "entrySpotTime", tickTime, !hasEntrySpot());
-                    utils.setObjValue(contract, "entrySpotIndex", index, true);
-                }
-
-                if (isExitSpot(tickTime, index)) {
-                    utils.setObjValue(contract, "exitSpot", tickTime, !hasExitSpot());
-                    utils.setObjValue(contract, "exitSpotIndex", index, true);
-                }
-
-                // tickPriceList.push(tickPrice);
-            }
-        };
-
-        var viewRegions = function viewRegions() {
-            if (hasEntrySpot()) {
-                var color = contract.result === "win" ? "rgba(0, 255, 0, 0.1)" : "rgba(255, 0, 0, 0.1)";
-                if (contract.showingExitSpot) {
-                    var start = utils.getRelativeIndex(contract.entrySpotIndex);
-                    start = start < 0 ? 0 : start;
-                    if (!utils.isDefined(contract.region)) {
-                        contract.region = {
-                            color: color,
-                            start: start
-                        };
-                    } else {
-                        contract.region.color = color;
-                        contract.region.start = start;
-                    }
-                    contract.region.end = utils.getRelativeIndex(contract.exitSpotIndex);
-                    chartDrawer.addRegion(contract.region);
-                } else if (contract.showingEntrySpot) {
-                    if (!utils.isDefined(contract.region)) {
-                        contract.region = {
-                            color: color,
-                            start: utils.getRelativeIndex(contract.entrySpotIndex)
-                        };
-                    } else {
-                        contract.region.color = color;
-                        contract.region.start = utils.getRelativeIndex(contract.entrySpotIndex);
-                    }
-                    chartDrawer.addRegion(contract.region);
-                } else {
-                    chartDrawer.removeRegion(contract.region);
-                }
-            }
-        };
-
-        var addRegions = function addRegions(lastTime, lastPrice) {
-            var options = JSON.parse(localStorage.options);
-            var pip = options.underlying.pip;
-            var fractionalLength = utils.fractionalLength(pip);
-
-            if (hasEntrySpot() && broadcastable) {
-                if (tickPriceList.length === 0) {
-                    if (contract.entrySpotTime !== lastTime && betweenExistingSpots(lastTime)) {
-                        var entrySpotPrice = parseFloat(contract.entrySpotPrice).toFixed(fractionalLength);
-                        var barrier = utils.digitTrade(contract) ? contract.barrier : parseFloat(contract.barrier).toFixed(fractionalLength);
-                        tickPriceList.push(entrySpotPrice);
-
-                        if (utils.conditions[contract.type](barrier, entrySpotPrice, tickPriceList, contract.selectedTick)) {
-                            contract.result = "win";
-                        } else {
-                            contract.result = "lose";
-                        }
-                        $rootScope.$broadcast("contract:spot", contract, entrySpotPrice);
-                    } else {
-                        tickPriceList.push(parseFloat(lastPrice).toFixed(fractionalLength));
-                    }
-                } else {
-                    tickPriceList.push(parseFloat(lastPrice).toFixed(fractionalLength));
-                }
-
-                if (betweenExistingSpots(lastTime)) {
-                    var _barrier = parseFloat(contract.barrier).toFixed(fractionalLength);
-                    var lastPriceFloat = parseFloat(lastPrice).toFixed(fractionalLength);
-
-                    if (utils.conditions[contract.type](_barrier, lastPriceFloat, tickPriceList, contract.selectedTick)) {
-                        contract.result = "win";
-                    } else {
-                        contract.result = "lose";
-                    }
-
-                    $rootScope.$broadcast("contract:spot", contract, lastPriceFloat);
-
-                    if (isFinished() && broadcastable) {
-                        tickPriceList = [];
-                        contractCtrls.forEach(function (contractctrl, index) {
-                            var oldContract = contractctrl.getContract();
-                            if (contract !== oldContract && !contractctrl.isFinished()) {
-                                setNotBroadcastable();
-                            }
-                        });
-                        if (broadcastable) {
-                            $rootScope.$broadcast("contract:finished", contract);
-                        }
-                        setNotBroadcastable();
-                    }
-                }
-            }
-        };
-
-        var removeRegion = function removeRegion() {
-            chartDrawer.removeRegion(contract.region);
-        };
-
-        return {
-            getBroadcastable: getBroadcastable,
-            setNotBroadcastable: setNotBroadcastable,
-            isFinished: isFinished,
-            getContract: getContract,
-            isSpot: isSpot,
-            betweenExistingSpots: betweenExistingSpots,
-            resetSpotShowing: resetSpotShowing,
-            addSpots: addSpots,
-            addRegions: addRegions,
-            removeRegion: removeRegion,
-            viewSpots: viewSpots,
-            viewRegions: viewRegions,
-            getEntrySpotPoint: getEntrySpotPoint,
-            getExitSpotPoint: getExitSpotPoint
-        };
-    };
-
-    var ChartDrawer = function ChartDrawer() {
-        var dataIndex = 0;
-        var canvas = void 0;
-        var ctx = void 0;
-        var dragging = false;
-        var zooming = false;
-        var stepper = Stepper();
-
-        var isLastPoint = function isLastPoint(i) {
-            if (reversedIndex(i) === 0) {
-                return true;
-            }
-            return false;
-        };
-
-        var hideLabels = function hideLabels() {
-            if (chartGlobals.tickCount >= chartGlobals.hideLabelsThreshold) {
-                return true;
-            }
-            return false;
-        };
-
-        var showingHistory = function showingHistory() {
-            if (dataIndex === 0) {
-                return false;
-            }
-            return true;
-        };
-
-        var getLabelColor = function getLabelColor(index) {
-            var color = "black";
-            if (!showingHistory() && isLastPoint(index)) {
-                color = "#2E8836";
-            }
-            contractCtrls.forEach(function (contract) {
-                if (contract.isSpot(index)) {
-                    color = "#818183";
-                }
-            });
-            return color;
-        };
-
-        var getDotColor = function getDotColor(value, index) {
-            var color = void 0;
-            contractCtrls.forEach(function (contract) {
-                if (contract.betweenExistingSpots(value)) {
-                    color = "#7cb5ec";
-                }
-            });
-            if (utils.isDefined(color)) {
-                return color;
-            }
-            if (isLastPoint(index) && !showingHistory()) {
-                color = "#2E8836";
-            } else {
-                color = "#7cb5ec";
-            }
-            return color;
-        };
-
-        var drawRegion = function drawRegion(thisChart, region) {
-            var height = thisChart.scale.endPoint - thisChart.scale.startPoint + 12; // + 12 to size up the region to the top
-            var end = void 0;
-
-            var start = thisChart.datasets[0].points[region.start].x;
-            if (utils.isDefined(region.end)) {
-                end = thisChart.datasets[0].points[region.end].x;
-            } else {
-                end = thisChart.datasets[0].points.slice(-1)[0].x;
-            }
-            if (end < start) {
-                return;
-            } else if (end === start) {
-                start -= 2; // subtract 2 from start to make the region visible when the duration is 1 tick
-            }
-            var length = end - start || 6; // set the region length to 6 whenever the duration is 1 tick
-            ctx.fillStyle = region.color;
-            ctx.fillRect(start, thisChart.scale.startPoint - 12, length, height); // begin the region from the top
-        };
-
-        var getLabelSize = function getLabelSize(ctx, point) {
-            return {
-                width: ctx.measureText(point.value).width,
-                height: parseInt(ctx.font)
-            };
-        };
-
-        var overlapping = function overlapping(point1, point2) {
-            return point1.s < point2.e && point1.e > point2.s || point2.s < point1.e && point2.e > point1.s;
-        };
-
-        var overlapping2d = function overlapping2d(point1, point2) {
-            var point1Size = getLabelSize(ctx, point1);
-            var point2Size = getLabelSize(ctx, point2);
-            var overlappingY = overlapping({
-                s: point1.y,
-                e: point1.y + point1Size.height
-            }, {
-                s: point2.y,
-                e: point2.y + point2Size.height
-            });
-            var overlappingX = overlapping({
-                s: point1.x,
-                e: point1.x + point1Size.width
-            }, {
-                s: point2.x,
-                e: point2.x + point2Size.width
-            });
-            return overlappingX && overlappingY;
-        };
-
-        var findSpots = function findSpots(points) {
-            var entries = [];
-            var exits = [];
-            contractCtrls.forEach(function (contract) {
-                var entry = contract.getEntrySpotPoint(points);
-                var exit = contract.getExitSpotPoint(points);
-                if (utils.isDefined(entry)) {
-                    entries.push(entry);
-                }
-                if (utils.isDefined(exit)) {
-                    exits.push(exit);
-                }
-            });
-            return {
-                entries: entries,
-                exits: exits
-            };
-        };
-
-        var withoutConflict = function withoutConflict(toShow, point) {
-            var result = true;
-            toShow.forEach(function (toShowPoint, index) {
-                if (overlapping2d(toShowPoint, point)) {
-                    result = false;
-                }
-            });
-            return result;
-        };
-
-        var toShowLabels = function toShowLabels(points) {
-            var toShow = [];
-            var spots = findSpots(points);
-            // This is our priority: 1. exit spot, 2. entry spot, 3. last value, 4. others (right to left)
-
-            spots.exits.forEach(function (exit, index) {
-                toShow.push(exit);
-            });
-
-            spots.entries.forEach(function (entry, index) {
-                if (withoutConflict(toShow, entry)) {
-                    toShow.push(entry);
-                }
-            });
-
-            var lastPoint = points.slice(-1)[0];
-            if (!showingHistory() && withoutConflict(toShow, lastPoint)) {
-                toShow.push(lastPoint);
-            }
-            // add other labels from right to left
-            if (!hideLabels()) {
-                for (var i = points.length - 1; i >= 0; i--) {
-                    if (withoutConflict(toShow, points[i])) {
-                        toShow.push(points[i]);
-                    }
-                }
-            }
-            toShow.forEach(function (toShowPoint, index) {
-                if (!_.isEmpty(toShowPoint)) {
-                    toShowPoint.shown = true;
-                }
-            });
-        };
-
-        var drawLabel = function drawLabel(point, index) {
-            if (index !== 0 && utils.isDefined(point.shown) && point.shown) {
-                ctx.fillStyle = getLabelColor(index);
-                ctx.textAlign = "center";
-                ctx.textBaseline = "bottom";
-
-                var padding = 0;
-                var valueWidth = getLabelSize(ctx, point).width;
-                if (isLastPoint(index)) {
-                    padding = valueWidth < 45 ? 0 : valueWidth - 45;
-                }
-                ctx.fillText(point.value, point.x - padding, point.y - 1);
-            }
-        };
-
-        var drawLastTickLabel = function drawLastTickLabel(point, index) {
-            if (index !== 0 && utils.isDefined(point.shown) && point.shown) {
-                var marginX = 10;
-                var marginY = 30;
-                var padding = 5;
-                var fontSize = 12;
-                ctx.font = ctx.font.replace(/\d+px/, fontSize + "px");
-                var value = ctx.measureText(point.value);
-                value.height = fontSize;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "bottom";
-                ctx.fillStyle = point.labelFillColor.toString();
-                ctx.fillRect(canvas.offsetWidth - (marginX + padding + value.width), canvas.offsetHeight - (marginY + value.height + padding), 2 * padding + value.width, 2 * padding + value.height);
-                if (ctx.fillStyle === "#C2C2C2") {
-                    ctx.fillStyle = "#000";
-                } else {
-                    ctx.fillStyle = "#FFF";
-                }
-                ctx.fillText(point.value, canvas.offsetWidth - (marginX + value.width / 2), canvas.offsetHeight - marginY);
-            }
-        };
-
-        var drawGridLine = function drawGridLine(thisChart, gridLine) {
-            var point = thisChart.datasets[0].points[gridLine.index];
-            var scale = thisChart.scale;
-
-            ctx.beginPath();
-            if (gridLine.orientation === "vertical") {
-                ctx.moveTo(point.x, scale.startPoint + 24);
-                ctx.strokeStyle = gridLine.color;
-                ctx.fillStyle = gridLine.color;
-                ctx.lineTo(point.x, scale.endPoint);
-                ctx.stroke();
-
-                ctx.textAlign = "center";
-                ctx.fillText(gridLine.label, point.x, scale.startPoint + 12);
-            } else if (gridLine.orientation === "horizontal") {
-                var yPoint = point.y;
-                if (gridLine.type === "average" && gridLine.index !== gridLine.firstIndex) {
-                    var firstPoint = thisChart.datasets[0].points[gridLine.firstIndex];
-                    yPoint = (firstPoint.y + point.y) / 2;
-                }
-
-                ctx.moveTo(scale.startPoint, yPoint);
-
-                ctx.strokeStyle = gridLine.color;
-                ctx.fillStyle = gridLine.color;
-                ctx.lineTo(thisChart.chart.width, yPoint);
-                ctx.stroke();
-
-                ctx.textAlign = "center";
-                var labelWidth = ctx.measureText(gridLine.label).width;
-                ctx.fillText(gridLine.label, parseInt(labelWidth / 2) + 5, yPoint - 1);
-            }
-        };
-
-        /* Override ChartJS Defaults */
-        Chart.CustomScale = Chart.Scale.extend({
-            initialize: function initialize() {
-                var longestText = function longestText(ctx, font, arrayOfStrings) {
-                    ctx.font = font;
-                    var longest = 0;
-                    Chart.helpers.each(arrayOfStrings, function (string) {
-                        var textWidth = ctx.measureText(string).width;
-                        longest = textWidth > longest ? textWidth : longest;
-                    });
-                    return longest;
-                };
-
-                this.calculateXLabelRotation = function () {
-                    this.ctx.font = this.font;
-
-                    var lastWidth = this.ctx.measureText(this.xLabels[this.xLabels.length - 1]).width;
-
-                    this.xScalePaddingRight = lastWidth / 2 + 3;
-
-                    this.xLabelRotation = 0;
-                    if (this.display) {
-                        var originalLabelWidth = longestText(this.ctx, this.font, this.xLabels);
-                        this.xLabelWidth = originalLabelWidth;
-                    } else {
-                        this.xLabelWidth = 0;
-                        this.xScalePaddingRight = this.padding;
-                    }
-                    this.xScalePaddingLeft = 0;
-                };
-                Chart.Scale.prototype.initialize.apply(this, arguments);
-            },
-            draw: function draw() {
-                var helpers = Chart.helpers;
-                var each = helpers.each;
-                var aliasPixel = helpers.aliasPixel;
-                var ctx = this.ctx;
-                var yLabelGap = (this.endPoint - this.startPoint) / this.steps;
-                var xStart = Math.round(this.xScalePaddingLeft);
-                if (this.display) {
-                    ctx.fillStyle = this.textColor;
-                    ctx.font = this.font;
-                    each(this.yLabels, function (labelString, index) {
-                        var yLabelCenter = this.endPoint - yLabelGap * index;
-                        var linePositionY = Math.round(yLabelCenter);
-
-                        ctx.textAlign = "right";
-                        ctx.textBaseline = "middle";
-                        if (this.showLabels) {
-                            ctx.fillText(labelString, xStart - 10, yLabelCenter);
-                        }
-                        ctx.beginPath();
-                        if (index > 0) {
-                            ctx.lineWidth = this.gridLineWidth;
-                            ctx.strokeStyle = this.gridLineColor;
-                        } else {
-                            ctx.lineWidth = this.lineWidth;
-                            ctx.strokeStyle = this.lineColor;
-                        }
-
-                        linePositionY += helpers.aliasPixel(ctx.lineWidth);
-
-                        ctx.moveTo(xStart, linePositionY);
-                        ctx.lineTo(this.width, linePositionY);
-                        ctx.stroke();
-                        ctx.closePath();
-
-                        ctx.lineWidth = this.lineWidth;
-                        ctx.strokeStyle = this.lineColor;
-                        ctx.beginPath();
-                        ctx.moveTo(xStart - 5, linePositionY);
-                        ctx.lineTo(xStart, linePositionY);
-                        ctx.stroke();
-                        ctx.closePath();
-                    }, this);
-
-                    each(this.xLabels, function (label, index) {
-                        var filtered = false;
-                        if (typeof this.labelsFilter === "function" && this.labelsFilter(index)) {
-                            filtered = true;
-                        }
-                        var xPos = this.calculateX(index) + aliasPixel(this.lineWidth);
-                        var linePos = this.calculateX(index - (this.offsetGridLines ? 0.5 : 0)) + aliasPixel(this.lineWidth);
-
-                        ctx.beginPath();
-
-                        if (index > 0) {
-                            ctx.lineWidth = this.gridLineWidth;
-                            ctx.strokeStyle = this.gridLineColor;
-                        } else {
-                            ctx.lineWidth = this.lineWidth;
-                            ctx.strokeStyle = this.lineColor;
-                        }
-                        ctx.moveTo(linePos, this.endPoint);
-                        ctx.lineTo(linePos, this.startPoint - 12);
-                        ctx.stroke();
-                        ctx.closePath();
-
-                        ctx.lineWidth = this.lineWidth;
-                        ctx.strokeStyle = this.lineColor;
-
-                        ctx.beginPath();
-                        ctx.moveTo(linePos, this.endPoint);
-                        if (filtered) {
-                            ctx.lineTo(linePos, this.endPoint);
-                        } else {
-                            ctx.lineTo(linePos, this.endPoint + 5);
-                        }
-                        ctx.stroke();
-                        ctx.closePath();
-
-                        ctx.save();
-                        ctx.translate(xPos, this.endPoint + 8);
-
-                        ctx.textAlign = "center";
-                        ctx.textBaseline = "top";
-                        if (!filtered) {
-                            ctx.fillText(label, 0, 0);
-                        }
-                        ctx.restore();
-                    }, this);
-                }
-            }
-        });
-
-        Chart.types.Line.extend({
-            name: "LineChartSpots",
-            initialize: function initialize(data) {
-                this.options.labelsFilter = data.labelsFilter || null;
-                Chart.types.Line.prototype.initialize.apply(this, arguments);
-            },
-            draw: function draw() {
-                var dataset = this.datasets[0];
-                var thisChart = this;
-
-                dataset.points.forEach(function (point, index) {
-                    point.fillColor = getDotColor(chartGlobals.chartData.epochLabels[index], index);
-                });
-
-                Chart.types.Line.prototype.draw.apply(this, arguments);
-                toShowLabels(dataset.points);
-                dataset.points.forEach(function (point, index) {
-                    drawLabel(point, index);
-                });
-
-                if (utils.isDefined(this.options.regions)) {
-                    this.options.regions.forEach(function (region) {
-                        drawRegion(thisChart, region);
-                    });
-                }
-
-                if (utils.isDefined(this.options.gridLines)) {
-                    this.options.gridLines.forEach(function (gridLine) {
-                        drawGridLine(thisChart, gridLine);
-                    });
-                }
-            },
-            buildScale: function buildScale(labels) {
-                var helpers = Chart.helpers;
-                var self = this;
-
-                var dataTotal = function dataTotal() {
-                    var values = [];
-                    self.eachPoints(function (point) {
-                        values.push(point.value);
-                    });
-                    return values;
-                };
-                var scaleOptions = {
-                    templateString: this.options.scaleLabel,
-                    height: this.chart.height,
-                    width: this.chart.width,
-                    ctx: this.chart.ctx,
-                    textColor: this.options.scaleFontColor,
-                    fontSize: this.options.scaleFontSize,
-                    labelsFilter: this.options.labelsFilter,
-                    fontStyle: this.options.scaleFontStyle,
-                    fontFamily: this.options.scaleFontFamily,
-                    valuesCount: labels.length,
-                    beginAtZero: this.options.scaleBeginAtZero,
-                    integersOnly: this.options.scaleIntegersOnly,
-                    calculateYRange: function calculateYRange(currentHeight) {
-                        var updatedRanges = helpers.calculateScaleRange(dataTotal(), currentHeight, this.fontSize, this.beginAtZero, this.integersOnly);
-                        helpers.extend(this, updatedRanges);
-                    },
-
-                    xLabels: labels,
-                    font: helpers.fontString(this.options.scaleFontSize, this.options.scaleFontStyle, this.options.scaleFontFamily),
-                    lineWidth: this.options.scaleLineWidth,
-                    lineColor: this.options.scaleLineColor,
-                    gridLineWidth: this.options.scaleShowGridLines ? this.options.scaleGridLineWidth : 0,
-                    gridLineColor: this.options.scaleShowGridLines ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
-                    padding: this.options.showScale ? 0 : this.options.pointDotRadius + this.options.pointDotStrokeWidth,
-                    showLabels: this.options.scaleShowLabels,
-                    display: this.options.showScale
-                };
-
-                if (this.options.scaleOverride) {
-                    helpers.extend(scaleOptions, {
-                        calculateYRange: helpers.noop,
-                        steps: this.options.scaleSteps,
-                        stepValue: this.options.scaleStepWidth,
-                        min: this.options.scaleStartValue,
-                        max: this.options.scaleStartValue + this.options.scaleSteps * this.options.scaleStepWidth
-                    });
-                }
-
-                this.scale = new Chart.CustomScale(scaleOptions);
-            }
-        });
-        /* End of Override ChartJS Defaults */
-
-        var destroy = function destroy() {
-            if (chartGlobals.chartJS) {
-                chartGlobals.chartJS.destroy();
-                setChartGlobals();
-                canvas = null;
-                ctx = null;
-                dataIndex = 0;
-                dragging = false;
-                zooming = false;
-                stepper = null;
-            }
-        };
-
-        var drawChart = function drawChart(chartID) {
-            canvas = document.getElementById(chartID);
-            if (canvas !== null) {
-                ctx = canvas.getContext("2d");
-                stepper = Stepper();
-                stepper.setDistance(canvas, chartGlobals.tickCount);
-            }
-        };
-
-        var findRegion = function findRegion(region) {
-            if (utils.isDefined(chartGlobals.chartOptions.regions)) {
-                return chartGlobals.chartOptions.regions.indexOf(region);
-            }
-            return -1;
-        };
-
-        var addRegion = function addRegion(region) {
-            if (!utils.isDefined(chartGlobals.chartOptions.regions)) {
-                chartGlobals.chartOptions.regions = [];
-            }
-            if (findRegion(region) < 0) {
-                chartGlobals.chartOptions.regions.push(region);
-            }
-        };
-
-        var removeRegion = function removeRegion(region) {
-            var regionIndex = findRegion(region);
-            if (regionIndex >= 0) {
-                chartGlobals.chartOptions.regions.splice(regionIndex, 1);
-            }
-        };
-
-        var dragStart = function dragStart(e) {
-            if (!_.isEmpty(stepper)) {
-                stepper.setStartPosition(dataIndex, e.center.x);
-                dragging = true;
-            }
-        };
-
-        var dragEnd = function dragEnd(e) {
-            if (!_.isEmpty(stepper)) {
-                if (!zooming) {
-                    move(stepper.stepCount(dataIndex, e.center.x));
-                }
-                stepper.stop();
-                dragging = false;
-            }
-        };
-
-        var zoomStart = function zoomStart() {
-            zooming = true;
-        };
-
-        var zoomEnd = function zoomEnd() {
-            zooming = false;
-        };
-
-        var addGridLine = function addGridLine(gridLine) {
-            if (!utils.isDefined(chartGlobals.chartOptions.gridLines)) {
-                chartGlobals.chartOptions.gridLines = [];
-            }
-            chartGlobals.chartOptions.gridLines.push(gridLine);
-        };
-
-        var updateChartPoints = function updateChartPoints(times, values) {
-            chartGlobals.chartData.labels = [];
-            chartGlobals.chartData.epochLabels = times;
-            times.forEach(function (time, index) {
-                chartGlobals.chartData.labels.push(utils.getTickTime(time));
-            });
-
-            chartGlobals.chartData.datasets[0].data = values;
-            if (utils.isDefined(chartGlobals.chartJS)) {
-                chartGlobals.chartJS.destroy();
-            }
-            if (utils.isDefined(ctx)) {
-                var chartObj = new Chart(ctx);
-                chartGlobals.chartJS = chartObj.LineChartSpots(chartGlobals.chartData, chartGlobals.chartOptions);
-            }
-        };
-
-        // depends on updateContracts call
-        var updateChart = function updateChart(ticks) {
-            chartGlobals.chartOptions.gridLines = [];
-            contractCtrls.forEach(function (contract) {
-                contract.resetSpotShowing();
-            });
-            var times = [];
-            var prices = [];
-
-            ticks.forEach(function (tick, index) {
-                var tickTime = parseInt(tick.time);
-                contractCtrls.forEach(function (contract) {
-                    contract.viewSpots(index, tickTime);
-                });
-                times.push(tickTime);
-                prices.push(tick.price);
-            });
-
-            contractCtrls.forEach(function (contract) {
-                contract.viewRegions();
-            });
-
-            updateChartPoints(times, prices);
-        };
-
-        var updateContracts = function updateContracts(ticks) {
-            var lastTime = void 0;
-            var lastPrice = void 0;
-
-            ticks.forEach(function (tick, index) {
-                var tickTime = parseInt(tick.time);
-                var tickPrice = tick.price;
-                contractCtrls.forEach(function (contract) {
-                    contract.addSpots(index, tickTime, tickPrice);
-                });
-                lastTime = parseInt(tick.time);
-                lastPrice = tick.price;
-            });
-
-            contractCtrls.forEach(function (contract) {
-                contract.addRegions(lastTime, lastPrice);
-            });
-        };
-
-        var addTick = function addTick(tick) {
-            if (utils.isDefined(localHistory)) {
-                localHistory.addTick(tick);
-                localHistory.getHistory(0, chartGlobals.capacity, updateContracts);
-                if (dataIndex === 0 && !dragging && !zooming) {
-                    localHistory.getHistory(dataIndex, chartGlobals.tickCount, updateChart);
-                } else {
-                    move(1, false);
-                }
-            }
-        };
-
-        var addHistory = function addHistory(history) {
-            if (!utils.isDefined(localHistory)) {
-                localHistory = LocalHistory(chartGlobals.capacity);
-            }
-            localHistory.addHistory(history);
-            localHistory.getHistory(0, chartGlobals.capacity, updateContracts);
-            localHistory.getHistory(dataIndex, chartGlobals.tickCount, updateChart);
-        };
-
-        var addCandles = function addCandles(candles) {};
-
-        var addOhlc = function addOhlc(ohlc) {};
-
-        var zoom = function zoom(direction) {
-            var newTickCount = void 0;
-            var condition = void 0;
-            if (direction === "in") {
-                newTickCount = parseInt(chartGlobals.tickCount / 1.2);
-                condition = newTickCount > chartGlobals.minTickCount;
-            } else if (direction === "out") {
-                newTickCount = parseInt(chartGlobals.tickCount * 1.2);
-                condition = newTickCount < chartGlobals.maxTickCount;
-            } else {
-                return;
-            }
-            if (condition) {
-                chartGlobals.tickCount = newTickCount;
-                localHistory.getHistory(dataIndex, chartGlobals.tickCount, updateChart);
-                stepper.setDistance(canvas, chartGlobals.tickCount);
-            }
-        };
-
-        var zoomOut = function zoomOut() {
-            zoom("out");
-        };
-
-        var zoomIn = function zoomIn() {
-            zoom("in");
-        };
-
-        var move = function move(steps, update) {
-            if (steps === 0) {
-                return;
-            }
-            var testDataIndex = dataIndex + steps;
-            if (testDataIndex < 0) {
-                // overflow
-                testDataIndex = 0;
-            } else if (testDataIndex >= chartGlobals.capacity - chartGlobals.tickCount) {
-                // underflow
-                testDataIndex = chartGlobals.capacity - chartGlobals.tickCount - 1;
-            }
-            if (testDataIndex !== dataIndex) {
-                dataIndex = testDataIndex;
-                if (!utils.isDefined(update) || update) {
-                    localHistory.getHistory(dataIndex, chartGlobals.tickCount, updateChart);
-                }
-            }
-        };
-
-        var drag = function drag(e) {
-            if (!_.isEmpty(stepper)) {
-                if (!zooming && stepper.isStep(e, chartGlobals.tickCount)) {
-                    move(stepper.stepCount(dataIndex, e.center.x));
-                }
-            }
-        };
-
-        var getCapacity = function getCapacity() {
-            return chartGlobals.capacity;
-        };
-
-        var getTickCount = function getTickCount() {
-            return chartGlobals.tickCount;
-        };
-
-        var getDataIndex = function getDataIndex() {
-            return dataIndex;
-        };
-
-        var addContract = function addContract(_contract) {
-            if (_contract) {
-                if (utils.digitTrade(_contract) || utils.asianGame(_contract) || utils.highLowTrade(_contract)) {
-                    _contract.duration -= 1;
-                }
-                contractCtrls.push(ContractCtrl(_contract));
-                dataIndex = 0;
-            }
-        };
-
-        var historyInterface = {
-            addTick: addTick,
-            addHistory: addHistory,
-            addCandles: addCandles,
-            addOhlc: addOhlc
-        };
-
-        return {
-            dragStart: dragStart,
-            dragEnd: dragEnd,
-            zoomIn: zoomIn,
-            zoomOut: zoomOut,
-            zoomStart: zoomStart,
-            zoomEnd: zoomEnd,
-            dragRight: drag,
-            dragLeft: drag,
-            getCapacity: getCapacity,
-            getTickCount: getTickCount,
-            getDataIndex: getDataIndex,
-            addContract: addContract,
-            historyInterface: historyInterface,
-            addGridLine: addGridLine,
-            addRegion: addRegion,
-            removeRegion: removeRegion,
-            drawChart: drawChart,
-            destroy: destroy
-        };
-    };
-
-    var drawChart = function drawChart(chartID) {
-        chartDrawer.drawChart(chartID);
-    };
-
-    var destroy = function destroy() {
-        chartDrawer.destroy();
-        contractCtrls.forEach(function (contractctrl, index) {
-            contractctrl.setNotBroadcastable();
-        });
-        localHistory = null;
-    };
-
-    chartDrawer = ChartDrawer();
-
-    return {
-        destroy: destroy,
-        drawChart: drawChart,
-        dragStart: chartDrawer.dragStart,
-        dragEnd: chartDrawer.dragEnd,
-        zoomIn: chartDrawer.zoomIn,
-        zoomOut: chartDrawer.zoomOut,
-        zoomStart: chartDrawer.zoomStart,
-        zoomEnd: chartDrawer.zoomEnd,
-        dragRight: chartDrawer.dragRight,
-        dragLeft: chartDrawer.dragLeft,
-        getCapacity: chartDrawer.getCapacity,
-        addContract: chartDrawer.addContract,
-        historyInterface: chartDrawer.historyInterface
-    };
-}]);
-"use strict";
-
-/**
- * @name cleanupService
- * @author Morteza Tavanarad
- * @contributors []
- * @since 12/22/2015
- * @copyright Binary Ltd
- *
- */
-
-angular.module("binary").service("cleanupService", ["$translate", "proposalService", function ($translate, proposalService) {
-    this.run = function () {
-        proposalService.forget();
-    };
-}]);
-"use strict";
-
-/**
- * @name client service
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 10/26/2017
- * @copyright Binary Ltd
- */
-
-angular.module("binary").service("clientService", ["appStateService", function (appStateService) {
-    var _this = this;
-
-    this.isLandingCompanyOf = function (targetLandingCompany, accountLandingCompany) {
-        return targetLandingCompany === accountLandingCompany;
-    };
-
-    this.hasAccountOfLandingCompany = function (accounts, landingCompany) {
-        return !!_.find(accounts, function (account) {
-            return _this.isLandingCompanyOf(landingCompany, account.landing_company_name);
-        });
-    };
-
-    this.getAccountType = function (landingCompany) {
-        var account_type = void 0;
-        if (landingCompany) {
-            if (_this.isLandingCompanyOf('virtual', landingCompany)) account_type = 'virtual';else if (_this.isLandingCompanyOf('maltainvest', landingCompany)) account_type = 'financial';else if (_this.isLandingCompanyOf('malta', landingCompany)) account_type = 'gaming';else account_type = 'real';
-        }
-        return account_type;
-    };
-
-    this.isAccountOfType = function (type, landingCompany) {
-        var accountType = _this.getAccountType(landingCompany);
-        return type === 'virtual' && accountType === 'virtual' || type === 'real' && accountType !== 'virtual' || type === accountType;
-    };
-
-    this.landingCompanyValue = function (landingCompany, key, landingCompanyObj) {
-        var landingCompanyOfAccount = void 0;
-        var landingCompanyObject = landingCompanyObj || JSON.parse(localStorage.getItem('landingCompanyObject'));
-        if (_this.isAccountOfType('financial', landingCompany)) {
-            landingCompanyOfAccount = landingCompanyObject.financial_company;
-        } else if (_this.isAccountOfType('real', landingCompany)) {
-            landingCompanyOfAccount = landingCompanyObject.gaming_company;
-            if (!landingCompanyOfAccount) {
-                landingCompanyOfAccount = landingCompanyObject.financial_company;
-            }
-        } else {
-            var financialCompany = (landingCompanyObject.financial_company || {})[key] || [];
-            var gamingCompany = (landingCompanyObject.gaming_company || {})[key] || [];
-            landingCompanyOfAccount = financialCompany.concat(gamingCompany);
-            return landingCompanyOfAccount;
-        }
-        return (landingCompanyOfAccount || {})[key];
-    };
-
-    // ignore virtual account currency in existing currencies
-    this.getExistingCurrencies = function (accounts) {
-        var currencies = [];
-        _.forIn(accounts, function (account, key) {
-            if (!_this.isLandingCompanyOf('virtual', account.landing_company_name) && account.currency.length > 0) {
-                currencies.push(account.currency);
-            }
-        });
-        return currencies;
-    };
-
-    this.dividedCurrencies = function (currencies) {
-        var currencyConfig = appStateService.currenciesConfig;
-        var cryptoCurrencies = [];
-        var fiatCurrencies = [];
-        _.forEach(currencies, function (currency) {
-            var isCryptoCurrency = /crypto/i.test(currencyConfig[currency].type);
-            if (isCryptoCurrency) {
-                cryptoCurrencies.push(currency);
-            } else {
-                fiatCurrencies.push(currency);
-            }
-        });
-        return {
-            cryptoCurrencies: cryptoCurrencies,
-            fiatCurrencies: fiatCurrencies
-        };
-    };
-
-    this.getFractionalDigits = function () {
-        var currency = sessionStorage.getItem('currency') || 'USD';
-        var currencyConfig = appStateService.currenciesConfig || {};
-        return !_.isEmpty(currencyConfig) && currencyConfig[currency] ? currencyConfig[currency].fractional_digits : 2;
-    };
-
-    this.groupMT5Accounts = function (accounts) {
-        var groupedAccounts = {};
-        var demo = [];
-        var real = [];
-        _.forEach(accounts, function (account) {
-            return account.isDemo ? demo.push(account) : real.push(account);
-        });
-        if (demo.length) {
-            groupedAccounts.demo = demo;
-        }
-        if (real.length) {
-            groupedAccounts.real = real;
-        }
-        return groupedAccounts;
-    };
-}]);
-"use strict";
-
-/**
- * @name delayService
- * @author Amin Marashi
- * @contributors []
- * @since 01/21/2016
- * @copyright Binary Ltd
- *
- */
-
-angular.module("binary").factory("delayService", function () {
-    var functions = {};
-    var runTimestamps = {};
-    var FunctionController = function FunctionController(delayedFunction, args, name) {
-        var timeoutId = 0;
-        return {
-            run: function run(minimumDelay) {
-                var runFunc = function runFunc() {
-                    runTimestamps[name] = new Date().getTime();
-                    delayedFunction.apply(this, args);
-                };
-
-                if (minimumDelay !== 0) {
-                    timeoutId = setTimeout(function () {
-                        runFunc();
-                    }, minimumDelay);
-                } else {
-                    runFunc();
-                }
-            },
-            cancel: function cancel() {
-                clearTimeout(timeoutId);
-            }
-        };
-    };
-    return {
-        update: function update(name, delayedFunction, minimumDelay, args) {
-            var now = new Date().getTime();
-            if (functions.hasOwnProperty(name)) {
-                var remainingTime = minimumDelay - (now - runTimestamps[name]);
-                if (remainingTime > 0) {
-                    minimumDelay = remainingTime;
-                } else {
-                    minimumDelay = 0;
-                }
-                functions[name].cancel();
-            } else {
-                minimumDelay = 0;
-                runTimestamps[name] = now;
-            }
-            functions[name] = FunctionController(delayedFunction, args, name);
-            functions[name].run(minimumDelay);
-        },
-        remove: function remove(name) {
-            if (functions.hasOwnProperty(name)) {
-                functions[name].cancel();
-                delete functions[name];
-                delete runTimestamps[name];
-            }
-        }
-    };
-});
-"use strict";
-
-/**
- * @name languageService
- * @author Massih Hazrati
- * @contributors []
- * @since 10/26/2015
- * @copyright Binary Ltd
- *
- */
-
-angular.module("binary").service("languageService", ["$rootScope", "$translate", "cleanupService", function ($rootScope, $translate, cleanupService) {
-    /**
-    * Update default language in local storage
-    * Changes the app language
-    * @param  {String} _language [description]
-    */
-    this.update = function (_language) {
-        localStorage.language = _language;
-        this.set(_language);
-    };
-
-    /**
-    * Read the language from local storage
-    * if exists update the app's language
-    */
-    this.set = function (_language) {
-        var language = localStorage.language || "en";
-
-        if (_language) {
-            language = _language;
-        }
-        cleanupService.run();
-        $rootScope.$broadcast("language:updated");
-        $translate.use(language);
-    };
-
-    this.read = function () {
-        var language = localStorage.language;
-        return language || "en";
-    };
-
-    this.remove = function () {
-        localStorage.removeItem("language");
-        cleanupService.run();
-    };
-
-    var languageConfigs = {
-        en: {
-            nativeName: 'English'
-        },
-        de: {
-            nativeName: 'Deutsch'
-        },
-        es: {
-            nativeName: 'Español'
-        },
-        fr: {
-            nativeName: 'Français'
-        },
-        id: {
-            nativeName: 'Indonesia'
-        },
-        it: {
-            nativeName: 'Italiano'
-        },
-        ja: {
-            nativeName: '日本語'
-        },
-        pl: {
-            nativeName: 'Polish'
-        },
-        pt: {
-            nativeName: 'Português'
-        },
-        ru: {
-            nativeName: 'Русский'
-        },
-        th: {
-            nativeName: 'Thai'
-        },
-        vi: {
-            nativeName: 'Tiếng Việt'
-        },
-        zh_cn: {
-            nativeName: '简体中文'
-        },
-        zh_tw: {
-            nativeName: '繁體中文'
-        }
-    };
-
-    var getLanguageNativeName = function getLanguageNativeName(key) {
-        var lang = languageConfigs[key];
-        return lang ? lang.nativeName : undefined;
-    };
-    this.getLanguageNativeName = getLanguageNativeName;
-}]);
-"use strict";
-
-/**
- * @name cleanupService
- * @author Morteza Tavanarad
- * @contributors []
- * @since 12/31/2015
- * @copyright Binary Ltd
- *
- */
-
-angular.module("binary").factory("localStorageService", ["$state", "appStateService", function ($state, appStateService) {
-    var service = {};
-
-    /**
-    * find a {key,value} in an array of objects and return its index
-    * returns -1 if not found
-    * @param  {Array of Objects} _accounts
-    * @param  {String} _key
-    * @param  {String, Number, Boolean} _value
-    * @return {Number} Index of the found array element
-    */
-    var findIndex = function findIndex(_accounts, _key, _value) {
-        var index = -1;
-        _accounts.forEach(function (el, i) {
-            if (_accounts[i][_key] === _value) {
-                index = i;
-            }
-        });
-        return index;
-    };
-
-    service.removeToken = function removeToken(token) {
-        if (localStorage.hasOwnProperty("accounts")) {
-            var accounts = JSON.parse(localStorage.accounts);
-            var tokenIndex = findIndex(accounts, "token", token);
-            if (tokenIndex > -1) {
-                accounts.splice(tokenIndex);
-                localStorage.accounts = JSON.stringify(accounts);
-            }
-        }
-    };
-
-    service.getDefaultToken = function () {
-        if (localStorage.accounts && JSON.parse(localStorage.accounts) instanceof Array) {
-            var accounts = JSON.parse(localStorage.accounts);
-            var index = findIndex(accounts, "is_default", true);
-            if (index > -1) {
-                return accounts[index].token;
-            }
-        }
-        return null;
-    };
-
-    return service;
-}]);
-"use strict";
-
-/**
- * @name tradeService
- * @author Massih Hazrati
- * @contributors []
- * @since 10/15/2015
- * @copyright Binary Ltd
- * Handles websocket functionalities
- */
-
-angular.module("binary").service("marketService", ["websocketService", "proposalService", "config", function (websocketService, proposalService, config) {
-    var regroup = function regroup(symbols) {
-        var groups = {
-            index: ["R_100", "R_25", "R_50", "R_75"],
-            BEARBULL: ["RDBEAR", "RDBULL"],
-            MOONSUN: ["RDMOON", "RDSUN"],
-            MARSVENUS: ["RDMARS", "RDVENUS"],
-            YANGYIN: ["RDYANG", "RDYIN"]
-        };
-
-        var result = [];
-        var itemIndices = [];
-        Object.keys(groups).forEach(function (key) {
-            var tmp = [];
-            var first = -1;
-            symbols.forEach(function (item, index) {
-                if (item.symbol === groups[key][0]) {
-                    first = index;
-                }
-            });
-            if (first >= 0) {
-                groups[key].forEach(function (item, index) {
-                    var itemIndex = -1;
-                    symbols.forEach(function (item, i) {
-                        if (item.symbol === groups[key][index]) {
-                            itemIndex = i;
-                        }
-                    });
-                    if (itemIndex >= 0) {
-                        tmp.push(symbols[itemIndex]);
-                        itemIndices.push(itemIndex);
-                    }
-                });
-                tmp.sort();
-                result = result.concat(tmp);
-            }
-        });
-        symbols.forEach(function (symbol, index) {
-            if (itemIndices.indexOf(index) < 0) {
-                result.push(symbol);
-            }
-        });
-        return result;
-    };
-
-    var reorder = function reorder(symbols) {
-        symbols.sort(function (a, b) {
-            if (a.display_name > b.display_name) {
-                return 1;
-            } else if (a.display_name < b.display_name) {
-                return -1;
-            }
-            return 0;
-        });
-        symbols = regroup(symbols);
-        return symbols;
-    };
-
-    this.fixOrder = function () {
-        if (!sessionStorage.active_symbols || sessionStorage.active_symbols === "null") {
-            return;
-        }
-
-        var symbols = JSON.parse(sessionStorage.active_symbols);
-        Object.keys(symbols).forEach(function (key) {
-            symbols[key] = reorder(symbols[key]);
-        });
-        sessionStorage.active_symbols = JSON.stringify(symbols);
-    };
-
-    this.getActiveMarkets = function () {
-        if (!sessionStorage.active_symbols || sessionStorage.active_symbols === "null") {
-            return [];
-        }
-
-        var data = JSON.parse(sessionStorage.active_symbols);
-        if (data) {
-            return Object.keys(data);
-        }
-
-        console.log(data); // eslint-disable-line
-        return [];
-    };
-
-    // TODO Remove getAllSymbolsForAMarket: This function is not used anymore
-    this.getAllSymbolsForAMarket = function (_market) {
-        if (!_market || !sessionStorage.active_symbols || !sessionStorage.asset_index) {
-            return [];
-        }
-
-        var activeSymbols = JSON.parse(sessionStorage.active_symbols)[_market];
-        var assetIndex = JSON.parse(sessionStorage.asset_index);
-        var indexes = config.assetIndexes;
-        var result = [];
-
-        activeSymbols.forEach(function (market) {
-            for (var i = 0; i < assetIndex.length; i++) {
-                if (market.symbol === assetIndex[i][indexes.symbol]) {
-                    var assetContracts = assetIndex[i][indexes.contracts];
-                    for (var c = 0; c < assetContracts.length; c++) {
-                        if (assetContracts[c][indexes.contractFrom].indexOf("t") !== -1) {
-                            market.display_name = assetIndex[i][indexes.displayName];
-                            result.push(market);
-                            break;
-                        }
-                    }
-                    break; // do not loop through remained assets, since the related asset_index has been found but is not supporting ticks
-                }
-            }
-            // assetIndex.splice(i, 1); // to shorten the list for the next loop
-        });
-
-        return result;
-    };
-
-    this.getSymbolDetails = function (_symbol) {
-        websocketService.sendRequestFor.contractsForSymbol(_symbol);
-    };
-
-    this.getDefault = {
-        /**
-        * Return the default/selected market
-        * @return {String} Market Name
-        */
-        market: function market(_market) {
-            var proposal = proposalService.get();
-            if (proposal && proposal.passthrough && proposal.passthrough.market && _market[proposal.passthrough.market]) {
-                return proposal.passthrough.market;
-            }
-
-            // return _market.random ? 'random' : 'forex';
-            return _.findKey(_market, function (o) {
-                return o;
-            });
-        },
-
-        /**
-        * Return the default/selected symbol
-        * @return {String} Symbol Name
-        */
-        symbol: function symbol(_market, _symbols) {
-            var proposal = proposalService.get();
-            if (proposal && proposal.passthrough && proposal.passthrough.market && proposal.symbol && proposal.passthrough.market === _market) {
-                return proposal.symbol;
-            }
-            return _symbols[0].symbol;
-        },
-        tradeType: function tradeType(_tradeTypes) {
-            if (_.isEmpty(_tradeTypes)) {
-                return null;
-            }
-
-            var proposal = proposalService.get();
-            var contractType = proposal.contract_type;
-            var selectedTradeType = _tradeTypes[0].value;
-            _tradeTypes.forEach(function (el, i) {
-                if (el.value === contractType) {
-                    selectedTradeType = contractType;
-                }
-            });
-            return selectedTradeType;
-        },
-        tick: function tick() {
-            var proposal = proposalService.get();
-            return proposal.duration ? proposal.duration : 5;
-        },
-        digit: function digit() {
-            var proposal = proposalService.get();
-            return proposal.barrier ? proposal.barrier : 0;
-        },
-        basis: function basis() {
-            var proposal = proposalService.get();
-            return proposal.basis ? proposal.basis : "payout";
-        },
-        amount: function amount() {
-            var proposal = proposalService.get();
-            if (!isNaN(proposal.amount)) {
-                return proposal.amount;
-            }
-            return 5;
-        }
-    };
-
-    this.getTradeTypes = function (_symbol) {
-        var tradeTypes = config.tradeTypes;
-        var finalTradeTypes = [];
-
-        tradeTypes.forEach(function (el, i) {
-            Object.keys(_symbol).forEach(function (key, index) {
-                if (_symbol.hasOwnProperty(key)) {
-                    // Find the tradeType in _symbol list
-                    if (el.value === key) {
-                        var hasTicks = false;
-                        // Loop through all _symbols of a trade type
-                        for (var j = 0; j < _symbol[key].length; j++) {
-                            var minDuration = _symbol[key][j].min_contract_duration;
-                            if (minDuration && minDuration.toString().match(/^\d+t$/)) {
-                                hasTicks = true;
-                            }
-                        }
-                        if (hasTicks) {
-                            finalTradeTypes.push(el);
-                        }
-                    }
-                }
-            });
-        });
-
-        return finalTradeTypes;
-    };
-
-    this.removeActiveSymbols = function () {
-        sessionStorage.active_symbols = null;
-    };
-
-    this.removeAssetIndex = function () {
-        sessionStorage.asset_index = null;
-    };
-
-    this.hasActiveSymobols = function () {
-        if (!sessionStorage.active_symbols) return false;
-        return JSON.parse(sessionStorage.active_symbols);
-    };
-
-    this.hasAssetIndex = function () {
-        if (!sessionStorage.asset_index) return false;
-        return JSON.parse(sessionStorage.asset_index);
-    };
-}]);
-"use strict";
-
-/**
- * @name notificationService
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 05/03/2017
- * @copyright Binary Ltd
- */
-
-angular.module("binary").service("notificationService", function () {
-    var _this = this;
-
-    this.notices = [];
-
-    this.emptyNotices = function () {
-        _this.notices = [];
-    };
-
-    this.messages = {
-        authenticateMessage: {
-            title: "account_authentication",
-            text: "please_authenticate",
-            link: "authentication"
-        },
-        ageVerificationMessage: {
-            title: "account_age_verification",
-            text: "needs_age_verification",
-            link: "contact"
-        },
-        restrictedMessage: {
-            title: "account_restriction",
-            text: "please_contact",
-            link: "contact"
-        },
-        countryNotSetMessage: {
-            title: "account_country",
-            text: "set_country",
-            link: "profile"
-        },
-        riskAssessmentMessage: {
-            title: "financial_assessment_not_completed",
-            text: "complete_financial_assessment",
-            link: "financial-assessment"
-        },
-        taxInformationMessage: {
-            title: "tax_information",
-            text: "complete_profile",
-            link: "profile"
-        },
-        termsAndConditionsMessage: {
-            title: "tnc",
-            text: "accept_tnc",
-            link: "terms-and-conditions"
-        },
-        maxTurnoverLimitNotSetMessage: {
-            title: "max_turnover_limit",
-            text: "set_max_turnover_limit",
-            link: "self-exclusion"
-        },
-        currencyNotSetMessage: {
-            title: "account_currency",
-            text: "choose_account_currency",
-            link: "set-currency"
-        }
-    };
-});
-"use strict";
-
-/**
- * @name session-storage service
- * @author Morteza Tavanarad
- * @contributors []
- * @since 03/24/2017
- * @copyright Binary Ltd
- *
- */
-
-(function () {
-    angular.module("binary").factory("sessionStorageService", SessionStorage);
-
-    function SessionStorage() {
-        var factory = {};
-
-        factory.getItem = function (itemName) {
-            var item = sessionStorage.getItem(itemName);
-            if (_.isEmpty(item) || item === "undefined") {
-                return null;
-            }
-            return item;
-        };
-
-        return factory;
-    }
-})();
-"use strict";
-
-/**
- * @name supportedLanguagesService
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 06/05/2019
- * @copyright Binary Ltd
- */
-
-angular.module("binary").service("supportedLanguagesService", function () {
-  var _this = this;
-
-  this.supportedLanguages = ["en"];
-
-  this.setSupportedLanguages = function (langs) {
-    return _this.supportedLanguages = langs;
-  };
-});
-"use strict";
-
-/**
- * @name tableStateService
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 05/02/2016
- * @copyright Binary Ltd
- * Keeping state of the app in this factory
- */
-
-angular.module("binary").factory("tableStateService", function () {
-    var factory = {};
-    factory.dateType = "allTime";
-    factory.dateFrom = "";
-    factory.dateTo = "";
-    factory.currentPage = 0;
-    factory.appID = "allApps";
-    factory.batchNum = 0;
-    factory.batchLimit = 0;
-    factory.batchSize = 20;
-    factory.completedGroup = true;
-    factory.statementDateType = "allTime";
-    factory.statementDateFrom = "";
-    factory.statementDateTo = "";
-    factory.statementCurrentPage = 0;
-    factory.statementAppID = "allApps";
-    factory.statementBatchNum = 0;
-    factory.statementBatchLimit = 0;
-    factory.statementBatchSize = 20;
-    factory.statementCompletedGroup = true;
-
-    return factory;
-});
-"use strict";
-
-/**
- * @name utils service
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/17/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.services").factory("utilsService", Utils);
-
-    Utils.$inject = ["$rootScope"];
-
-    function Utils($rootScope) {
-        var factory = {};
-
-        factory.spinnerLogo = {
-            start: function start() {
-                $rootScope.$broadcast("spinner-logo:start");
-            },
-            stop: function stop() {
-                $rootScope.$broadcast("spinner-logo:stop");
-            }
-        };
-
-        return factory;
-    }
-})();
-"use strict";
-
-/**
- * @name validation service
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 10/15/2017
- * @copyright Binary Ltd
- */
-
-angular.module("binary").factory("validationService", ["clientService", function (clientService) {
-    var validationService = {};
-
-    var getFrctionalDigits = function getFrctionalDigits() {
-        return clientService.getFractionalDigits();
-    };
-    var getFloatNumberRegex = function getFloatNumberRegex() {
-        return new RegExp("^\\d+(\\.\\d{0," + validationService.fractionalDigits + "})?$");
-    };
-    var getValidateFloatNumber = function getValidateFloatNumber(floatNumberRegex) {
-        return function (val) {
-            return validator(val, floatNumberRegex);
-        }();
-    };
-
-    validationService.fractionalDigits = getFrctionalDigits();
-
-    var validateGeneralRegex = /[`~!@#$%^&*)(_=+[}{\]\\/";:?><|]+/;
-    var validateAddressRegex = /[`~!$%^&*_=+[}{\]\\"?><|]+/;
-    var validatePostcodeRegex = /^([a-zA-Z\d-\s])*$/;
-    var validatePhoneRegex = /^\+?((-|\s)*[0-9])*$/;
-    var validateTaxIdentificationNumberRegex = /^[\w-]{0,20}$/;
-    var passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]+/;
-    var mailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
-    var tokenRegex = /^\w{8,128}$/;
-    var floatNumberRegex = getFloatNumberRegex();
-    var integerRegex = /^\d+$/;
-    /* eslint-disable */
-    var validator = function validator(val, regexPattern, reverse) {
-        return {
-            test: function test(val) {
-                return reverse ? !regexPattern.test(val) : regexPattern.test(val);
-            }
-        };
-    };
-    /* eslint-enable */
-
-    validationService.validateGeneral = function (val) {
-        return validator(val, validateGeneralRegex, true);
-    }();
-    validationService.validateAddress = function (val) {
-        return validator(val, validateAddressRegex, true);
-    }();
-    validationService.validatePostcode = function (val) {
-        return validator(val, validatePostcodeRegex);
-    }();
-    validationService.validatePhone = function (val) {
-        return validator(val, validatePhoneRegex);
-    }();
-    validationService.validateTaxIdentificationNumber = function (val) {
-        return validator(val, validateTaxIdentificationNumberRegex);
-    }();
-    validationService.validatePassword = function (val) {
-        return validator(val, passwordRegex);
-    }();
-    validationService.validateMail = function (val) {
-        return validator(val, mailRegex);
-    }();
-    validationService.validateToken = function (val) {
-        return validator(val, tokenRegex);
-    }();
-
-    validationService.validateFloatNumber = getValidateFloatNumber(floatNumberRegex);
-    validationService.validateIntegerNumber = function (val) {
-        return validator(val, integerRegex);
-    }();
-
-    validationService.length = {
-        name: {
-            min: 2,
-            max: 30
-        },
-        tin: {
-            max: 20
-        },
-        address: {
-            max: 70
-        },
-        city: {
-            max: 35
-        },
-        postcode: {
-            max: 20
-        },
-        phone: {
-            min: 8,
-            max: 35
-        },
-        secret_answer: {
-            min: 4,
-            max: 50
-        },
-        password: {
-            min: 6,
-            max: 25
-        },
-        selfExclusionLimits: {
-            max: 20
-        },
-        selfExclusionOpenPositions: {
-            max: 4
-        },
-        selfExclusionSessionDuration: {
-            max: 5
-        }
-    };
-
-    validationService.reset = function () {
-        validationService.fractionalDigits = getFrctionalDigits();
-        floatNumberRegex = getFloatNumberRegex();
-        validationService.validateFloatNumber = getValidateFloatNumber(floatNumberRegex);
-    };
-
-    return validationService;
-}]);
-"use strict";
-
-/**
- * @name websocketService
- * @author Massih Hazrati
- * @contributors []
- * @since 10/15/2015
- * @copyright Binary Ltd
- * Handles websocket functionalities
- */
-
-angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPlatform", "$rootScope", "$state", "$translate", "alertService", "appStateService", "localStorageService", "clientService", "config", "notificationService", "supportedLanguagesService", function ($ionicLoading, $ionicPlatform, $rootScope, $state, $translate, alertService, appStateService, localStorageService, clientService, config, notificationService, supportedLanguagesService) {
-    var dataStream = "";
-    var messageBuffer = [];
-
-    var addExtraParams = function addExtraParams(data, extraParams) {
-        if (_.isEmpty(extraParams)) {
-            return data;
-        }
-
-        Object.keys(extraParams).forEach(function (key, index) {
-            if (extraParams.hasOwnProperty(key)) {
-                data[key] = extraParams[key];
-            }
-        });
-
-        return data;
-    };
-
-    var waitForConnection = function waitForConnection(callback, isAuthonticationRequest) {
-        if (dataStream && dataStream.readyState === 3) {
-            init();
-            if (!isAuthonticationRequest) {
-                setTimeout(function () {
-                    waitForConnection(callback);
-                }, 1000);
-            }
-        } else if (dataStream && dataStream.readyState === 1) {
-            callback();
-        } else if (!(dataStream instanceof WebSocket)) {
-            init();
-            if (!isAuthonticationRequest) {
-                setTimeout(function () {
-                    waitForConnection(callback);
-                }, 1000);
-            }
-        } else {
-            setTimeout(function () {
-                waitForConnection(callback);
-            }, 1000);
-        }
-    };
-
-    var sendMessage = function sendMessage(_data) {
-        var token = localStorageService.getDefaultToken();
-
-        $ionicPlatform.ready(function () {
-            waitForConnection(function () {
-                dataStream.send(JSON.stringify(_data));
-            }, _data.hasOwnProperty("authorize") && token);
-        });
-    };
-
-    var getAppId = function getAppId() {
-        return window.localStorage.getItem('config.app_id') || config.app_id;
-    };
-
-    var getSocketURL = function getSocketURL() {
-        var server_url = window.localStorage.getItem('config.server_url');
-        var wsUrl = server_url ? "wss://" + server_url + "/websockets/v3" : config.wsUrl;
-        return wsUrl;
-    };
-
-    var getFPofURL = function getFPofURL(url) {
-        if (_.isEmpty(url)) {
-            return null;
-        }
-
-        var result = /(binaryqa\d{2}.com)/.exec(url);
-
-        if (!_.isEmpty(result)) {
-            var bareUrl = "www." + result[1];
-
-            var matchedCert = _.find(config.qaMachinesCertFP, function (c) {
-                return c.url.indexOf(bareUrl) > -1;
-            });
-
-            if (matchedCert) {
-                return matchedCert.fp;
-            }
-        }
-
-        return config.serverCertFP;
-    };
-
-    var init = function init(forced) {
-        forced = forced || false;
-        var language = localStorage.language || "en";
-
-        if (dataStream && dataStream.readyState !== 3 && !forced) {
-            return;
-        } else if (dataStream && dataStream.readyState !== 0) {
-            dataStream.close();
-        }
-
-        dataStream = null;
-
-        appStateService.isLoggedin = false;
-
-        var onFailed = function onFailed() {
-            $rootScope.$broadcast("connection:error", true);
-        };
-
-        var onSuccess = function onSuccess() {
-
-            dataStream = new WebSocket(wsUrl + "?app_id=" + appId + "&l=" + language);
-
-            dataStream.onopen = function () {
-                // Authorize the default token if it's exist
-                var token = localStorageService.getDefaultToken();
-                if (token) {
-                    var data = {
-                        authorize: token,
-                        passthrough: {
-                            type: "reopen-connection"
-                        }
-                    };
-                    sendMessage(data);
-                }
-
-                console.log("socket is opened"); // eslint-disable-line
-                $rootScope.$broadcast("connection:ready");
-            };
-
-            dataStream.onmessage = function (message) {
-                receiveMessage(message);
-            };
-
-            dataStream.onclose = function (e) {
-                console.log("socket is closed ", e); // eslint-disable-line
-                init();
-                console.log("socket is reopened"); // eslint-disable-line
-                appStateService.isLoggedin = false;
-                $rootScope.$broadcast("connection:reopened");
-            };
-
-            dataStream.onerror = function (e) {
-                if (e.target.readyState === 3) {
-                    $rootScope.$broadcast("connection:error");
-                }
-                appStateService.isLoggedin = false;
-            };
-        };
-
-        var appId = getAppId();
-        var wsUrl = getSocketURL();
-        var fp = getFPofURL(wsUrl);
-
-        if (window.plugins && window.plugins.sslCertificateChecker) {
-            window.plugins.sslCertificateChecker.check(onSuccess, onFailed, "https://" + wsUrl.slice(6), fp);
-        } else {
-            onSuccess();
-        }
-    };
-
-    $rootScope.$on("language:updated", function () {
-        init(true);
-
-        // Fetch asset_indes and active_symbols in order to update text in selected language.
-        sessionStorage.removeItem('asset_index');
-        sessionStorage.removeItem('active_symbols');
-        websocketService.sendRequestFor.assetIndex();
-        websocketService.sendRequestFor.symbols();
-    });
-
-    var websocketService = {};
-    websocketService.authenticate = function (_token, extraParams) {
-        extraParams = null || extraParams;
-        appStateService.isLoggedin = false;
-
-        var data = {
-            authorize: _token
-        };
-
-        addExtraParams(data, extraParams);
-
-        sendMessage(data);
-    };
-
-    websocketService.logout = function (error) {
-        websocketService.sendRequestFor.logout();
-        localStorage.removeItem("accounts");
-        websocketService.sendRequestFor.forgetProposals();
-        sessionStorage.active_symbols = null;
-        sessionStorage.asset_index = null;
-        appStateService.isRealityChecked = false;
-        appStateService.isChangedAccount = false;
-        appStateService.isPopupOpen = false;
-        appStateService.isLoggedin = false;
-        sessionStorage.removeItem("start");
-        sessionStorage.removeItem("_interval");
-        sessionStorage.removeItem("realityCheckStart");
-        localStorage.removeItem("termsConditionsVersion");
-        localStorage.removeItem("landingCompanyObject");
-        localStorage.removeItem("landingCompany");
-        localStorage.removeItem("landingCompanyName");
-        appStateService.profitTableRefresh = true;
-        appStateService.statementRefresh = true;
-        sessionStorage.removeItem("countryParams");
-        websocketService.closeConnection();
-        appStateService.passwordChanged = false;
-        appStateService.limitsChange = false;
-        appStateService.realityCheckLogin = false;
-        appStateService.hasAuthenticateMessage = false;
-        appStateService.hasRestrictedMessage = false;
-        appStateService.hasMaxTurnoverMessage = false;
-        appStateService.hasCountryMessage = false;
-        appStateService.hasTnCMessage = false;
-        appStateService.hasTaxInfoMessage = false;
-        appStateService.hasFinancialAssessmentMessage = false;
-        appStateService.hasAgeVerificationMessage = false;
-        appStateService.hasCountryMessage = false;
-        appStateService.hasCurrencyMessage = false;
-        appStateService.checkedAccountStatus = false;
-        appStateService.accountCurrencyChanged = false;
-        appStateService.selectedCurrency = false;
-        notificationService.emptyNotices();
-        appStateService.checkingUpgradeDone = false;
-        appStateService.loginFinished = false;
-        appStateService.isMaltainvest = false;
-
-        if (error) {
-            $translate(["alert.error", "alert.ok"]).then(function (translation) {
-                alertService.displayAlert(translation["alert.error"], error, translation["alert.ok"], function () {
-                    $state.go("signin");
-                });
-            });
-        } else {
-            $state.go("signin");
-        }
-    };
-
-    websocketService.sendRequestFor = {
-        websiteStatus: function websiteStatus(subscribe) {
-            subscribe = subscribe || false;
-            var data = {
-                website_status: 1,
-                subscribe: subscribe ? 1 : 0
-            };
-            sendMessage(data);
-        },
-        symbols: function symbols() {
-            var data = {
-                active_symbols: "brief"
-            };
-            sendMessage(data);
-        },
-        assetIndex: function assetIndex() {
-            var data = {
-                asset_index: 1
-            };
-            sendMessage(data);
-        },
-        currencies: function currencies() {
-            var data = {
-                payout_currencies: 1
-            };
-            sendMessage(data);
-        },
-        contractsForSymbol: function contractsForSymbol(_symbol) {
-            var data = {
-                contracts_for: _symbol
-            };
-            sendMessage(data);
-        },
-        ticksForSymbol: function ticksForSymbol(_symbol) {
-            var data = {
-                ticks: _symbol
-            };
-            sendMessage(data);
-        },
-        forgetAll: function forgetAll(_stream) {
-            var data = {
-                forget_all: _stream
-            };
-            sendMessage(data);
-        },
-        forgetStream: function forgetStream(_id) {
-            var data = {
-                forget: _id
-            };
-            sendMessage(data);
-        },
-        forgetProposals: function forgetProposals(reqId) {
-            var data = {
-                forget_all: "proposal",
-                req_id: reqId
-            };
-            sendMessage(data);
-        },
-        forgetTicks: function forgetTicks() {
-            var data = {
-                forget_all: "ticks"
-            };
-            sendMessage(data);
-        },
-        proposal: function proposal(_proposal) {
-            sendMessage(_proposal);
-        },
-        purchase: function purchase(_proposalId, price) {
-            var data = {
-                buy: _proposalId,
-                price: price || 0
-            };
-            sendMessage(data);
-        },
-        balance: function balance() {
-            var data = {
-                balance: 1,
-                subscribe: 1
-            };
-            sendMessage(data);
-        },
-        portfolio: function portfolio() {
-            var data = {
-                portfolio: 1
-            };
-            sendMessage(data);
-        },
-        profitTable: function profitTable(params, req_id) {
-            var data = {
-                profit_table: 1
-            };
-
-            addExtraParams(data, params);
-
-            sendMessage(data);
-        },
-        ticksHistory: function ticksHistory(data) {
-            // data is the whole JSON convertable object parameter for the ticks_history API call
-            if (data.ticks_history) {
-                sendMessage(data);
-            }
-        },
-        openContract: function openContract(contractId, extraParams) {
-            var data = {};
-            data.proposal_open_contract = 1;
-
-            if (contractId) {
-                data.contract_id = contractId;
-            }
-
-            addExtraParams(data, extraParams);
-
-            sendMessage(data);
-        },
-        sellExpiredContract: function sellExpiredContract() {
-            var data = {
-                sell_expired: 1
-            };
-
-            sendMessage(data);
-        },
-        landingCompanyDetails: function landingCompanyDetails(company) {
-            var data = {
-                landing_company_details: company
-            };
-            sendMessage(data);
-        },
-        realityCheck: function realityCheck() {
-            var data = {
-                reality_check: 1
-            };
-            sendMessage(data);
-        },
-        accountOpening: function accountOpening(verifyEmail) {
-            var data = {
-                verify_email: verifyEmail,
-                type: "account_opening"
-            };
-            sendMessage(data);
-        },
-        residenceListSend: function residenceListSend() {
-            var data = {
-                residence_list: 1
-            };
-            sendMessage(data);
-        },
-        newAccountVirtual: function newAccountVirtual(verificationCode, clientPassword, residence) {
-            var data = {
-                new_account_virtual: "1",
-                verification_code: verificationCode,
-                client_password: clientPassword,
-                residence: residence
-            };
-            sendMessage(data);
-        },
-        accountSetting: function accountSetting() {
-            var data = {
-                get_settings: 1
-            };
-            sendMessage(data);
-        },
-        setAccountSettings: function setAccountSettings(data) {
-            data.set_settings = 1;
-
-            sendMessage(data);
-        },
-        landingCompanySend: function landingCompanySend(company, reqId) {
-            var data = {
-                landing_company: company
-            };
-            if (reqId) {
-                data.req_id = reqId;
-            }
-            sendMessage(data);
-        },
-        statesListSend: function statesListSend(countryCode) {
-            var data = {
-                states_list: countryCode
-            };
-            sendMessage(data);
-        },
-        createRealAccountSend: function createRealAccountSend(params) {
-            var data = {
-                new_account_real: "1"
-            };
-            addExtraParams(data, params);
-            sendMessage(data);
-        },
-        createMaltainvestAccountSend: function createMaltainvestAccountSend(params) {
-            var data = {
-                new_account_maltainvest: "1"
-            };
-            addExtraParams(data, params);
-            sendMessage(data);
-        },
-        statement: function statement(params) {
-            var data = {
-                statement: 1
-            };
-
-            addExtraParams(data, params);
-
-            sendMessage(data);
-        },
-        ping: function ping() {
-            var data = {
-                ping: 1
-            };
-            sendMessage(data);
-        },
-        setSelfExclusion: function setSelfExclusion(params) {
-            var data = {
-                set_self_exclusion: 1
-            };
-
-            addExtraParams(data, params);
-
-            sendMessage(data);
-        },
-        getSelfExclusion: function getSelfExclusion() {
-            var data = {
-                get_self_exclusion: 1
-            };
-
-            sendMessage(data);
-        },
-        TAndCApprovalSend: function TAndCApprovalSend() {
-            var data = {
-                tnc_approval: 1
-            };
-            sendMessage(data);
-        },
-        changePassword: function changePassword(_oldPassword, _newPassword) {
-            var data = {
-                change_password: "1",
-                old_password: _oldPassword,
-                new_password: _newPassword
-            };
-            sendMessage(data);
-        },
-        getFinancialAssessment: function getFinancialAssessment() {
-            var data = {
-                get_financial_assessment: 1
-            };
-            sendMessage(data);
-        },
-        setFinancialAssessment: function setFinancialAssessment(params) {
-            var data = {
-                set_financial_assessment: 1
-            };
-
-            addExtraParams(data, params);
-            sendMessage(data);
-        },
-        tradingTimes: function tradingTimes(_date) {
-            var data = {
-                trading_times: _date
-            };
-            sendMessage(data);
-        },
-        getAccountStatus: function getAccountStatus() {
-            var data = {
-                get_account_status: 1
-            };
-            sendMessage(data);
-        },
-        accountLimits: function accountLimits() {
-            var data = {
-                get_limits: 1
-            };
-            sendMessage(data);
-        },
-        logout: function logout() {
-            var data = {
-                logout: 1
-            };
-
-            sendMessage(data);
-        },
-        mt5LoginList: function mt5LoginList() {
-            var data = {
-                mt5_login_list: 1
-            };
-
-            sendMessage(data);
-        },
-        mt5GetSettings: function mt5GetSettings(login) {
-            var data = {
-                mt5_get_settings: 1,
-                login: login
-            };
-
-            sendMessage(data);
-        },
-        setAccountCurrency: function setAccountCurrency(currency) {
-            var data = {
-                set_account_currency: currency
-            };
-
-            sendMessage(data);
-        }
-    };
-    websocketService.closeConnection = function () {
-        if (dataStream) {
-            dataStream.close();
-        }
-    };
-
-    var receiveMessage = function receiveMessage(_response) {
-        var message = JSON.parse(_response.data);
-
-        if (message) {
-            if (message.error) {
-                if (["InvalidToken", "AccountDisabled", "DisabledClient"].indexOf(message.error.code) > -1) {
-                    websocketService.logout(message.error.message);
-
-                    // hide ionicLoading if some component show it to receive auth message.
-                    $ionicLoading.hide();
-
-                    return;
-                }
-            }
-
-            var messageType = message.msg_type;
-            switch (messageType) {
-                case "authorize":
-                    if (message.authorize) {
-                        message.authorize.token = message.echo_req.authorize;
-                        window._trackJs.userId = message.authorize.loginid;
-                        appStateService.isLoggedin = true;
-                        appStateService.virtuality = message.authorize.is_virtual;
-                        localStorage.landingCompanyName = message.authorize.landing_company_fullname;
-                        localStorage.landingCompany = message.authorize.landing_company_name;
-                        appStateService.scopes = message.authorize.scopes;
-                        appStateService.upgradeableLandingCompanies = message.authorize.upgradeable_landing_companies || [];
-                        appStateService.isMaltainvest = clientService.isLandingCompanyOf('maltainvest', message.authorize.landing_company_name);
-                        // update accounts from account list whenever authorize is received
-                        var accounts = !_.isEmpty(localStorage.getItem('accounts')) && JSON.parse(localStorage.getItem('accounts'));
-                        var accountList = message.authorize.account_list;
-                        if (accounts && accounts.length && accountList) {
-                            accounts.forEach(function (account, idx) {
-                                var acc = _.find(accountList, function (a) {
-                                    return a.loginid === account.id;
-                                });
-                                account.country = message.authorize.country || '';
-                                accounts[idx] = _.assign(account, acc);
-                            });
-                            localStorage.setItem('accounts', JSON.stringify(accounts));
-                        }
-
-                        if (_.isEmpty(message.authorize.currency)) {
-                            websocketService.sendRequestFor.currencies();
-                        } else {
-                            sessionStorage.currency = message.authorize.currency;
-                        }
-                        appStateService.loginFinished = true;
-
-                        $rootScope.$broadcast("authorize", message.authorize, message.req_id, message.passthrough);
-                    } else {
-                        var errorMessage = "Unexpected Error!";
-                        if (message.hasOwnProperty("error")) {
-                            localStorageService.removeToken(message.echo_req.authorize);
-                            errorMessage = message.error.message;
-                        }
-                        $rootScope.$broadcast("authorize", false, errorMessage);
-                        appStateService.isLoggedin = false;
-                    }
-                    break;
-                case "website_status":
-                    if (message.hasOwnProperty("website_status")) {
-                        appStateService.currenciesConfig = message.website_status.currencies_config;
-                        $rootScope.$broadcast("website_status", message.website_status);
-                        localStorage.termsConditionsVersion = message.website_status.terms_conditions_version;
-                        var supportedLanguages = message.website_status.supported_languages;
-                        if (supportedLanguages.length) {
-                            supportedLanguagesService.setSupportedLanguages(message.website_status.supported_languages);
-                            $rootScope.$broadcast("supported_languages");
-                        }
-                    } else if (message.hasOwnProperty("error")) {
-                        trackJs.track(message.error.code + ": " + message.error.message);
-                    }
-                    break;
-                case "active_symbols":
-                    {
-                        var markets = message.active_symbols;
-                        var groupedMarkets = _.groupBy(markets, "market");
-                        var openMarkets = {};
-                        Object.keys(groupedMarkets).forEach(function (key, index) {
-                            if (groupedMarkets.hasOwnProperty(key)) {
-                                if (groupedMarkets[key][0].exchange_is_open === 1) {
-                                    openMarkets[key] = groupedMarkets[key];
-                                }
-                            }
-                        });
-                        // if ( !sessionStorage.hasOwnProperty('active_symbols') || sessionStorage.active_symbols != JSON.stringify(openMarkets) ) {
-                        sessionStorage.active_symbols = JSON.stringify(openMarkets);
-                        sessionStorage.all_active_symbols = JSON.stringify(message.active_symbols);
-                        $rootScope.$broadcast("symbols:updated", openMarkets);
-                        // }
-                        break;
-                    }
-                case "asset_index":
-                    // if ( !sessionStorage.hasOwnProperty('asset_index') || sessionStorage.asset_index != JSON.stringify(message.asset_index) ) {
-                    sessionStorage.asset_index = JSON.stringify(message.asset_index);
-                    $rootScope.$broadcast("assetIndex:updated");
-                    // }
-                    break;
-                case "payout_currencies":
-                    $rootScope.$broadcast("currencies", message.payout_currencies);
-                    break;
-                case "proposal":
-                    if (message.proposal) {
-                        $rootScope.$broadcast("proposal", message.proposal, message.req_id);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("proposal:error", message.error, message.req_id);
-                    }
-                    break;
-                case "contracts_for":
-                    {
-                        var symbol = message.echo_req.contracts_for;
-                        if (message.error) {
-                            trackJs.track(message.error.code + ": " + message.error.message + " - " + symbol);
-                            break;
-                        }
-                        var groupedSymbol = _.groupBy(message.contracts_for.available, "contract_category");
-                        $rootScope.$broadcast("symbol", groupedSymbol);
-                        break;
-                    }
-                case "buy":
-                    if (message.error) {
-                        $rootScope.$broadcast("purchase:error", message.error);
-                        alertService.displayError(message.error.message);
-                    } else {
-                        $rootScope.$broadcast("purchase", message);
-                    }
-                    break;
-                case "balance":
-                    if (!message.error) {
-                        $rootScope.$broadcast("balance", message.balance);
-                    }
-                    break;
-                case "tick":
-                    $rootScope.$broadcast("tick", message);
-                    break;
-                case "history":
-                    $rootScope.$broadcast("history", message);
-                    break;
-                case "candles":
-                    $rootScope.$broadcast("candles", message);
-                    break;
-                case "ohlc":
-                    $rootScope.$broadcast("ohlc", message);
-                    break;
-                case "portfolio":
-                    $rootScope.$broadcast("portfolio", message.portfolio);
-                    break;
-                case "profit_table":
-                    if (message.profit_table) {
-                        $rootScope.$broadcast("profit_table:update", message.profit_table, message.req_id);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("profit_table:error", message.error.message);
-                    }
-                    break;
-                case "sell_expired":
-                    $rootScope.$broadcast("sell:expired", message.sell_expired);
-                    break;
-                case "proposal_open_contract":
-                    $rootScope.$broadcast("proposal:open-contract", message.proposal_open_contract, message.req_id);
-                    break;
-                case "landing_company_details":
-                    if (message.landing_company_details) {
-                        $rootScope.$broadcast("landing_company_details", message.landing_company_details);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("landing_company_details:error", message.error.message);
-                    }
-                    break;
-                case "reality_check":
-                    $rootScope.$broadcast("reality_check", message.reality_check);
-                    break;
-                case "verify_email":
-                    if (message.verify_email) {
-                        $rootScope.$broadcast("verify_email", message.verify_email);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("verify_email:error", message.error.details);
-                    }
-                    break;
-                case "residence_list":
-                    $rootScope.$broadcast("residence_list", message.residence_list);
-                    break;
-                case "new_account_virtual":
-                    if (message.new_account_virtual) {
-                        $rootScope.$broadcast("new_account_virtual", message.new_account_virtual);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("new_account_virtual:error", message.error);
-                    }
-                    break;
-                case "get_settings":
-                    if (message.get_settings) {
-                        $rootScope.$broadcast("get_settings", message.get_settings);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("get_settings:error", message.error.message);
-                    }
-                    break;
-                case "landing_company":
-                    if (message.landing_company) {
-                        localStorage.setItem('landingCompanyObject', JSON.stringify(message.landing_company));
-                        $rootScope.$broadcast("landing_company", message.landing_company, message.req_id);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("landing_company:error", message.error.message);
-                    }
-                    break;
-                case "states_list":
-                    $rootScope.$broadcast("states_list", message.states_list);
-                    break;
-                case "new_account_real":
-                    if (message.new_account_real) {
-                        $rootScope.$broadcast("new_account_real", message.new_account_real);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("new_account_real:error", message.error);
-                    }
-                    break;
-                case "new_account_maltainvest":
-                    if (message.new_account_maltainvest) {
-                        $rootScope.$broadcast("new_account_maltainvest", message.new_account_maltainvest);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("new_account_maltainvest:error", message.error);
-                    }
-                    break;
-                case "statement":
-                    if (message.statement) {
-                        $rootScope.$broadcast("statement:update", message.statement, message.req_id);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("statement:error", message.error.message);
-                    }
-                    break;
-                case "get_self_exclusion":
-                    if (message.get_self_exclusion) {
-                        $rootScope.$broadcast("get-self-exclusion", message.get_self_exclusion);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("get-self-exclusion:error", message.error.message);
-                    }
-                    break;
-                case "set_self_exclusion":
-                    if (message.set_self_exclusion) {
-                        $rootScope.$broadcast("set-self-exclusion", message.set_self_exclusion);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("set-self-exclusion:error", message.error.message);
-                    }
-                    break;
-                case "set_settings":
-                    if (message.set_settings) {
-                        $rootScope.$broadcast("set-settings", message.set_settings);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("set-settings:error", message.error);
-                    }
-                    break;
-                case "tnc_approval":
-                    if (message.tnc_approval) {
-                        $rootScope.$broadcast("tnc_approval", message.tnc_approval);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("tnc_approval:error", message.error);
-                    }
-                    break;
-                case "change_password":
-                    if (message.change_password) {
-                        $rootScope.$broadcast("change_password:success", message.change_password);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("change_password:error", message.error);
-                    }
-                    break;
-                case "get_financial_assessment":
-                    if (message.get_financial_assessment) {
-                        $rootScope.$broadcast("get_financial_assessment:success", message.get_financial_assessment);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("get_financial_assessment:error", message.error);
-                    }
-                    break;
-                case "set_financial_assessment":
-                    if (message.set_financial_assessment) {
-                        $rootScope.$broadcast("set_financial_assessment:success", message.set_financial_assessment);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("set_financial_assessment:error", message.error);
-                    }
-                    break;
-                case "get_account_status":
-                    if (message.get_account_status) {
-                        $rootScope.$broadcast("get_account_status", message.get_account_status);
-                    } else if (message.error) {
-                        trackJs.track(message.error.code + ": " + message.error.message);
-                    }
-                    break;
-                case "get_limits":
-                    if (message.get_limits) {
-                        $rootScope.$broadcast("get_limits", message.get_limits);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("get_limits:error", message.error);
-                    }
-                    break;
-                case "trading_times":
-                    if (message.trading_times) {
-                        $rootScope.$broadcast("trading_times:success", message.trading_times);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("trading_times:error", message.error);
-                    }
-                    break;
-                case "forget_all":
-                    $rootScope.$broadcast("forget_all", message.req_id);
-                    break;
-                case "mt5_login_list":
-                    if (message.mt5_login_list) {
-                        $rootScope.$broadcast("mt5_login_list:success", message.mt5_login_list);
-                        localStorage.setItem("mt5LoginList", message.mt5_login_list);
-                    }
-                    break;
-                case "mt5_get_settings":
-                    if (message.mt5_get_settings) {
-                        $rootScope.$broadcast("mt5_get_settings:success", message.mt5_get_settings);
-                    }
-                    break;
-                case "set_account_currency":
-                    if (message.set_account_currency && message.set_account_currency === 1) {
-                        $rootScope.$broadcast("set_account_currency:success", message.echo_req.set_account_currency);
-                    } else if (message.error) {
-                        $rootScope.$broadcast("set_account_currency:error", message.error);
-                    }
-                    break;
-                default:
-            }
-        }
-    };
-
-    websocketService.getServerURL = localStorage.getItem('config.server_url') || config.serverUrl;
-
-    return websocketService;
-}]);
 "use strict";
 
 /**
@@ -9302,6 +5662,3646 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
+ * @name accountService
+ * @author Massih Hazrati
+ * @contributors []
+ * @since 10/26/2015
+ * @copyright Binary Ltd
+ */
+
+angular.module("binary").service("accountService", ["websocketService", "appStateService", "delayService", function (websocketService, appStateService, delayService) {
+    var _this = this;
+
+    /**
+    * find a {key,value} in an array of objects and return its index
+    * returns -1 if not found
+    * @param  {Array of Objects} _accounts
+    * @param  {String} _key
+    * @param  {String, Number, Boolean} _value
+    * @return {Number} Index of the found array element
+    */
+
+    this.addedAccount = "";
+    var findIndex = function findIndex(_accounts, _key, _value) {
+        var index = -1;
+        _accounts.forEach(function (el, i) {
+            if (_accounts[i][_key] === _value) {
+                index = i;
+            }
+        });
+        return index;
+    };
+
+    /**
+    * Check if the 'accounts' localStorage exist
+    * @return {Boolean}
+    */
+    var storageExist = function storageExist() {
+        return localStorage.accounts && JSON.parse(localStorage.accounts) instanceof Array;
+    };
+
+    /**
+    * Returns the list of all accounts
+    * @return {Array}
+    */
+    this.getAll = function () {
+        var accounts = storageExist() ? JSON.parse(localStorage.accounts) : [];
+        if (accounts.length > 0) {
+            accounts = accounts.sort(function (a, b) {
+                if (a.currency === null) {
+                    return 1;
+                } else if (b.currency === null) {
+                    return -1;
+                } else if (a.currency === b.currency) {
+                    return 0;
+                } else if (a.currency < b.currency) {
+                    return -1;
+                }
+                return 1;
+            });
+        }
+        return accounts;
+    };
+
+    /**
+    * Removes the 'accounts' localStorage
+    */
+    this.removeAll = function () {
+        localStorage.removeItem("accounts");
+    };
+
+    /**
+    * Send a token for validation
+    * if '_token' param is not passed, validates the default token
+    * @param  {String} _token
+    */
+    var validate = function validate(_token, extraParams) {
+        // Remove the last delay queue of 'symbolsAndAssetIndexUpdate'
+        delayService.remove("symbolsAndAssetIndexUpdate");
+
+        if (_token) {
+            websocketService.authenticate(_token, extraParams);
+        } else {
+            var accountList = this.getAll();
+            var defaultAccountIndex = findIndex(accountList, "is_default", true);
+            // If default account exist
+            if (defaultAccountIndex > -1) {
+                var token = accountList[defaultAccountIndex].token;
+                websocketService.authenticate(token, extraParams);
+            }
+        }
+    };
+
+    this.validate = function (_token, extraParams) {
+        if (!_token) {
+            var accountList = this.getAll();
+            var defaultAccountIndex = findIndex(accountList, "is_default", true);
+            // If default account exist
+            if (defaultAccountIndex > -1) {
+                _token = accountList[defaultAccountIndex].token;
+            }
+        }
+
+        validate(_token, extraParams);
+    };
+
+    /**
+    * Add an account to the 'accounts' localStorage
+    * @param {Object} _account
+    */
+    this.add = function (_account) {
+        var account = {
+            id: _account.loginid,
+            token: _account.token,
+            currency: _account.currency,
+            email: _account.email,
+            country: _account.country,
+            is_disabled: _account.is_disabled,
+            is_ico_only: _account.is_ico_only,
+            is_virtual: _account.is_virtual,
+            excluded_until: _account.excluded_until,
+            landing_company_name: _account.landing_company_name
+        };
+
+        var accountList = this.getAll();
+
+        if (_.find(accountList, ["id", account.id])) {
+            return;
+        }
+
+        accountList.push(account);
+        localStorage.accounts = JSON.stringify(accountList);
+    };
+
+    /**
+    * Removes an account from 'accounts' localStorage
+    * Doesn't remove the default account
+    * @param  {String} _token
+    */
+    this.remove = function (_token) {
+        var accountList = this.getAll();
+        var index = findIndex(accountList, "token", _token);
+        // If the token exist and is not the default token
+        if (index > -1 && accountList[index].is_default !== true) {
+            accountList.splice(index, 1);
+            localStorage.accounts = JSON.stringify(accountList);
+        }
+    };
+
+    /**
+    * Set the passed token as the default account
+    * @param {String} _token
+    */
+    this.setDefault = function (_token) {
+        var accountList = this.getAll();
+        var index = findIndex(accountList, "token", _token);
+        // Make sure the token exist
+        if (index > -1) {
+            accountList.forEach(function (el, i) {
+                accountList[i].is_default = accountList[i].token === _token;
+            });
+            localStorage.accounts = JSON.stringify(accountList);
+        }
+    };
+
+    /**
+    * Check if the default account exist
+    * @return {Boolean}
+    */
+    this.hasDefault = function () {
+        var accountList = this.getAll();
+        var index = findIndex(accountList, "is_default", true);
+        return index > -1;
+    };
+
+    /**
+    * Returns the default account
+    * @return {Object}
+    */
+    this.getDefault = function () {
+        var accountList = this.getAll();
+        var index = findIndex(accountList, "is_default", true);
+        if (index === -1) {
+            return null;
+        }
+        return accountList[index];
+    };
+
+    /**
+    * Check if the token/account is unique
+    * Only one token for each account is allowed
+    * @param  {String}  _id : loginid
+    * @return {Boolean}
+    */
+    this.isUnique = function (_id) {
+        var accountList = this.getAll();
+        var index = findIndex(accountList, "id", _id);
+        return !(index > -1);
+    };
+
+    this.checkScope = function (_scope) {
+        var scopes = _.concat([], _scope);
+        var result = false;
+
+        if (appStateService.isLoggedin && !_.isEmpty(appStateService.scopes)) {
+            result = true;
+            scopes.some(function (value, index) {
+                if (appStateService.scopes.indexOf(value.toLowerCase()) < 0) {
+                    result = false;
+                    return true;
+                }
+                return false;
+            });
+        }
+        return result;
+    };
+
+    this.getAllloginids = function (_accounts) {
+        var allLoginids = [];
+        var accounts = _accounts || _this.getAll();
+        accounts.forEach(function (account) {
+            allLoginids.push(account.id);
+        });
+        return allLoginids;
+    };
+}]);
+"use strict";
+
+/**
+ * @name alertService
+ * @author Massih Hazrati
+ * @contributors []
+ * @since 10/26/2015
+ * @copyright Binary Ltd
+ */
+
+angular.module("binary").service("alertService", ["$translate", "$ionicPopup", "$rootScope", function ($translate, $ionicPopup, $rootScope) {
+    var _this = this;
+
+    var displayAlert = function displayAlert(_title, _message, _button, _callback) {
+        $translate(["alert.ok"]).then(function (translation) {
+            if (navigator.notification === undefined) {
+                var alertPopup = $ionicPopup.alert({
+                    title: _title,
+                    template: _message,
+                    buttons: [{
+                        type: "button-positive",
+                        text: _button || translation["alert.ok"]
+                    }]
+                });
+                alertPopup.then(_callback);
+            } else {
+                navigator.notification.alert(_message, _callback, _title, _button || translation["alert.ok"]);
+            }
+        });
+    };
+
+    var displayConfirmation = function displayConfirmation(_title, _message, _buttons, _callback) {
+        if (navigator.notification === undefined) {
+            var confirmPopup = $ionicPopup.confirm({
+                title: _title,
+                template: _message,
+                buttons: _buttons
+            });
+            confirmPopup.then(_callback);
+        } else {
+            navigator.notification.confirm(_message, _callback, _title, _buttons);
+        }
+    };
+
+    this.displayRealitCheckInterval = function (_title, _class, scope, _template, _buttons, _callback) {
+        var showPopup = $ionicPopup.show({
+            title: _title,
+            cssClass: _class,
+            scope: scope,
+            templateUrl: _template,
+            buttons: _buttons
+        });
+        showPopup.then(_callback);
+    };
+
+    this.displayRealityCheckResult = function (_title, _class, scope, _template, _buttons, _callback) {
+        var showPopup = $ionicPopup.show({
+            title: _title,
+            cssClass: _class,
+            scope: scope,
+            templateUrl: _template,
+            buttons: _buttons
+        });
+        showPopup.then(_callback);
+    };
+
+    this.displayIOSPWAPrompt = function (_title, _class, scope, _template, _buttons, _callback) {
+        var showPopup = $ionicPopup.show({
+            title: _title,
+            cssClass: _class,
+            scope: scope,
+            templateUrl: _template,
+            buttons: _buttons
+        });
+        showPopup.then(_callback);
+        return showPopup;
+    };
+
+    this.displayError = function (_message) {
+        $translate(["alert.error"]).then(function (translation) {
+            displayAlert(translation["alert.error"], _message);
+        });
+    };
+
+    this.displaySymbolWarning = function (_message, _callback) {
+        $translate(["alert.warning", _message]).then(function (translation) {
+            displayAlert(translation["alert.warning"], translation[_message]);
+        });
+    };
+
+    this.accountError = {
+        tokenNotValid: function tokenNotValid() {
+            $translate(["alert.error", "alert.not_valid"]).then(function (translation) {
+                displayAlert(translation["alert.error"], translation["alert.not_valid"]);
+                // navigator.notification.alert(translation['alert.not_valid'], null, translation['alert.error'], 'OK');
+            });
+        },
+        tokenNotAuthenticated: function tokenNotAuthenticated(message) {
+            $translate(["alert.error", "alert.not_auth"]).then(function (translation) {
+                displayAlert(translation["alert.error"], message || translation["alert.not_auth"]);
+            });
+        },
+        tokenNotUnique: function tokenNotUnique() {
+            $translate(["alert.error", "alert.not_unique"]).then(function (translation) {
+                displayAlert(translation["alert.error"], translation["alert.not_unique"]);
+            });
+        }
+    };
+
+    this.contractError = {
+        notAvailable: function notAvailable() {
+            $translate(["alert.error", "alert.contract_error"]).then(function (translation) {
+                displayAlert(translation["alert.error"], translation["alert.contract_error"]);
+            });
+        }
+    };
+
+    this.optionsError = {
+        noTick: function noTick() {
+            $translate(["alert.error", "alert.no_tick"]).then(function (translation) {
+                displayAlert(translation["alert.error"], translation["alert.no_tick"]);
+            });
+        }
+    };
+
+    this.displayAlert = displayAlert;
+
+    this.confirmAccountRemoval = function (_token) {
+        $translate(["alert.remove_token_title", "alert.remove_token_content"]).then(function (translation) {
+            displayConfirmation(translation["alert.remove_token_title"], translation["alert.remove_token_content"], ["Yes", "No"], function (res) {
+                if (!(typeof res === "boolean")) {
+                    if (res === 1) res = true;else res = false;
+                }
+
+                if (res) {
+                    $rootScope.$broadcast("token:remove", _token);
+                }
+            });
+        });
+    };
+
+    this.confirmRemoveAllAccount = function (_callback) {
+        $translate(["alert.remove_all_tokens_title", "alert.remove_all_tokens_content", "alert.yes", "alert.no"]).then(function (translation) {
+            var buttons = null;
+            if (navigator.notification) {
+                buttons = [translation["alert.yes"], translation["alert.no"]];
+            } else {
+                buttons = [{
+                    text: translation["alert.no"],
+                    onTap: function onTap() {
+                        return false;
+                    }
+                }, {
+                    text: translation["alert.yes"],
+                    type: "button-positive",
+                    onTap: function onTap() {
+                        return true;
+                    }
+                }];
+            }
+            displayConfirmation(translation["alert.remove_all_tokens_title"], translation["alert.remove_all_tokens_content"], buttons, _callback);
+        });
+    };
+
+    this.confirmExit = function (_callback) {
+        $translate(["app.exit_title", "app.exit_confirmation", "alert.yes", "alert.no"]).then(function (translation) {
+            displayConfirmation(translation["app.exit_title"], translation["app.exit_confirmation"], [translation["alert.yes"], translation["alert.no"]], _callback);
+        });
+    };
+
+    this.showInformation = function (scope, title, templateUrl) {
+        var showPopup = $ionicPopup.show({
+            title: title,
+            cssClass: 'information-popup',
+            scope: scope,
+            templateUrl: templateUrl,
+            buttons: [{
+                type: "button-positive",
+                text: $translate.instant("alert.ok")
+            }]
+        });
+        return showPopup;
+    };
+
+    this.showProfessioanlClientInformation = function (scope) {
+        return _this.showInformation(scope, $translate.instant('professional-client.professional_client'), 'js/share/templates/professional-client/professional-client-information.template.html');
+    };
+
+    this.showPEPInformation = function (scope) {
+        return _this.showInformation(scope, $translate.instant('pep-information.pep'), 'js/share/templates/pep-information/pep-information.template.html');
+    };
+
+    this.showTaxInformation = function (scope) {
+        return _this.showInformation(scope, $translate.instant('what-is-tax-information.tax_information_title'), 'js/share/templates/tax-information/tax-information.template.html');
+    };
+
+    this.displayProfessionalClientConfirmation = function (_title, _class, scope, _template, _buttons) {
+        var showPopup = $ionicPopup.show({
+            title: _title,
+            cssClass: _class,
+            scope: scope,
+            templateUrl: _template,
+            buttons: _buttons
+        });
+        return showPopup;
+    };
+}]);
+"use strict";
+
+/**
+ * @name analyticsService
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 07/17/2016
+ * @copyright Binary Ltd
+ * Send information to all analytics services
+ */
+
+angular.module("binary").factory("analyticsService", ["accountService", function (accountService) {
+    var factory = {};
+    factory.google = {
+        addUser: function addUser() {
+            var user = accountService.getDefault();
+            var userId = user && user.id ? user.id : null;
+            window.ga.setUserId(userId);
+        },
+        trackView: function trackView(_view) {
+            if (typeof ga !== "undefined") {
+                this.addUser();
+                ga.trackView(_view);
+            }
+        },
+        trackEvent: function trackEvent(market, contractType, symbole, payout) {
+            if (typeof ga !== "undefined") {
+                this.addUser();
+                ga.trackEvent(market, contractType, symbole, payout);
+            }
+        }
+    };
+
+    return factory;
+}]);
+"use strict";
+
+/**
+ * @name appStateService
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 05/02/2016
+ * @copyright Binary Ltd
+ * Keeping state of the app in this factory
+ */
+
+angular.module("binary").factory("appStateService", function () {
+    var factory = {};
+    factory.tradeMode = true;
+    factory.purchaseMode = false;
+    factory.isLoggedin = false;
+    factory.scopes = [];
+    factory.isChangedAccount = false;
+    factory.isRealityChecked = false;
+    factory.isPopupOpen = false;
+    factory.isProfitTableSet = false;
+    factory.profitTableRefresh = false;
+    factory.isStatementSet = false;
+    factory.statementRefresh = false;
+    factory.virtuality = 0;
+    factory.newAccountAdded = false;
+    factory.isLanguageReady = false;
+    factory.passwordChanged = false;
+    factory.limitsChange = false;
+    factory.realityCheckLogin = false;
+    factory.hasAuthenticateMessage = false;
+    factory.hasRestrictedMessage = false;
+    factory.hasMaxTurnoverMessage = false;
+    factory.hasCountryMessage = false;
+    factory.hasTnCMessage = false;
+    factory.hasTaxInfoMessage = false;
+    factory.hasFinancialAssessmentMessage = false;
+    factory.hasAgeVerificationMessage = false;
+    factory.hasCurrencyMessage = false;
+    factory.checkedAccountStatus = false;
+    factory.siteStatus = "up";
+    factory.modalIsOpen = false;
+    factory.currenciesConfig = {};
+    factory.balanceSubscribtionId = null;
+    factory.accountCurrencyChanged = false;
+    factory.selectedCurrency = false;
+    factory.upgrade = {};
+    factory.redirectedFromAccountsManagemenet = false;
+    factory.checkingUpgradeDone = false;
+    factory.upgradeableLandingCompanies = [];
+    factory.loginFinished = false;
+    factory.isMaltainvest = false;
+
+    return factory;
+});
+"use strict";
+
+/**
+ * @name appVersionService
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 01/20/2016
+ * @copyright Binary Ltd
+ */
+
+angular.module("binary").factory("appVersionService", ["$http", function ($http) {
+    var appVersion = {};
+
+    function getAppVersion() {
+        return $http.get("js/config.json");
+    }
+
+    appVersion.getAppVersion = getAppVersion;
+
+    return appVersion;
+}]);
+"use strict";
+
+/**
+ * @name chartService
+ * @author Amin Marashi
+ * @contributors []
+ * @since 11/25/2015
+ * @copyright Binary Ltd
+ */
+
+angular.module("binary").factory("chartService", ["$rootScope", function ($rootScope) {
+    var localHistory = void 0;
+    var chartDrawer = void 0;
+    var contractCtrls = [];
+
+    /* Define ChartJS Options */
+    var reversedIndex = function reversedIndex(i) {
+        return chartGlobals.tickCount - 1 - i;
+    };
+
+    var distribute = function distribute(i) {
+        var distance = Math.ceil(chartGlobals.tickCount / chartGlobals.minTickCount);
+        if (reversedIndex(i) % distance === 0) {
+            return true;
+        }
+        return false;
+    };
+
+    var chartGlobals = void 0;
+    var setChartGlobals = function setChartGlobals() {
+        chartGlobals = {
+            chartJS: null,
+            capacity: 600,
+            maxTickCount: 50,
+            hideLabelsThreshold: 15,
+            tickCount: 15,
+            minTickCount: 5,
+            chartData: {
+                labels: [],
+                labelsFilter: function labelsFilter(index) {
+                    return !distribute(index);
+                },
+
+                datasets: [{
+                    strokeColor: "#7cb5ec",
+                    pointColor: "#7cb5ec",
+                    pointStrokeColor: "#7cb5ec",
+                    data: []
+                }]
+            },
+            chartOptions: {
+                animation: false,
+                bezierCurve: false,
+                datasetFill: false,
+                showTooltips: false,
+                keepAspectRatio: false,
+                scaleShowLabels: false,
+                scaleFontSize: 10,
+                pointDotRadius: 3, // original 4
+                datasetStrokeWidth: 2 // original 2
+            }
+        };
+    };
+    setChartGlobals();
+    /* End of Define ChartJS Options */
+
+    var utils = {
+        zeroPad: function zeroPad(num) {
+            if (num < 10) {
+                return "0" + num;
+            }
+            return num.toString();
+        },
+        getTickTime: function getTickTime(tick) {
+            var date = new Date(tick * 1000);
+            return date.getUTCHours() + ":" + utils.zeroPad(date.getUTCMinutes()) + ":" + utils.zeroPad(date.getUTCSeconds());
+        },
+        isDefined: function isDefined(obj) {
+            if (typeof obj === "undefined" || obj === null) {
+                return false;
+            }
+            return true;
+        },
+        setObjValue: function setObjValue(obj, attr, value, condition) {
+            if (utils.isDefined(obj)) {
+                if (utils.isDefined(condition)) {
+                    if (condition) {
+                        obj[attr] = value;
+                    }
+                } else if (typeof obj[attr] === "undefined") {
+                    obj[attr] = value;
+                }
+            }
+        },
+        fractionalLength: function fractionalLength(floatNumber) {
+            var stringNumber = floatNumber.toString();
+            var decimalLength = stringNumber.indexOf(".");
+            return stringNumber.length - decimalLength - 1;
+        },
+        maxFractionalLength: function maxFractionalLength(floatNumbers) {
+            var max = 0;
+            floatNumbers.forEach(function (number) {
+                max = max < utils.fractionalLength(number) ? utils.fractionalLength(number) : max;
+            });
+            return max;
+        },
+        lastDigit: function lastDigit(num) {
+            return parseInt(num.toString().slice(-1)[0]);
+        },
+        average: function average(list) {
+            var decimalPointLength = utils.fractionalLength(list[0]) + 1;
+            return parseFloat(list.reduce(function (a, b) {
+                return a + b;
+            }, 0) / list.length).toFixed(decimalPointLength);
+        },
+        conditions: {
+            CALL: function condition(barrier, price) {
+                return parseFloat(price) > parseFloat(barrier);
+            },
+            PUT: function condition(barrier, price) {
+                return parseFloat(price) < parseFloat(barrier);
+            },
+            CALLHL: function condition(barrier, price) {
+                // Higher/Lower CALL
+                return parseFloat(price) > parseFloat(barrier);
+            },
+            PUTHL: function condition(barrier, price) {
+                // Higher/Lower PUT
+                return parseFloat(price) < parseFloat(barrier);
+            },
+            DIGITMATCH: function condition(barrier, price) {
+                return utils.lastDigit(parseInt(barrier)) === utils.lastDigit(price);
+            },
+            DIGITDIFF: function condition(barrier, price) {
+                return utils.lastDigit(parseInt(barrier)) !== utils.lastDigit(price);
+            },
+            DIGITEVEN: function condition(barrier, price) {
+                return utils.lastDigit(price) % 2 === 0;
+            },
+            DIGITODD: function condition(barrier, price) {
+                return utils.lastDigit(price) % 2 !== 0;
+            },
+            DIGITUNDER: function condition(barrier, price) {
+                return utils.lastDigit(price) < parseInt(barrier);
+            },
+            DIGITOVER: function condition(barrier, price) {
+                return utils.lastDigit(price) > parseInt(barrier);
+            },
+            ASIANU: function condition(barrier, price, priceList) {
+                var avg = utils.average(priceList);
+
+                return parseFloat(price) > avg;
+            },
+            ASIAND: function condition(barrier, price, priceList) {
+                var avg = utils.average(priceList);
+
+                return parseFloat(price) < avg;
+            },
+            TICKHIGH: function condition(barrier, price, priceList, selectedTick) {
+                return priceList[selectedTick - 1] && !_.find(priceList, function (val) {
+                    return val > priceList[selectedTick - 1];
+                });
+            },
+            TICKLOW: function condition(barrier, price, priceList, selectedTick) {
+                return priceList[selectedTick - 1] && !_.find(priceList, function (val) {
+                    return val < priceList[selectedTick - 1];
+                });
+            }
+        },
+        digitTrade: function digitTrade(contract) {
+            if (contract.type.indexOf("DIGIT") === 0) {
+                return true;
+            }
+            return false;
+        },
+        asianGame: function asianGame(contract) {
+            if (contract.type.indexOf("ASIAN") === 0) {
+                return true;
+            }
+            return false;
+        },
+        higherLowerTrade: function higherLowerTrade(contract) {
+            if (["PUTHL", "CALLHL"].indexOf(contract.type) > -1 && !_.isEmpty(contract.barrier)) {
+                return true;
+            }
+            return false;
+        },
+        highLowTrade: function highLowTrade(contract) {
+            if (["TICKLOW", "TICKHIGH"].indexOf(contract.type) > -1) {
+                return true;
+            }
+            return false;
+        },
+        getRelativeIndex: function getRelativeIndex(absoluteIndex, dataIndex) {
+            return absoluteIndex - (chartDrawer.getCapacity() - (chartDrawer.getTickCount() + chartDrawer.getDataIndex()));
+        },
+        getAbsoluteIndex: function getAbsoluteIndex(relativeIndex, dataIndex) {
+            return relativeIndex + (chartDrawer.getCapacity() - (chartDrawer.getTickCount() + chartDrawer.getDataIndex()));
+        }
+    };
+
+    var Stepper = function Stepper() {
+        var tickDistance = 0;
+        var startingPosition = 0;
+        var startingDataIndex = 0;
+        var started = false;
+        var previousTime = 0;
+
+        var setStartPosition = function setStartPosition(dataIndex, position) {
+            startingPosition = position;
+            startingDataIndex = dataIndex;
+            started = true;
+        };
+
+        var stepCount = function stepCount(dataIndex, position) {
+            if (!started) {
+                return 0;
+            }
+            return startingDataIndex + Math.floor((position - startingPosition) / tickDistance) - dataIndex;
+        };
+
+        var setDistance = function setDistance(canvas, tickCount) {
+            if (canvas !== null) {
+                tickDistance = Math.ceil(canvas.offsetWidth / tickCount);
+            }
+        };
+
+        var getDistance = function getDistance() {
+            return tickDistance;
+        };
+
+        var isStep = function isStep(e, tickCount) {
+            if (e.timeStamp - previousTime > 100) {
+                previousTime = e.timeStamp;
+                return true;
+            }
+            return false;
+        };
+
+        var stop = function stop() {
+            started = false;
+        };
+
+        return {
+            isStep: isStep,
+            stop: stop,
+            setDistance: setDistance,
+            getDistance: getDistance,
+            setStartPosition: setStartPosition,
+            stepCount: stepCount
+        };
+    };
+
+    var LocalHistory = function LocalHistory(capacity) {
+        var historyData = [];
+
+        var addTick = function addTick(tick) {
+            var options = JSON.parse(localStorage.options);
+            var pip = options.underlying.pip;
+            var fractionalLength = utils.fractionalLength(pip);
+            if (parseInt(tick.epoch) > parseInt(historyData.slice(-1)[0].time)) {
+                historyData.push({
+                    time: tick.epoch,
+                    price: parseFloat(tick.quote).toFixed(fractionalLength)
+                });
+                historyData.shift();
+            }
+        };
+
+        var updateHistoryArray = function updateHistoryArray(historyArray, history) {
+            var times = history.times;
+            var prices = history.prices;
+            var compare = function compare(a, b) {
+                var timea = parseInt(a.time);
+                var timeb = parseInt(b.time);
+                if (timea < timeb) {
+                    return -1;
+                } else if (timea > timeb) {
+                    return 1;
+                }
+                return 0;
+            };
+            var seenTimes = [];
+            times.forEach(function (time, index) {
+                if (seenTimes.indexOf(time) < 0) {
+                    seenTimes.push(time);
+                    historyArray.push({
+                        time: time,
+                        price: prices[index]
+                    });
+                }
+            });
+            times.sort(compare);
+        };
+
+        var addHistory = function addHistory(history) {
+            historyData = [];
+            contractCtrls.forEach(function (contract) {
+                contract.removeRegion();
+            });
+            contractCtrls = [];
+            updateHistoryArray(historyData, history);
+        };
+
+        var getHistory = function getHistory(dataIndex, count, callback) {
+            var end = capacity - dataIndex;
+            var start = end - count;
+            if (start >= 0) {
+                callback(historyData.slice(start, end));
+            } else {
+                callback([]);
+            }
+        };
+
+        return {
+            getHistory: getHistory,
+            addTick: addTick,
+            addHistory: addHistory
+        };
+    };
+
+    var ContractCtrl = function ContractCtrl(contract) {
+        var broadcastable = true;
+        var tickPriceList = [];
+
+        var setNotBroadcastable = function setNotBroadcastable() {
+            return broadcastable = false;
+        };
+
+        var getBroadcastable = function getBroadcastable() {
+            return broadcastable;
+        };
+
+        var isFinished = function isFinished() {
+            return utils.isDefined(contract.exitSpot);
+        };
+
+        var getContract = function getContract() {
+            return contract;
+        };
+
+        var resetSpotShowing = function resetSpotShowing() {
+            contract.showingEntrySpot = false;
+            contract.showingExitSpot = false;
+        };
+
+        var hasEntrySpot = function hasEntrySpot() {
+            if (utils.isDefined(contract.entrySpotIndex)) {
+                return true;
+            }
+            return false;
+        };
+
+        var hasExitSpot = function hasExitSpot() {
+            if (utils.isDefined(contract.exitSpotIndex)) {
+                return true;
+            }
+            return false;
+        };
+
+        var betweenExistingSpots = function betweenExistingSpots(time) {
+            if (hasEntrySpot() && time >= contract.entrySpotTime && (!hasExitSpot() || time <= contract.exitSpot)) {
+                return true;
+            }
+            return false;
+        };
+
+        var isSpot = function isSpot(i) {
+            if (contract.showingEntrySpot && contract.entrySpotIndex === utils.getAbsoluteIndex(i)) {
+                return true;
+            }
+            if (contract.showingExitSpot && contract.exitSpotIndex === utils.getAbsoluteIndex(i)) {
+                return true;
+            }
+            return false;
+        };
+
+        var getEntrySpotPoint = function getEntrySpotPoint(points) {
+            var result = void 0;
+            if (contract.showingEntrySpot) {
+                result = points[utils.getRelativeIndex(contract.entrySpotIndex)];
+            }
+            return result;
+        };
+
+        var getExitSpotPoint = function getExitSpotPoint(points) {
+            var result = void 0;
+            if (contract.showingExitSpot) {
+                result = points[utils.getRelativeIndex(contract.exitSpotIndex)];
+            }
+            return result;
+        };
+
+        var isEntrySpot = function isEntrySpot(time) {
+            if (hasEntrySpot()) {
+                if (time === contract.entrySpotTime) {
+                    return true;
+                }
+                return false;
+            }
+            if (time >= contract.startTime) {
+                return true;
+            }
+            return false;
+        };
+
+        var isExitSpot = function isExitSpot(time, index) {
+            if (hasExitSpot()) {
+                if (time === contract.exitSpot) {
+                    return true;
+                }
+                return false;
+            }
+            if (hasEntrySpot() && index === contract.entrySpotIndex + contract.duration) {
+                return true;
+            }
+            return false;
+        };
+
+        var viewSpots = function viewSpots(index, tickTime) {
+            if (isEntrySpot(tickTime)) {
+                contract.showingEntrySpot = true;
+                if (!utils.digitTrade(contract) && !utils.asianGame(contract) && !hasExitSpot()) {
+                    chartDrawer.addGridLine({
+                        color: "#2E8836",
+                        label: "barrier: " + contract.barrier,
+                        orientation: "horizontal",
+                        type: "barrier",
+                        index: index
+                    });
+                } else if (utils.asianGame(contract) && tickPriceList.length > 0 && !hasExitSpot()) {
+                    chartDrawer.addGridLine({
+                        color: "#2E8836",
+                        label: "Average: " + utils.average(tickPriceList),
+                        orientation: "horizontal",
+                        type: "average",
+                        firstIndex: index,
+                        index: index + (tickPriceList.length - 1)
+                    });
+                }
+            }
+
+            if (isExitSpot(tickTime, utils.getAbsoluteIndex(index))) {
+                contract.showingExitSpot = true;
+            }
+        };
+
+        var addSpots = function addSpots(index, tickTime, tickPrice) {
+            if (isEntrySpot(tickTime) || betweenExistingSpots(tickTime)) {
+                if (isEntrySpot(tickTime)) {
+                    var barrier = tickPrice;
+                    if (utils.higherLowerTrade(contract)) {
+                        contract.offset = contract.offset || contract.barrier;
+                        barrier = Number(tickPrice) + Number(contract.offset);
+                        barrier = utils.digitTrade(contract) ? contract.barrier : barrier.toFixed(utils.fractionalLength(tickPrice));
+                    }
+                    utils.setObjValue(contract, "barrier", barrier, !utils.digitTrade(contract));
+                    utils.setObjValue(contract, "entrySpotPrice", tickPrice, true);
+                    utils.setObjValue(contract, "entrySpotTime", tickTime, !hasEntrySpot());
+                    utils.setObjValue(contract, "entrySpotIndex", index, true);
+                }
+
+                if (isExitSpot(tickTime, index)) {
+                    utils.setObjValue(contract, "exitSpot", tickTime, !hasExitSpot());
+                    utils.setObjValue(contract, "exitSpotIndex", index, true);
+                }
+
+                // tickPriceList.push(tickPrice);
+            }
+        };
+
+        var viewRegions = function viewRegions() {
+            if (hasEntrySpot()) {
+                var color = contract.result === "win" ? "rgba(0, 255, 0, 0.1)" : "rgba(255, 0, 0, 0.1)";
+                if (contract.showingExitSpot) {
+                    var start = utils.getRelativeIndex(contract.entrySpotIndex);
+                    start = start < 0 ? 0 : start;
+                    if (!utils.isDefined(contract.region)) {
+                        contract.region = {
+                            color: color,
+                            start: start
+                        };
+                    } else {
+                        contract.region.color = color;
+                        contract.region.start = start;
+                    }
+                    contract.region.end = utils.getRelativeIndex(contract.exitSpotIndex);
+                    chartDrawer.addRegion(contract.region);
+                } else if (contract.showingEntrySpot) {
+                    if (!utils.isDefined(contract.region)) {
+                        contract.region = {
+                            color: color,
+                            start: utils.getRelativeIndex(contract.entrySpotIndex)
+                        };
+                    } else {
+                        contract.region.color = color;
+                        contract.region.start = utils.getRelativeIndex(contract.entrySpotIndex);
+                    }
+                    chartDrawer.addRegion(contract.region);
+                } else {
+                    chartDrawer.removeRegion(contract.region);
+                }
+            }
+        };
+
+        var addRegions = function addRegions(lastTime, lastPrice) {
+            var options = JSON.parse(localStorage.options);
+            var pip = options.underlying.pip;
+            var fractionalLength = utils.fractionalLength(pip);
+
+            if (hasEntrySpot() && broadcastable) {
+                if (tickPriceList.length === 0) {
+                    if (contract.entrySpotTime !== lastTime && betweenExistingSpots(lastTime)) {
+                        var entrySpotPrice = parseFloat(contract.entrySpotPrice).toFixed(fractionalLength);
+                        var barrier = utils.digitTrade(contract) ? contract.barrier : parseFloat(contract.barrier).toFixed(fractionalLength);
+                        tickPriceList.push(entrySpotPrice);
+
+                        if (utils.conditions[contract.type](barrier, entrySpotPrice, tickPriceList, contract.selectedTick)) {
+                            contract.result = "win";
+                        } else {
+                            contract.result = "lose";
+                        }
+                        $rootScope.$broadcast("contract:spot", contract, entrySpotPrice);
+                    } else {
+                        tickPriceList.push(parseFloat(lastPrice).toFixed(fractionalLength));
+                    }
+                } else {
+                    tickPriceList.push(parseFloat(lastPrice).toFixed(fractionalLength));
+                }
+
+                if (betweenExistingSpots(lastTime)) {
+                    var _barrier = parseFloat(contract.barrier).toFixed(fractionalLength);
+                    var lastPriceFloat = parseFloat(lastPrice).toFixed(fractionalLength);
+
+                    if (utils.conditions[contract.type](_barrier, lastPriceFloat, tickPriceList, contract.selectedTick)) {
+                        contract.result = "win";
+                    } else {
+                        contract.result = "lose";
+                    }
+
+                    $rootScope.$broadcast("contract:spot", contract, lastPriceFloat);
+
+                    if (isFinished() && broadcastable) {
+                        tickPriceList = [];
+                        contractCtrls.forEach(function (contractctrl, index) {
+                            var oldContract = contractctrl.getContract();
+                            if (contract !== oldContract && !contractctrl.isFinished()) {
+                                setNotBroadcastable();
+                            }
+                        });
+                        if (broadcastable) {
+                            $rootScope.$broadcast("contract:finished", contract);
+                        }
+                        setNotBroadcastable();
+                    }
+                }
+            }
+        };
+
+        var removeRegion = function removeRegion() {
+            chartDrawer.removeRegion(contract.region);
+        };
+
+        return {
+            getBroadcastable: getBroadcastable,
+            setNotBroadcastable: setNotBroadcastable,
+            isFinished: isFinished,
+            getContract: getContract,
+            isSpot: isSpot,
+            betweenExistingSpots: betweenExistingSpots,
+            resetSpotShowing: resetSpotShowing,
+            addSpots: addSpots,
+            addRegions: addRegions,
+            removeRegion: removeRegion,
+            viewSpots: viewSpots,
+            viewRegions: viewRegions,
+            getEntrySpotPoint: getEntrySpotPoint,
+            getExitSpotPoint: getExitSpotPoint
+        };
+    };
+
+    var ChartDrawer = function ChartDrawer() {
+        var dataIndex = 0;
+        var canvas = void 0;
+        var ctx = void 0;
+        var dragging = false;
+        var zooming = false;
+        var stepper = Stepper();
+
+        var isLastPoint = function isLastPoint(i) {
+            if (reversedIndex(i) === 0) {
+                return true;
+            }
+            return false;
+        };
+
+        var hideLabels = function hideLabels() {
+            if (chartGlobals.tickCount >= chartGlobals.hideLabelsThreshold) {
+                return true;
+            }
+            return false;
+        };
+
+        var showingHistory = function showingHistory() {
+            if (dataIndex === 0) {
+                return false;
+            }
+            return true;
+        };
+
+        var getLabelColor = function getLabelColor(index) {
+            var color = "black";
+            if (!showingHistory() && isLastPoint(index)) {
+                color = "#2E8836";
+            }
+            contractCtrls.forEach(function (contract) {
+                if (contract.isSpot(index)) {
+                    color = "#818183";
+                }
+            });
+            return color;
+        };
+
+        var getDotColor = function getDotColor(value, index) {
+            var color = void 0;
+            contractCtrls.forEach(function (contract) {
+                if (contract.betweenExistingSpots(value)) {
+                    color = "#7cb5ec";
+                }
+            });
+            if (utils.isDefined(color)) {
+                return color;
+            }
+            if (isLastPoint(index) && !showingHistory()) {
+                color = "#2E8836";
+            } else {
+                color = "#7cb5ec";
+            }
+            return color;
+        };
+
+        var drawRegion = function drawRegion(thisChart, region) {
+            var height = thisChart.scale.endPoint - thisChart.scale.startPoint + 12; // + 12 to size up the region to the top
+            var end = void 0;
+
+            var start = thisChart.datasets[0].points[region.start].x;
+            if (utils.isDefined(region.end)) {
+                end = thisChart.datasets[0].points[region.end].x;
+            } else {
+                end = thisChart.datasets[0].points.slice(-1)[0].x;
+            }
+            if (end < start) {
+                return;
+            } else if (end === start) {
+                start -= 2; // subtract 2 from start to make the region visible when the duration is 1 tick
+            }
+            var length = end - start || 6; // set the region length to 6 whenever the duration is 1 tick
+            ctx.fillStyle = region.color;
+            ctx.fillRect(start, thisChart.scale.startPoint - 12, length, height); // begin the region from the top
+        };
+
+        var getLabelSize = function getLabelSize(ctx, point) {
+            return {
+                width: ctx.measureText(point.value).width,
+                height: parseInt(ctx.font)
+            };
+        };
+
+        var overlapping = function overlapping(point1, point2) {
+            return point1.s < point2.e && point1.e > point2.s || point2.s < point1.e && point2.e > point1.s;
+        };
+
+        var overlapping2d = function overlapping2d(point1, point2) {
+            var point1Size = getLabelSize(ctx, point1);
+            var point2Size = getLabelSize(ctx, point2);
+            var overlappingY = overlapping({
+                s: point1.y,
+                e: point1.y + point1Size.height
+            }, {
+                s: point2.y,
+                e: point2.y + point2Size.height
+            });
+            var overlappingX = overlapping({
+                s: point1.x,
+                e: point1.x + point1Size.width
+            }, {
+                s: point2.x,
+                e: point2.x + point2Size.width
+            });
+            return overlappingX && overlappingY;
+        };
+
+        var findSpots = function findSpots(points) {
+            var entries = [];
+            var exits = [];
+            contractCtrls.forEach(function (contract) {
+                var entry = contract.getEntrySpotPoint(points);
+                var exit = contract.getExitSpotPoint(points);
+                if (utils.isDefined(entry)) {
+                    entries.push(entry);
+                }
+                if (utils.isDefined(exit)) {
+                    exits.push(exit);
+                }
+            });
+            return {
+                entries: entries,
+                exits: exits
+            };
+        };
+
+        var withoutConflict = function withoutConflict(toShow, point) {
+            var result = true;
+            toShow.forEach(function (toShowPoint, index) {
+                if (overlapping2d(toShowPoint, point)) {
+                    result = false;
+                }
+            });
+            return result;
+        };
+
+        var toShowLabels = function toShowLabels(points) {
+            var toShow = [];
+            var spots = findSpots(points);
+            // This is our priority: 1. exit spot, 2. entry spot, 3. last value, 4. others (right to left)
+
+            spots.exits.forEach(function (exit, index) {
+                toShow.push(exit);
+            });
+
+            spots.entries.forEach(function (entry, index) {
+                if (withoutConflict(toShow, entry)) {
+                    toShow.push(entry);
+                }
+            });
+
+            var lastPoint = points.slice(-1)[0];
+            if (!showingHistory() && withoutConflict(toShow, lastPoint)) {
+                toShow.push(lastPoint);
+            }
+            // add other labels from right to left
+            if (!hideLabels()) {
+                for (var i = points.length - 1; i >= 0; i--) {
+                    if (withoutConflict(toShow, points[i])) {
+                        toShow.push(points[i]);
+                    }
+                }
+            }
+            toShow.forEach(function (toShowPoint, index) {
+                if (!_.isEmpty(toShowPoint)) {
+                    toShowPoint.shown = true;
+                }
+            });
+        };
+
+        var drawLabel = function drawLabel(point, index) {
+            if (index !== 0 && utils.isDefined(point.shown) && point.shown) {
+                ctx.fillStyle = getLabelColor(index);
+                ctx.textAlign = "center";
+                ctx.textBaseline = "bottom";
+
+                var padding = 0;
+                var valueWidth = getLabelSize(ctx, point).width;
+                if (isLastPoint(index)) {
+                    padding = valueWidth < 45 ? 0 : valueWidth - 45;
+                }
+                ctx.fillText(point.value, point.x - padding, point.y - 1);
+            }
+        };
+
+        var drawLastTickLabel = function drawLastTickLabel(point, index) {
+            if (index !== 0 && utils.isDefined(point.shown) && point.shown) {
+                var marginX = 10;
+                var marginY = 30;
+                var padding = 5;
+                var fontSize = 12;
+                ctx.font = ctx.font.replace(/\d+px/, fontSize + "px");
+                var value = ctx.measureText(point.value);
+                value.height = fontSize;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "bottom";
+                ctx.fillStyle = point.labelFillColor.toString();
+                ctx.fillRect(canvas.offsetWidth - (marginX + padding + value.width), canvas.offsetHeight - (marginY + value.height + padding), 2 * padding + value.width, 2 * padding + value.height);
+                if (ctx.fillStyle === "#C2C2C2") {
+                    ctx.fillStyle = "#000";
+                } else {
+                    ctx.fillStyle = "#FFF";
+                }
+                ctx.fillText(point.value, canvas.offsetWidth - (marginX + value.width / 2), canvas.offsetHeight - marginY);
+            }
+        };
+
+        var drawGridLine = function drawGridLine(thisChart, gridLine) {
+            var point = thisChart.datasets[0].points[gridLine.index];
+            var scale = thisChart.scale;
+
+            ctx.beginPath();
+            if (gridLine.orientation === "vertical") {
+                ctx.moveTo(point.x, scale.startPoint + 24);
+                ctx.strokeStyle = gridLine.color;
+                ctx.fillStyle = gridLine.color;
+                ctx.lineTo(point.x, scale.endPoint);
+                ctx.stroke();
+
+                ctx.textAlign = "center";
+                ctx.fillText(gridLine.label, point.x, scale.startPoint + 12);
+            } else if (gridLine.orientation === "horizontal") {
+                var yPoint = point.y;
+                if (gridLine.type === "average" && gridLine.index !== gridLine.firstIndex) {
+                    var firstPoint = thisChart.datasets[0].points[gridLine.firstIndex];
+                    yPoint = (firstPoint.y + point.y) / 2;
+                }
+
+                ctx.moveTo(scale.startPoint, yPoint);
+
+                ctx.strokeStyle = gridLine.color;
+                ctx.fillStyle = gridLine.color;
+                ctx.lineTo(thisChart.chart.width, yPoint);
+                ctx.stroke();
+
+                ctx.textAlign = "center";
+                var labelWidth = ctx.measureText(gridLine.label).width;
+                ctx.fillText(gridLine.label, parseInt(labelWidth / 2) + 5, yPoint - 1);
+            }
+        };
+
+        /* Override ChartJS Defaults */
+        Chart.CustomScale = Chart.Scale.extend({
+            initialize: function initialize() {
+                var longestText = function longestText(ctx, font, arrayOfStrings) {
+                    ctx.font = font;
+                    var longest = 0;
+                    Chart.helpers.each(arrayOfStrings, function (string) {
+                        var textWidth = ctx.measureText(string).width;
+                        longest = textWidth > longest ? textWidth : longest;
+                    });
+                    return longest;
+                };
+
+                this.calculateXLabelRotation = function () {
+                    this.ctx.font = this.font;
+
+                    var lastWidth = this.ctx.measureText(this.xLabels[this.xLabels.length - 1]).width;
+
+                    this.xScalePaddingRight = lastWidth / 2 + 3;
+
+                    this.xLabelRotation = 0;
+                    if (this.display) {
+                        var originalLabelWidth = longestText(this.ctx, this.font, this.xLabels);
+                        this.xLabelWidth = originalLabelWidth;
+                    } else {
+                        this.xLabelWidth = 0;
+                        this.xScalePaddingRight = this.padding;
+                    }
+                    this.xScalePaddingLeft = 0;
+                };
+                Chart.Scale.prototype.initialize.apply(this, arguments);
+            },
+            draw: function draw() {
+                var helpers = Chart.helpers;
+                var each = helpers.each;
+                var aliasPixel = helpers.aliasPixel;
+                var ctx = this.ctx;
+                var yLabelGap = (this.endPoint - this.startPoint) / this.steps;
+                var xStart = Math.round(this.xScalePaddingLeft);
+                if (this.display) {
+                    ctx.fillStyle = this.textColor;
+                    ctx.font = this.font;
+                    each(this.yLabels, function (labelString, index) {
+                        var yLabelCenter = this.endPoint - yLabelGap * index;
+                        var linePositionY = Math.round(yLabelCenter);
+
+                        ctx.textAlign = "right";
+                        ctx.textBaseline = "middle";
+                        if (this.showLabels) {
+                            ctx.fillText(labelString, xStart - 10, yLabelCenter);
+                        }
+                        ctx.beginPath();
+                        if (index > 0) {
+                            ctx.lineWidth = this.gridLineWidth;
+                            ctx.strokeStyle = this.gridLineColor;
+                        } else {
+                            ctx.lineWidth = this.lineWidth;
+                            ctx.strokeStyle = this.lineColor;
+                        }
+
+                        linePositionY += helpers.aliasPixel(ctx.lineWidth);
+
+                        ctx.moveTo(xStart, linePositionY);
+                        ctx.lineTo(this.width, linePositionY);
+                        ctx.stroke();
+                        ctx.closePath();
+
+                        ctx.lineWidth = this.lineWidth;
+                        ctx.strokeStyle = this.lineColor;
+                        ctx.beginPath();
+                        ctx.moveTo(xStart - 5, linePositionY);
+                        ctx.lineTo(xStart, linePositionY);
+                        ctx.stroke();
+                        ctx.closePath();
+                    }, this);
+
+                    each(this.xLabels, function (label, index) {
+                        var filtered = false;
+                        if (typeof this.labelsFilter === "function" && this.labelsFilter(index)) {
+                            filtered = true;
+                        }
+                        var xPos = this.calculateX(index) + aliasPixel(this.lineWidth);
+                        var linePos = this.calculateX(index - (this.offsetGridLines ? 0.5 : 0)) + aliasPixel(this.lineWidth);
+
+                        ctx.beginPath();
+
+                        if (index > 0) {
+                            ctx.lineWidth = this.gridLineWidth;
+                            ctx.strokeStyle = this.gridLineColor;
+                        } else {
+                            ctx.lineWidth = this.lineWidth;
+                            ctx.strokeStyle = this.lineColor;
+                        }
+                        ctx.moveTo(linePos, this.endPoint);
+                        ctx.lineTo(linePos, this.startPoint - 12);
+                        ctx.stroke();
+                        ctx.closePath();
+
+                        ctx.lineWidth = this.lineWidth;
+                        ctx.strokeStyle = this.lineColor;
+
+                        ctx.beginPath();
+                        ctx.moveTo(linePos, this.endPoint);
+                        if (filtered) {
+                            ctx.lineTo(linePos, this.endPoint);
+                        } else {
+                            ctx.lineTo(linePos, this.endPoint + 5);
+                        }
+                        ctx.stroke();
+                        ctx.closePath();
+
+                        ctx.save();
+                        ctx.translate(xPos, this.endPoint + 8);
+
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "top";
+                        if (!filtered) {
+                            ctx.fillText(label, 0, 0);
+                        }
+                        ctx.restore();
+                    }, this);
+                }
+            }
+        });
+
+        Chart.types.Line.extend({
+            name: "LineChartSpots",
+            initialize: function initialize(data) {
+                this.options.labelsFilter = data.labelsFilter || null;
+                Chart.types.Line.prototype.initialize.apply(this, arguments);
+            },
+            draw: function draw() {
+                var dataset = this.datasets[0];
+                var thisChart = this;
+
+                dataset.points.forEach(function (point, index) {
+                    point.fillColor = getDotColor(chartGlobals.chartData.epochLabels[index], index);
+                });
+
+                Chart.types.Line.prototype.draw.apply(this, arguments);
+                toShowLabels(dataset.points);
+                dataset.points.forEach(function (point, index) {
+                    drawLabel(point, index);
+                });
+
+                if (utils.isDefined(this.options.regions)) {
+                    this.options.regions.forEach(function (region) {
+                        drawRegion(thisChart, region);
+                    });
+                }
+
+                if (utils.isDefined(this.options.gridLines)) {
+                    this.options.gridLines.forEach(function (gridLine) {
+                        drawGridLine(thisChart, gridLine);
+                    });
+                }
+            },
+            buildScale: function buildScale(labels) {
+                var helpers = Chart.helpers;
+                var self = this;
+
+                var dataTotal = function dataTotal() {
+                    var values = [];
+                    self.eachPoints(function (point) {
+                        values.push(point.value);
+                    });
+                    return values;
+                };
+                var scaleOptions = {
+                    templateString: this.options.scaleLabel,
+                    height: this.chart.height,
+                    width: this.chart.width,
+                    ctx: this.chart.ctx,
+                    textColor: this.options.scaleFontColor,
+                    fontSize: this.options.scaleFontSize,
+                    labelsFilter: this.options.labelsFilter,
+                    fontStyle: this.options.scaleFontStyle,
+                    fontFamily: this.options.scaleFontFamily,
+                    valuesCount: labels.length,
+                    beginAtZero: this.options.scaleBeginAtZero,
+                    integersOnly: this.options.scaleIntegersOnly,
+                    calculateYRange: function calculateYRange(currentHeight) {
+                        var updatedRanges = helpers.calculateScaleRange(dataTotal(), currentHeight, this.fontSize, this.beginAtZero, this.integersOnly);
+                        helpers.extend(this, updatedRanges);
+                    },
+
+                    xLabels: labels,
+                    font: helpers.fontString(this.options.scaleFontSize, this.options.scaleFontStyle, this.options.scaleFontFamily),
+                    lineWidth: this.options.scaleLineWidth,
+                    lineColor: this.options.scaleLineColor,
+                    gridLineWidth: this.options.scaleShowGridLines ? this.options.scaleGridLineWidth : 0,
+                    gridLineColor: this.options.scaleShowGridLines ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
+                    padding: this.options.showScale ? 0 : this.options.pointDotRadius + this.options.pointDotStrokeWidth,
+                    showLabels: this.options.scaleShowLabels,
+                    display: this.options.showScale
+                };
+
+                if (this.options.scaleOverride) {
+                    helpers.extend(scaleOptions, {
+                        calculateYRange: helpers.noop,
+                        steps: this.options.scaleSteps,
+                        stepValue: this.options.scaleStepWidth,
+                        min: this.options.scaleStartValue,
+                        max: this.options.scaleStartValue + this.options.scaleSteps * this.options.scaleStepWidth
+                    });
+                }
+
+                this.scale = new Chart.CustomScale(scaleOptions);
+            }
+        });
+        /* End of Override ChartJS Defaults */
+
+        var destroy = function destroy() {
+            if (chartGlobals.chartJS) {
+                chartGlobals.chartJS.destroy();
+                setChartGlobals();
+                canvas = null;
+                ctx = null;
+                dataIndex = 0;
+                dragging = false;
+                zooming = false;
+                stepper = null;
+            }
+        };
+
+        var drawChart = function drawChart(chartID) {
+            canvas = document.getElementById(chartID);
+            if (canvas !== null) {
+                ctx = canvas.getContext("2d");
+                stepper = Stepper();
+                stepper.setDistance(canvas, chartGlobals.tickCount);
+            }
+        };
+
+        var findRegion = function findRegion(region) {
+            if (utils.isDefined(chartGlobals.chartOptions.regions)) {
+                return chartGlobals.chartOptions.regions.indexOf(region);
+            }
+            return -1;
+        };
+
+        var addRegion = function addRegion(region) {
+            if (!utils.isDefined(chartGlobals.chartOptions.regions)) {
+                chartGlobals.chartOptions.regions = [];
+            }
+            if (findRegion(region) < 0) {
+                chartGlobals.chartOptions.regions.push(region);
+            }
+        };
+
+        var removeRegion = function removeRegion(region) {
+            var regionIndex = findRegion(region);
+            if (regionIndex >= 0) {
+                chartGlobals.chartOptions.regions.splice(regionIndex, 1);
+            }
+        };
+
+        var dragStart = function dragStart(e) {
+            if (!_.isEmpty(stepper)) {
+                stepper.setStartPosition(dataIndex, e.center.x);
+                dragging = true;
+            }
+        };
+
+        var dragEnd = function dragEnd(e) {
+            if (!_.isEmpty(stepper)) {
+                if (!zooming) {
+                    move(stepper.stepCount(dataIndex, e.center.x));
+                }
+                stepper.stop();
+                dragging = false;
+            }
+        };
+
+        var zoomStart = function zoomStart() {
+            zooming = true;
+        };
+
+        var zoomEnd = function zoomEnd() {
+            zooming = false;
+        };
+
+        var addGridLine = function addGridLine(gridLine) {
+            if (!utils.isDefined(chartGlobals.chartOptions.gridLines)) {
+                chartGlobals.chartOptions.gridLines = [];
+            }
+            chartGlobals.chartOptions.gridLines.push(gridLine);
+        };
+
+        var updateChartPoints = function updateChartPoints(times, values) {
+            chartGlobals.chartData.labels = [];
+            chartGlobals.chartData.epochLabels = times;
+            times.forEach(function (time, index) {
+                chartGlobals.chartData.labels.push(utils.getTickTime(time));
+            });
+
+            chartGlobals.chartData.datasets[0].data = values;
+            if (utils.isDefined(chartGlobals.chartJS)) {
+                chartGlobals.chartJS.destroy();
+            }
+            if (utils.isDefined(ctx)) {
+                var chartObj = new Chart(ctx);
+                chartGlobals.chartJS = chartObj.LineChartSpots(chartGlobals.chartData, chartGlobals.chartOptions);
+            }
+        };
+
+        // depends on updateContracts call
+        var updateChart = function updateChart(ticks) {
+            chartGlobals.chartOptions.gridLines = [];
+            contractCtrls.forEach(function (contract) {
+                contract.resetSpotShowing();
+            });
+            var times = [];
+            var prices = [];
+
+            ticks.forEach(function (tick, index) {
+                var tickTime = parseInt(tick.time);
+                contractCtrls.forEach(function (contract) {
+                    contract.viewSpots(index, tickTime);
+                });
+                times.push(tickTime);
+                prices.push(tick.price);
+            });
+
+            contractCtrls.forEach(function (contract) {
+                contract.viewRegions();
+            });
+
+            updateChartPoints(times, prices);
+        };
+
+        var updateContracts = function updateContracts(ticks) {
+            var lastTime = void 0;
+            var lastPrice = void 0;
+
+            ticks.forEach(function (tick, index) {
+                var tickTime = parseInt(tick.time);
+                var tickPrice = tick.price;
+                contractCtrls.forEach(function (contract) {
+                    contract.addSpots(index, tickTime, tickPrice);
+                });
+                lastTime = parseInt(tick.time);
+                lastPrice = tick.price;
+            });
+
+            contractCtrls.forEach(function (contract) {
+                contract.addRegions(lastTime, lastPrice);
+            });
+        };
+
+        var addTick = function addTick(tick) {
+            if (utils.isDefined(localHistory)) {
+                localHistory.addTick(tick);
+                localHistory.getHistory(0, chartGlobals.capacity, updateContracts);
+                if (dataIndex === 0 && !dragging && !zooming) {
+                    localHistory.getHistory(dataIndex, chartGlobals.tickCount, updateChart);
+                } else {
+                    move(1, false);
+                }
+            }
+        };
+
+        var addHistory = function addHistory(history) {
+            if (!utils.isDefined(localHistory)) {
+                localHistory = LocalHistory(chartGlobals.capacity);
+            }
+            localHistory.addHistory(history);
+            localHistory.getHistory(0, chartGlobals.capacity, updateContracts);
+            localHistory.getHistory(dataIndex, chartGlobals.tickCount, updateChart);
+        };
+
+        var addCandles = function addCandles(candles) {};
+
+        var addOhlc = function addOhlc(ohlc) {};
+
+        var zoom = function zoom(direction) {
+            var newTickCount = void 0;
+            var condition = void 0;
+            if (direction === "in") {
+                newTickCount = parseInt(chartGlobals.tickCount / 1.2);
+                condition = newTickCount > chartGlobals.minTickCount;
+            } else if (direction === "out") {
+                newTickCount = parseInt(chartGlobals.tickCount * 1.2);
+                condition = newTickCount < chartGlobals.maxTickCount;
+            } else {
+                return;
+            }
+            if (condition) {
+                chartGlobals.tickCount = newTickCount;
+                localHistory.getHistory(dataIndex, chartGlobals.tickCount, updateChart);
+                stepper.setDistance(canvas, chartGlobals.tickCount);
+            }
+        };
+
+        var zoomOut = function zoomOut() {
+            zoom("out");
+        };
+
+        var zoomIn = function zoomIn() {
+            zoom("in");
+        };
+
+        var move = function move(steps, update) {
+            if (steps === 0) {
+                return;
+            }
+            var testDataIndex = dataIndex + steps;
+            if (testDataIndex < 0) {
+                // overflow
+                testDataIndex = 0;
+            } else if (testDataIndex >= chartGlobals.capacity - chartGlobals.tickCount) {
+                // underflow
+                testDataIndex = chartGlobals.capacity - chartGlobals.tickCount - 1;
+            }
+            if (testDataIndex !== dataIndex) {
+                dataIndex = testDataIndex;
+                if (!utils.isDefined(update) || update) {
+                    localHistory.getHistory(dataIndex, chartGlobals.tickCount, updateChart);
+                }
+            }
+        };
+
+        var drag = function drag(e) {
+            if (!_.isEmpty(stepper)) {
+                if (!zooming && stepper.isStep(e, chartGlobals.tickCount)) {
+                    move(stepper.stepCount(dataIndex, e.center.x));
+                }
+            }
+        };
+
+        var getCapacity = function getCapacity() {
+            return chartGlobals.capacity;
+        };
+
+        var getTickCount = function getTickCount() {
+            return chartGlobals.tickCount;
+        };
+
+        var getDataIndex = function getDataIndex() {
+            return dataIndex;
+        };
+
+        var addContract = function addContract(_contract) {
+            if (_contract) {
+                if (utils.digitTrade(_contract) || utils.asianGame(_contract) || utils.highLowTrade(_contract)) {
+                    _contract.duration -= 1;
+                }
+                contractCtrls.push(ContractCtrl(_contract));
+                dataIndex = 0;
+            }
+        };
+
+        var historyInterface = {
+            addTick: addTick,
+            addHistory: addHistory,
+            addCandles: addCandles,
+            addOhlc: addOhlc
+        };
+
+        return {
+            dragStart: dragStart,
+            dragEnd: dragEnd,
+            zoomIn: zoomIn,
+            zoomOut: zoomOut,
+            zoomStart: zoomStart,
+            zoomEnd: zoomEnd,
+            dragRight: drag,
+            dragLeft: drag,
+            getCapacity: getCapacity,
+            getTickCount: getTickCount,
+            getDataIndex: getDataIndex,
+            addContract: addContract,
+            historyInterface: historyInterface,
+            addGridLine: addGridLine,
+            addRegion: addRegion,
+            removeRegion: removeRegion,
+            drawChart: drawChart,
+            destroy: destroy
+        };
+    };
+
+    var drawChart = function drawChart(chartID) {
+        chartDrawer.drawChart(chartID);
+    };
+
+    var destroy = function destroy() {
+        chartDrawer.destroy();
+        contractCtrls.forEach(function (contractctrl, index) {
+            contractctrl.setNotBroadcastable();
+        });
+        localHistory = null;
+    };
+
+    chartDrawer = ChartDrawer();
+
+    return {
+        destroy: destroy,
+        drawChart: drawChart,
+        dragStart: chartDrawer.dragStart,
+        dragEnd: chartDrawer.dragEnd,
+        zoomIn: chartDrawer.zoomIn,
+        zoomOut: chartDrawer.zoomOut,
+        zoomStart: chartDrawer.zoomStart,
+        zoomEnd: chartDrawer.zoomEnd,
+        dragRight: chartDrawer.dragRight,
+        dragLeft: chartDrawer.dragLeft,
+        getCapacity: chartDrawer.getCapacity,
+        addContract: chartDrawer.addContract,
+        historyInterface: chartDrawer.historyInterface
+    };
+}]);
+"use strict";
+
+/**
+ * @name cleanupService
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 12/22/2015
+ * @copyright Binary Ltd
+ *
+ */
+
+angular.module("binary").service("cleanupService", ["$translate", "proposalService", function ($translate, proposalService) {
+    this.run = function () {
+        proposalService.forget();
+    };
+}]);
+"use strict";
+
+/**
+ * @name client service
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 10/26/2017
+ * @copyright Binary Ltd
+ */
+
+angular.module("binary").service("clientService", ["appStateService", function (appStateService) {
+    var _this = this;
+
+    this.isLandingCompanyOf = function (targetLandingCompany, accountLandingCompany) {
+        return targetLandingCompany === accountLandingCompany;
+    };
+
+    this.hasAccountOfLandingCompany = function (accounts, landingCompany) {
+        return !!_.find(accounts, function (account) {
+            return _this.isLandingCompanyOf(landingCompany, account.landing_company_name);
+        });
+    };
+
+    this.getAccountType = function (landingCompany) {
+        var account_type = void 0;
+        if (landingCompany) {
+            if (_this.isLandingCompanyOf('virtual', landingCompany)) account_type = 'virtual';else if (_this.isLandingCompanyOf('maltainvest', landingCompany)) account_type = 'financial';else if (_this.isLandingCompanyOf('malta', landingCompany)) account_type = 'gaming';else account_type = 'real';
+        }
+        return account_type;
+    };
+
+    this.isAccountOfType = function (type, landingCompany) {
+        var accountType = _this.getAccountType(landingCompany);
+        return type === 'virtual' && accountType === 'virtual' || type === 'real' && accountType !== 'virtual' || type === accountType;
+    };
+
+    this.landingCompanyValue = function (landingCompany, key, landingCompanyObj) {
+        var landingCompanyOfAccount = void 0;
+        var landingCompanyObject = landingCompanyObj || JSON.parse(localStorage.getItem('landingCompanyObject'));
+        if (_this.isAccountOfType('financial', landingCompany)) {
+            landingCompanyOfAccount = landingCompanyObject.financial_company;
+        } else if (_this.isAccountOfType('real', landingCompany)) {
+            landingCompanyOfAccount = landingCompanyObject.gaming_company;
+            if (!landingCompanyOfAccount) {
+                landingCompanyOfAccount = landingCompanyObject.financial_company;
+            }
+        } else {
+            var financialCompany = (landingCompanyObject.financial_company || {})[key] || [];
+            var gamingCompany = (landingCompanyObject.gaming_company || {})[key] || [];
+            landingCompanyOfAccount = financialCompany.concat(gamingCompany);
+            return landingCompanyOfAccount;
+        }
+        return (landingCompanyOfAccount || {})[key];
+    };
+
+    // ignore virtual account currency in existing currencies
+    this.getExistingCurrencies = function (accounts) {
+        var currencies = [];
+        _.forIn(accounts, function (account, key) {
+            if (!_this.isLandingCompanyOf('virtual', account.landing_company_name) && account.currency.length > 0) {
+                currencies.push(account.currency);
+            }
+        });
+        return currencies;
+    };
+
+    this.dividedCurrencies = function (currencies) {
+        var currencyConfig = appStateService.currenciesConfig;
+        var cryptoCurrencies = [];
+        var fiatCurrencies = [];
+        _.forEach(currencies, function (currency) {
+            var isCryptoCurrency = /crypto/i.test(currencyConfig[currency].type);
+            if (isCryptoCurrency) {
+                cryptoCurrencies.push(currency);
+            } else {
+                fiatCurrencies.push(currency);
+            }
+        });
+        return {
+            cryptoCurrencies: cryptoCurrencies,
+            fiatCurrencies: fiatCurrencies
+        };
+    };
+
+    this.getFractionalDigits = function () {
+        var currency = sessionStorage.getItem('currency') || 'USD';
+        var currencyConfig = appStateService.currenciesConfig || {};
+        return !_.isEmpty(currencyConfig) && currencyConfig[currency] ? currencyConfig[currency].fractional_digits : 2;
+    };
+
+    this.groupMT5Accounts = function (accounts) {
+        var groupedAccounts = {};
+        var demo = [];
+        var real = [];
+        _.forEach(accounts, function (account) {
+            return account.isDemo ? demo.push(account) : real.push(account);
+        });
+        if (demo.length) {
+            groupedAccounts.demo = demo;
+        }
+        if (real.length) {
+            groupedAccounts.real = real;
+        }
+        return groupedAccounts;
+    };
+}]);
+"use strict";
+
+/**
+ * @name delayService
+ * @author Amin Marashi
+ * @contributors []
+ * @since 01/21/2016
+ * @copyright Binary Ltd
+ *
+ */
+
+angular.module("binary").factory("delayService", function () {
+    var functions = {};
+    var runTimestamps = {};
+    var FunctionController = function FunctionController(delayedFunction, args, name) {
+        var timeoutId = 0;
+        return {
+            run: function run(minimumDelay) {
+                var runFunc = function runFunc() {
+                    runTimestamps[name] = new Date().getTime();
+                    delayedFunction.apply(this, args);
+                };
+
+                if (minimumDelay !== 0) {
+                    timeoutId = setTimeout(function () {
+                        runFunc();
+                    }, minimumDelay);
+                } else {
+                    runFunc();
+                }
+            },
+            cancel: function cancel() {
+                clearTimeout(timeoutId);
+            }
+        };
+    };
+    return {
+        update: function update(name, delayedFunction, minimumDelay, args) {
+            var now = new Date().getTime();
+            if (functions.hasOwnProperty(name)) {
+                var remainingTime = minimumDelay - (now - runTimestamps[name]);
+                if (remainingTime > 0) {
+                    minimumDelay = remainingTime;
+                } else {
+                    minimumDelay = 0;
+                }
+                functions[name].cancel();
+            } else {
+                minimumDelay = 0;
+                runTimestamps[name] = now;
+            }
+            functions[name] = FunctionController(delayedFunction, args, name);
+            functions[name].run(minimumDelay);
+        },
+        remove: function remove(name) {
+            if (functions.hasOwnProperty(name)) {
+                functions[name].cancel();
+                delete functions[name];
+                delete runTimestamps[name];
+            }
+        }
+    };
+});
+"use strict";
+
+/**
+ * @name languageService
+ * @author Massih Hazrati
+ * @contributors []
+ * @since 10/26/2015
+ * @copyright Binary Ltd
+ *
+ */
+
+angular.module("binary").service("languageService", ["$rootScope", "$translate", "cleanupService", function ($rootScope, $translate, cleanupService) {
+    /**
+    * Update default language in local storage
+    * Changes the app language
+    * @param  {String} _language [description]
+    */
+    this.update = function (_language) {
+        localStorage.language = _language;
+        this.set(_language);
+    };
+
+    /**
+    * Read the language from local storage
+    * if exists update the app's language
+    */
+    this.set = function (_language) {
+        var language = localStorage.language || "en";
+
+        if (_language) {
+            language = _language;
+        }
+        cleanupService.run();
+        $rootScope.$broadcast("language:updated");
+        $translate.use(language);
+    };
+
+    this.read = function () {
+        var language = localStorage.language;
+        return language || "en";
+    };
+
+    this.remove = function () {
+        localStorage.removeItem("language");
+        cleanupService.run();
+    };
+
+    var languageConfigs = {
+        en: {
+            nativeName: 'English'
+        },
+        de: {
+            nativeName: 'Deutsch'
+        },
+        es: {
+            nativeName: 'Español'
+        },
+        fr: {
+            nativeName: 'Français'
+        },
+        id: {
+            nativeName: 'Indonesia'
+        },
+        it: {
+            nativeName: 'Italiano'
+        },
+        ja: {
+            nativeName: '日本語'
+        },
+        pl: {
+            nativeName: 'Polish'
+        },
+        pt: {
+            nativeName: 'Português'
+        },
+        ru: {
+            nativeName: 'Русский'
+        },
+        th: {
+            nativeName: 'Thai'
+        },
+        vi: {
+            nativeName: 'Tiếng Việt'
+        },
+        zh_cn: {
+            nativeName: '简体中文'
+        },
+        zh_tw: {
+            nativeName: '繁體中文'
+        }
+    };
+
+    var getLanguageNativeName = function getLanguageNativeName(key) {
+        var lang = languageConfigs[key];
+        return lang ? lang.nativeName : undefined;
+    };
+    this.getLanguageNativeName = getLanguageNativeName;
+}]);
+"use strict";
+
+/**
+ * @name cleanupService
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 12/31/2015
+ * @copyright Binary Ltd
+ *
+ */
+
+angular.module("binary").factory("localStorageService", ["$state", "appStateService", function ($state, appStateService) {
+    var service = {};
+
+    /**
+    * find a {key,value} in an array of objects and return its index
+    * returns -1 if not found
+    * @param  {Array of Objects} _accounts
+    * @param  {String} _key
+    * @param  {String, Number, Boolean} _value
+    * @return {Number} Index of the found array element
+    */
+    var findIndex = function findIndex(_accounts, _key, _value) {
+        var index = -1;
+        _accounts.forEach(function (el, i) {
+            if (_accounts[i][_key] === _value) {
+                index = i;
+            }
+        });
+        return index;
+    };
+
+    service.removeToken = function removeToken(token) {
+        if (localStorage.hasOwnProperty("accounts")) {
+            var accounts = JSON.parse(localStorage.accounts);
+            var tokenIndex = findIndex(accounts, "token", token);
+            if (tokenIndex > -1) {
+                accounts.splice(tokenIndex);
+                localStorage.accounts = JSON.stringify(accounts);
+            }
+        }
+    };
+
+    service.getDefaultToken = function () {
+        if (localStorage.accounts && JSON.parse(localStorage.accounts) instanceof Array) {
+            var accounts = JSON.parse(localStorage.accounts);
+            var index = findIndex(accounts, "is_default", true);
+            if (index > -1) {
+                return accounts[index].token;
+            }
+        }
+        return null;
+    };
+
+    return service;
+}]);
+"use strict";
+
+/**
+ * @name tradeService
+ * @author Massih Hazrati
+ * @contributors []
+ * @since 10/15/2015
+ * @copyright Binary Ltd
+ * Handles websocket functionalities
+ */
+
+angular.module("binary").service("marketService", ["websocketService", "proposalService", "config", function (websocketService, proposalService, config) {
+    var regroup = function regroup(symbols) {
+        var groups = {
+            index: ["R_100", "R_25", "R_50", "R_75"],
+            BEARBULL: ["RDBEAR", "RDBULL"],
+            MOONSUN: ["RDMOON", "RDSUN"],
+            MARSVENUS: ["RDMARS", "RDVENUS"],
+            YANGYIN: ["RDYANG", "RDYIN"]
+        };
+
+        var result = [];
+        var itemIndices = [];
+        Object.keys(groups).forEach(function (key) {
+            var tmp = [];
+            var first = -1;
+            symbols.forEach(function (item, index) {
+                if (item.symbol === groups[key][0]) {
+                    first = index;
+                }
+            });
+            if (first >= 0) {
+                groups[key].forEach(function (item, index) {
+                    var itemIndex = -1;
+                    symbols.forEach(function (item, i) {
+                        if (item.symbol === groups[key][index]) {
+                            itemIndex = i;
+                        }
+                    });
+                    if (itemIndex >= 0) {
+                        tmp.push(symbols[itemIndex]);
+                        itemIndices.push(itemIndex);
+                    }
+                });
+                tmp.sort();
+                result = result.concat(tmp);
+            }
+        });
+        symbols.forEach(function (symbol, index) {
+            if (itemIndices.indexOf(index) < 0) {
+                result.push(symbol);
+            }
+        });
+        return result;
+    };
+
+    var reorder = function reorder(symbols) {
+        symbols.sort(function (a, b) {
+            if (a.display_name > b.display_name) {
+                return 1;
+            } else if (a.display_name < b.display_name) {
+                return -1;
+            }
+            return 0;
+        });
+        symbols = regroup(symbols);
+        return symbols;
+    };
+
+    this.fixOrder = function () {
+        if (!sessionStorage.active_symbols || sessionStorage.active_symbols === "null") {
+            return;
+        }
+
+        var symbols = JSON.parse(sessionStorage.active_symbols);
+        Object.keys(symbols).forEach(function (key) {
+            symbols[key] = reorder(symbols[key]);
+        });
+        sessionStorage.active_symbols = JSON.stringify(symbols);
+    };
+
+    this.getActiveMarkets = function () {
+        if (!sessionStorage.active_symbols || sessionStorage.active_symbols === "null") {
+            return [];
+        }
+
+        var data = JSON.parse(sessionStorage.active_symbols);
+        if (data) {
+            return Object.keys(data);
+        }
+
+        console.log(data); // eslint-disable-line
+        return [];
+    };
+
+    // TODO Remove getAllSymbolsForAMarket: This function is not used anymore
+    this.getAllSymbolsForAMarket = function (_market) {
+        if (!_market || !sessionStorage.active_symbols || !sessionStorage.asset_index) {
+            return [];
+        }
+
+        var activeSymbols = JSON.parse(sessionStorage.active_symbols)[_market];
+        var assetIndex = JSON.parse(sessionStorage.asset_index);
+        var indexes = config.assetIndexes;
+        var result = [];
+
+        activeSymbols.forEach(function (market) {
+            for (var i = 0; i < assetIndex.length; i++) {
+                if (market.symbol === assetIndex[i][indexes.symbol]) {
+                    var assetContracts = assetIndex[i][indexes.contracts];
+                    for (var c = 0; c < assetContracts.length; c++) {
+                        if (assetContracts[c][indexes.contractFrom].indexOf("t") !== -1) {
+                            market.display_name = assetIndex[i][indexes.displayName];
+                            result.push(market);
+                            break;
+                        }
+                    }
+                    break; // do not loop through remained assets, since the related asset_index has been found but is not supporting ticks
+                }
+            }
+            // assetIndex.splice(i, 1); // to shorten the list for the next loop
+        });
+
+        return result;
+    };
+
+    this.getSymbolDetails = function (_symbol) {
+        websocketService.sendRequestFor.contractsForSymbol(_symbol);
+    };
+
+    this.getDefault = {
+        /**
+        * Return the default/selected market
+        * @return {String} Market Name
+        */
+        market: function market(_market) {
+            var proposal = proposalService.get();
+            if (proposal && proposal.passthrough && proposal.passthrough.market && _market[proposal.passthrough.market]) {
+                return proposal.passthrough.market;
+            }
+
+            // return _market.random ? 'random' : 'forex';
+            return _.findKey(_market, function (o) {
+                return o;
+            });
+        },
+
+        /**
+        * Return the default/selected symbol
+        * @return {String} Symbol Name
+        */
+        symbol: function symbol(_market, _symbols) {
+            var proposal = proposalService.get();
+            if (proposal && proposal.passthrough && proposal.passthrough.market && proposal.symbol && proposal.passthrough.market === _market) {
+                return proposal.symbol;
+            }
+            return _symbols[0].symbol;
+        },
+        tradeType: function tradeType(_tradeTypes) {
+            if (_.isEmpty(_tradeTypes)) {
+                return null;
+            }
+
+            var proposal = proposalService.get();
+            var contractType = proposal.contract_type;
+            var selectedTradeType = _tradeTypes[0].value;
+            _tradeTypes.forEach(function (el, i) {
+                if (el.value === contractType) {
+                    selectedTradeType = contractType;
+                }
+            });
+            return selectedTradeType;
+        },
+        tick: function tick() {
+            var proposal = proposalService.get();
+            return proposal.duration ? proposal.duration : 5;
+        },
+        digit: function digit() {
+            var proposal = proposalService.get();
+            return proposal.barrier ? proposal.barrier : 0;
+        },
+        basis: function basis() {
+            var proposal = proposalService.get();
+            return proposal.basis ? proposal.basis : "payout";
+        },
+        amount: function amount() {
+            var proposal = proposalService.get();
+            if (!isNaN(proposal.amount)) {
+                return proposal.amount;
+            }
+            return 5;
+        }
+    };
+
+    this.getTradeTypes = function (_symbol) {
+        var tradeTypes = config.tradeTypes;
+        var finalTradeTypes = [];
+
+        tradeTypes.forEach(function (el, i) {
+            Object.keys(_symbol).forEach(function (key, index) {
+                if (_symbol.hasOwnProperty(key)) {
+                    // Find the tradeType in _symbol list
+                    if (el.value === key) {
+                        var hasTicks = false;
+                        // Loop through all _symbols of a trade type
+                        for (var j = 0; j < _symbol[key].length; j++) {
+                            var minDuration = _symbol[key][j].min_contract_duration;
+                            if (minDuration && minDuration.toString().match(/^\d+t$/)) {
+                                hasTicks = true;
+                            }
+                        }
+                        if (hasTicks) {
+                            finalTradeTypes.push(el);
+                        }
+                    }
+                }
+            });
+        });
+
+        return finalTradeTypes;
+    };
+
+    this.removeActiveSymbols = function () {
+        sessionStorage.active_symbols = null;
+    };
+
+    this.removeAssetIndex = function () {
+        sessionStorage.asset_index = null;
+    };
+
+    this.hasActiveSymobols = function () {
+        if (!sessionStorage.active_symbols) return false;
+        return JSON.parse(sessionStorage.active_symbols);
+    };
+
+    this.hasAssetIndex = function () {
+        if (!sessionStorage.asset_index) return false;
+        return JSON.parse(sessionStorage.asset_index);
+    };
+}]);
+"use strict";
+
+/**
+ * @name notificationService
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 05/03/2017
+ * @copyright Binary Ltd
+ */
+
+angular.module("binary").service("notificationService", function () {
+    var _this = this;
+
+    this.notices = [];
+
+    this.emptyNotices = function () {
+        _this.notices = [];
+    };
+
+    this.messages = {
+        authenticateMessage: {
+            title: "account_authentication",
+            text: "please_authenticate",
+            link: "authentication"
+        },
+        ageVerificationMessage: {
+            title: "account_age_verification",
+            text: "needs_age_verification",
+            link: "contact"
+        },
+        restrictedMessage: {
+            title: "account_restriction",
+            text: "please_contact",
+            link: "contact"
+        },
+        countryNotSetMessage: {
+            title: "account_country",
+            text: "set_country",
+            link: "profile"
+        },
+        riskAssessmentMessage: {
+            title: "financial_assessment_not_completed",
+            text: "complete_financial_assessment",
+            link: "financial-assessment"
+        },
+        taxInformationMessage: {
+            title: "tax_information",
+            text: "complete_profile",
+            link: "profile"
+        },
+        termsAndConditionsMessage: {
+            title: "tnc",
+            text: "accept_tnc",
+            link: "terms-and-conditions"
+        },
+        maxTurnoverLimitNotSetMessage: {
+            title: "max_turnover_limit",
+            text: "set_max_turnover_limit",
+            link: "self-exclusion"
+        },
+        currencyNotSetMessage: {
+            title: "account_currency",
+            text: "choose_account_currency",
+            link: "set-currency"
+        }
+    };
+});
+"use strict";
+
+/**
+ * @name session-storage service
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 03/24/2017
+ * @copyright Binary Ltd
+ *
+ */
+
+(function () {
+    angular.module("binary").factory("sessionStorageService", SessionStorage);
+
+    function SessionStorage() {
+        var factory = {};
+
+        factory.getItem = function (itemName) {
+            var item = sessionStorage.getItem(itemName);
+            if (_.isEmpty(item) || item === "undefined") {
+                return null;
+            }
+            return item;
+        };
+
+        return factory;
+    }
+})();
+"use strict";
+
+/**
+ * @name supportedLanguagesService
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 06/05/2019
+ * @copyright Binary Ltd
+ */
+
+angular.module("binary").service("supportedLanguagesService", function () {
+  var _this = this;
+
+  this.supportedLanguages = ["en"];
+
+  this.setSupportedLanguages = function (langs) {
+    return _this.supportedLanguages = langs;
+  };
+});
+"use strict";
+
+/**
+ * @name tableStateService
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 05/02/2016
+ * @copyright Binary Ltd
+ * Keeping state of the app in this factory
+ */
+
+angular.module("binary").factory("tableStateService", function () {
+    var factory = {};
+    factory.dateType = "allTime";
+    factory.dateFrom = "";
+    factory.dateTo = "";
+    factory.currentPage = 0;
+    factory.appID = "allApps";
+    factory.batchNum = 0;
+    factory.batchLimit = 0;
+    factory.batchSize = 20;
+    factory.completedGroup = true;
+    factory.statementDateType = "allTime";
+    factory.statementDateFrom = "";
+    factory.statementDateTo = "";
+    factory.statementCurrentPage = 0;
+    factory.statementAppID = "allApps";
+    factory.statementBatchNum = 0;
+    factory.statementBatchLimit = 0;
+    factory.statementBatchSize = 20;
+    factory.statementCompletedGroup = true;
+
+    return factory;
+});
+"use strict";
+
+/**
+ * @name utils service
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 08/17/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.services").factory("utilsService", Utils);
+
+    Utils.$inject = ["$rootScope"];
+
+    function Utils($rootScope) {
+        var factory = {};
+
+        factory.spinnerLogo = {
+            start: function start() {
+                $rootScope.$broadcast("spinner-logo:start");
+            },
+            stop: function stop() {
+                $rootScope.$broadcast("spinner-logo:stop");
+            }
+        };
+
+        return factory;
+    }
+})();
+"use strict";
+
+/**
+ * @name validation service
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 10/15/2017
+ * @copyright Binary Ltd
+ */
+
+angular.module("binary").factory("validationService", ["clientService", function (clientService) {
+    var validationService = {};
+
+    var getFrctionalDigits = function getFrctionalDigits() {
+        return clientService.getFractionalDigits();
+    };
+    var getFloatNumberRegex = function getFloatNumberRegex() {
+        return new RegExp("^\\d+(\\.\\d{0," + validationService.fractionalDigits + "})?$");
+    };
+    var getValidateFloatNumber = function getValidateFloatNumber(floatNumberRegex) {
+        return function (val) {
+            return validator(val, floatNumberRegex);
+        }();
+    };
+
+    validationService.fractionalDigits = getFrctionalDigits();
+
+    var validateGeneralRegex = /[`~!@#$%^&*)(_=+[}{\]\\/";:?><|]+/;
+    var validateAddressRegex = /[`~!$%^&*_=+[}{\]\\"?><|]+/;
+    var validatePostcodeRegex = /^([a-zA-Z\d-\s])*$/;
+    var validatePhoneRegex = /^\+?((-|\s)*[0-9])*$/;
+    var validateTaxIdentificationNumberRegex = /^[\w-]{0,20}$/;
+    var passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]+/;
+    var mailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/;
+    var tokenRegex = /^\w{8,128}$/;
+    var floatNumberRegex = getFloatNumberRegex();
+    var integerRegex = /^\d+$/;
+    /* eslint-disable */
+    var validator = function validator(val, regexPattern, reverse) {
+        return {
+            test: function test(val) {
+                return reverse ? !regexPattern.test(val) : regexPattern.test(val);
+            }
+        };
+    };
+    /* eslint-enable */
+
+    validationService.validateGeneral = function (val) {
+        return validator(val, validateGeneralRegex, true);
+    }();
+    validationService.validateAddress = function (val) {
+        return validator(val, validateAddressRegex, true);
+    }();
+    validationService.validatePostcode = function (val) {
+        return validator(val, validatePostcodeRegex);
+    }();
+    validationService.validatePhone = function (val) {
+        return validator(val, validatePhoneRegex);
+    }();
+    validationService.validateTaxIdentificationNumber = function (val) {
+        return validator(val, validateTaxIdentificationNumberRegex);
+    }();
+    validationService.validatePassword = function (val) {
+        return validator(val, passwordRegex);
+    }();
+    validationService.validateMail = function (val) {
+        return validator(val, mailRegex);
+    }();
+    validationService.validateToken = function (val) {
+        return validator(val, tokenRegex);
+    }();
+
+    validationService.validateFloatNumber = getValidateFloatNumber(floatNumberRegex);
+    validationService.validateIntegerNumber = function (val) {
+        return validator(val, integerRegex);
+    }();
+
+    validationService.length = {
+        name: {
+            min: 2,
+            max: 30
+        },
+        tin: {
+            max: 20
+        },
+        address: {
+            max: 70
+        },
+        city: {
+            max: 35
+        },
+        postcode: {
+            max: 20
+        },
+        phone: {
+            min: 8,
+            max: 35
+        },
+        secret_answer: {
+            min: 4,
+            max: 50
+        },
+        password: {
+            min: 6,
+            max: 25
+        },
+        selfExclusionLimits: {
+            max: 20
+        },
+        selfExclusionOpenPositions: {
+            max: 4
+        },
+        selfExclusionSessionDuration: {
+            max: 5
+        }
+    };
+
+    validationService.reset = function () {
+        validationService.fractionalDigits = getFrctionalDigits();
+        floatNumberRegex = getFloatNumberRegex();
+        validationService.validateFloatNumber = getValidateFloatNumber(floatNumberRegex);
+    };
+
+    return validationService;
+}]);
+"use strict";
+
+/**
+ * @name websocketService
+ * @author Massih Hazrati
+ * @contributors []
+ * @since 10/15/2015
+ * @copyright Binary Ltd
+ * Handles websocket functionalities
+ */
+
+angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPlatform", "$rootScope", "$state", "$translate", "alertService", "appStateService", "localStorageService", "clientService", "config", "notificationService", "supportedLanguagesService", function ($ionicLoading, $ionicPlatform, $rootScope, $state, $translate, alertService, appStateService, localStorageService, clientService, config, notificationService, supportedLanguagesService) {
+    var dataStream = "";
+    var messageBuffer = [];
+
+    var addExtraParams = function addExtraParams(data, extraParams) {
+        if (_.isEmpty(extraParams)) {
+            return data;
+        }
+
+        Object.keys(extraParams).forEach(function (key, index) {
+            if (extraParams.hasOwnProperty(key)) {
+                data[key] = extraParams[key];
+            }
+        });
+
+        return data;
+    };
+
+    var waitForConnection = function waitForConnection(callback, isAuthonticationRequest) {
+        if (dataStream && dataStream.readyState === 3) {
+            init();
+            if (!isAuthonticationRequest) {
+                setTimeout(function () {
+                    waitForConnection(callback);
+                }, 1000);
+            }
+        } else if (dataStream && dataStream.readyState === 1) {
+            callback();
+        } else if (!(dataStream instanceof WebSocket)) {
+            init();
+            if (!isAuthonticationRequest) {
+                setTimeout(function () {
+                    waitForConnection(callback);
+                }, 1000);
+            }
+        } else {
+            setTimeout(function () {
+                waitForConnection(callback);
+            }, 1000);
+        }
+    };
+
+    var sendMessage = function sendMessage(_data) {
+        var token = localStorageService.getDefaultToken();
+
+        $ionicPlatform.ready(function () {
+            waitForConnection(function () {
+                dataStream.send(JSON.stringify(_data));
+            }, _data.hasOwnProperty("authorize") && token);
+        });
+    };
+
+    var getAppId = function getAppId() {
+        return window.localStorage.getItem('config.app_id') || config.app_id;
+    };
+
+    var getSocketURL = function getSocketURL() {
+        var server_url = window.localStorage.getItem('config.server_url');
+        var wsUrl = server_url ? "wss://" + server_url + "/websockets/v3" : config.wsUrl;
+        return wsUrl;
+    };
+
+    var getFPofURL = function getFPofURL(url) {
+        if (_.isEmpty(url)) {
+            return null;
+        }
+
+        var result = /(binaryqa\d{2}.com)/.exec(url);
+
+        if (!_.isEmpty(result)) {
+            var bareUrl = "www." + result[1];
+
+            var matchedCert = _.find(config.qaMachinesCertFP, function (c) {
+                return c.url.indexOf(bareUrl) > -1;
+            });
+
+            if (matchedCert) {
+                return matchedCert.fp;
+            }
+        }
+
+        return config.serverCertFP;
+    };
+
+    var init = function init(forced) {
+        forced = forced || false;
+        var language = localStorage.language || "en";
+
+        if (dataStream && dataStream.readyState !== 3 && !forced) {
+            return;
+        } else if (dataStream && dataStream.readyState !== 0) {
+            dataStream.close();
+        }
+
+        dataStream = null;
+
+        appStateService.isLoggedin = false;
+
+        var onFailed = function onFailed() {
+            $rootScope.$broadcast("connection:error", true);
+        };
+
+        var onSuccess = function onSuccess() {
+
+            dataStream = new WebSocket(wsUrl + "?app_id=" + appId + "&l=" + language);
+
+            dataStream.onopen = function () {
+                // Authorize the default token if it's exist
+                var token = localStorageService.getDefaultToken();
+                if (token) {
+                    var data = {
+                        authorize: token,
+                        passthrough: {
+                            type: "reopen-connection"
+                        }
+                    };
+                    sendMessage(data);
+                }
+
+                console.log("socket is opened"); // eslint-disable-line
+                $rootScope.$broadcast("connection:ready");
+            };
+
+            dataStream.onmessage = function (message) {
+                receiveMessage(message);
+            };
+
+            dataStream.onclose = function (e) {
+                console.log("socket is closed ", e); // eslint-disable-line
+                init();
+                console.log("socket is reopened"); // eslint-disable-line
+                appStateService.isLoggedin = false;
+                $rootScope.$broadcast("connection:reopened");
+            };
+
+            dataStream.onerror = function (e) {
+                if (e.target.readyState === 3) {
+                    $rootScope.$broadcast("connection:error");
+                }
+                appStateService.isLoggedin = false;
+            };
+        };
+
+        var appId = getAppId();
+        var wsUrl = getSocketURL();
+        var fp = getFPofURL(wsUrl);
+
+        if (window.plugins && window.plugins.sslCertificateChecker) {
+            window.plugins.sslCertificateChecker.check(onSuccess, onFailed, "https://" + wsUrl.slice(6), fp);
+        } else {
+            onSuccess();
+        }
+    };
+
+    $rootScope.$on("language:updated", function () {
+        init(true);
+
+        // Fetch asset_indes and active_symbols in order to update text in selected language.
+        sessionStorage.removeItem('asset_index');
+        sessionStorage.removeItem('active_symbols');
+        websocketService.sendRequestFor.assetIndex();
+        websocketService.sendRequestFor.symbols();
+    });
+
+    var websocketService = {};
+    websocketService.authenticate = function (_token, extraParams) {
+        extraParams = null || extraParams;
+        appStateService.isLoggedin = false;
+
+        var data = {
+            authorize: _token
+        };
+
+        addExtraParams(data, extraParams);
+
+        sendMessage(data);
+    };
+
+    websocketService.logout = function (error) {
+        websocketService.sendRequestFor.logout();
+        localStorage.removeItem("accounts");
+        websocketService.sendRequestFor.forgetProposals();
+        sessionStorage.active_symbols = null;
+        sessionStorage.asset_index = null;
+        appStateService.isRealityChecked = false;
+        appStateService.isChangedAccount = false;
+        appStateService.isPopupOpen = false;
+        appStateService.isLoggedin = false;
+        sessionStorage.removeItem("start");
+        sessionStorage.removeItem("_interval");
+        sessionStorage.removeItem("realityCheckStart");
+        localStorage.removeItem("termsConditionsVersion");
+        localStorage.removeItem("landingCompanyObject");
+        localStorage.removeItem("landingCompany");
+        localStorage.removeItem("landingCompanyName");
+        appStateService.profitTableRefresh = true;
+        appStateService.statementRefresh = true;
+        sessionStorage.removeItem("countryParams");
+        websocketService.closeConnection();
+        appStateService.passwordChanged = false;
+        appStateService.limitsChange = false;
+        appStateService.realityCheckLogin = false;
+        appStateService.hasAuthenticateMessage = false;
+        appStateService.hasRestrictedMessage = false;
+        appStateService.hasMaxTurnoverMessage = false;
+        appStateService.hasCountryMessage = false;
+        appStateService.hasTnCMessage = false;
+        appStateService.hasTaxInfoMessage = false;
+        appStateService.hasFinancialAssessmentMessage = false;
+        appStateService.hasAgeVerificationMessage = false;
+        appStateService.hasCountryMessage = false;
+        appStateService.hasCurrencyMessage = false;
+        appStateService.checkedAccountStatus = false;
+        appStateService.accountCurrencyChanged = false;
+        appStateService.selectedCurrency = false;
+        notificationService.emptyNotices();
+        appStateService.checkingUpgradeDone = false;
+        appStateService.loginFinished = false;
+        appStateService.isMaltainvest = false;
+
+        if (error) {
+            $translate(["alert.error", "alert.ok"]).then(function (translation) {
+                alertService.displayAlert(translation["alert.error"], error, translation["alert.ok"], function () {
+                    $state.go("signin");
+                });
+            });
+        } else {
+            $state.go("signin");
+        }
+    };
+
+    websocketService.sendRequestFor = {
+        websiteStatus: function websiteStatus(subscribe) {
+            subscribe = subscribe || false;
+            var data = {
+                website_status: 1,
+                subscribe: subscribe ? 1 : 0
+            };
+            sendMessage(data);
+        },
+        symbols: function symbols() {
+            var data = {
+                active_symbols: "brief"
+            };
+            sendMessage(data);
+        },
+        assetIndex: function assetIndex() {
+            var data = {
+                asset_index: 1
+            };
+            sendMessage(data);
+        },
+        currencies: function currencies() {
+            var data = {
+                payout_currencies: 1
+            };
+            sendMessage(data);
+        },
+        contractsForSymbol: function contractsForSymbol(_symbol) {
+            var data = {
+                contracts_for: _symbol
+            };
+            sendMessage(data);
+        },
+        ticksForSymbol: function ticksForSymbol(_symbol) {
+            var data = {
+                ticks: _symbol
+            };
+            sendMessage(data);
+        },
+        forgetAll: function forgetAll(_stream) {
+            var data = {
+                forget_all: _stream
+            };
+            sendMessage(data);
+        },
+        forgetStream: function forgetStream(_id) {
+            var data = {
+                forget: _id
+            };
+            sendMessage(data);
+        },
+        forgetProposals: function forgetProposals(reqId) {
+            var data = {
+                forget_all: "proposal",
+                req_id: reqId
+            };
+            sendMessage(data);
+        },
+        forgetTicks: function forgetTicks() {
+            var data = {
+                forget_all: "ticks"
+            };
+            sendMessage(data);
+        },
+        proposal: function proposal(_proposal) {
+            sendMessage(_proposal);
+        },
+        purchase: function purchase(_proposalId, price) {
+            var data = {
+                buy: _proposalId,
+                price: price || 0
+            };
+            sendMessage(data);
+        },
+        balance: function balance() {
+            var data = {
+                balance: 1,
+                subscribe: 1
+            };
+            sendMessage(data);
+        },
+        portfolio: function portfolio() {
+            var data = {
+                portfolio: 1
+            };
+            sendMessage(data);
+        },
+        profitTable: function profitTable(params, req_id) {
+            var data = {
+                profit_table: 1
+            };
+
+            addExtraParams(data, params);
+
+            sendMessage(data);
+        },
+        ticksHistory: function ticksHistory(data) {
+            // data is the whole JSON convertable object parameter for the ticks_history API call
+            if (data.ticks_history) {
+                sendMessage(data);
+            }
+        },
+        openContract: function openContract(contractId, extraParams) {
+            var data = {};
+            data.proposal_open_contract = 1;
+
+            if (contractId) {
+                data.contract_id = contractId;
+            }
+
+            addExtraParams(data, extraParams);
+
+            sendMessage(data);
+        },
+        sellExpiredContract: function sellExpiredContract() {
+            var data = {
+                sell_expired: 1
+            };
+
+            sendMessage(data);
+        },
+        landingCompanyDetails: function landingCompanyDetails(company) {
+            var data = {
+                landing_company_details: company
+            };
+            sendMessage(data);
+        },
+        realityCheck: function realityCheck() {
+            var data = {
+                reality_check: 1
+            };
+            sendMessage(data);
+        },
+        accountOpening: function accountOpening(verifyEmail) {
+            var data = {
+                verify_email: verifyEmail,
+                type: "account_opening"
+            };
+            sendMessage(data);
+        },
+        residenceListSend: function residenceListSend() {
+            var data = {
+                residence_list: 1
+            };
+            sendMessage(data);
+        },
+        newAccountVirtual: function newAccountVirtual(verificationCode, clientPassword, residence) {
+            var data = {
+                new_account_virtual: "1",
+                verification_code: verificationCode,
+                client_password: clientPassword,
+                residence: residence
+            };
+            sendMessage(data);
+        },
+        accountSetting: function accountSetting() {
+            var data = {
+                get_settings: 1
+            };
+            sendMessage(data);
+        },
+        setAccountSettings: function setAccountSettings(data) {
+            data.set_settings = 1;
+
+            sendMessage(data);
+        },
+        landingCompanySend: function landingCompanySend(company, reqId) {
+            var data = {
+                landing_company: company
+            };
+            if (reqId) {
+                data.req_id = reqId;
+            }
+            sendMessage(data);
+        },
+        statesListSend: function statesListSend(countryCode) {
+            var data = {
+                states_list: countryCode
+            };
+            sendMessage(data);
+        },
+        createRealAccountSend: function createRealAccountSend(params) {
+            var data = {
+                new_account_real: "1"
+            };
+            addExtraParams(data, params);
+            sendMessage(data);
+        },
+        createMaltainvestAccountSend: function createMaltainvestAccountSend(params) {
+            var data = {
+                new_account_maltainvest: "1"
+            };
+            addExtraParams(data, params);
+            sendMessage(data);
+        },
+        statement: function statement(params) {
+            var data = {
+                statement: 1
+            };
+
+            addExtraParams(data, params);
+
+            sendMessage(data);
+        },
+        ping: function ping() {
+            var data = {
+                ping: 1
+            };
+            sendMessage(data);
+        },
+        setSelfExclusion: function setSelfExclusion(params) {
+            var data = {
+                set_self_exclusion: 1
+            };
+
+            addExtraParams(data, params);
+
+            sendMessage(data);
+        },
+        getSelfExclusion: function getSelfExclusion() {
+            var data = {
+                get_self_exclusion: 1
+            };
+
+            sendMessage(data);
+        },
+        TAndCApprovalSend: function TAndCApprovalSend() {
+            var data = {
+                tnc_approval: 1
+            };
+            sendMessage(data);
+        },
+        changePassword: function changePassword(_oldPassword, _newPassword) {
+            var data = {
+                change_password: "1",
+                old_password: _oldPassword,
+                new_password: _newPassword
+            };
+            sendMessage(data);
+        },
+        getFinancialAssessment: function getFinancialAssessment() {
+            var data = {
+                get_financial_assessment: 1
+            };
+            sendMessage(data);
+        },
+        setFinancialAssessment: function setFinancialAssessment(params) {
+            var data = {
+                set_financial_assessment: 1
+            };
+
+            addExtraParams(data, params);
+            sendMessage(data);
+        },
+        tradingTimes: function tradingTimes(_date) {
+            var data = {
+                trading_times: _date
+            };
+            sendMessage(data);
+        },
+        getAccountStatus: function getAccountStatus() {
+            var data = {
+                get_account_status: 1
+            };
+            sendMessage(data);
+        },
+        accountLimits: function accountLimits() {
+            var data = {
+                get_limits: 1
+            };
+            sendMessage(data);
+        },
+        logout: function logout() {
+            var data = {
+                logout: 1
+            };
+
+            sendMessage(data);
+        },
+        mt5LoginList: function mt5LoginList() {
+            var data = {
+                mt5_login_list: 1
+            };
+
+            sendMessage(data);
+        },
+        mt5GetSettings: function mt5GetSettings(login) {
+            var data = {
+                mt5_get_settings: 1,
+                login: login
+            };
+
+            sendMessage(data);
+        },
+        setAccountCurrency: function setAccountCurrency(currency) {
+            var data = {
+                set_account_currency: currency
+            };
+
+            sendMessage(data);
+        }
+    };
+    websocketService.closeConnection = function () {
+        if (dataStream) {
+            dataStream.close();
+        }
+    };
+
+    var receiveMessage = function receiveMessage(_response) {
+        var message = JSON.parse(_response.data);
+
+        if (message) {
+            if (message.error) {
+                if (["InvalidToken", "AccountDisabled", "DisabledClient"].indexOf(message.error.code) > -1) {
+                    websocketService.logout(message.error.message);
+
+                    // hide ionicLoading if some component show it to receive auth message.
+                    $ionicLoading.hide();
+
+                    return;
+                }
+            }
+
+            var messageType = message.msg_type;
+            switch (messageType) {
+                case "authorize":
+                    if (message.authorize) {
+                        message.authorize.token = message.echo_req.authorize;
+                        window._trackJs.userId = message.authorize.loginid;
+                        appStateService.isLoggedin = true;
+                        appStateService.virtuality = message.authorize.is_virtual;
+                        localStorage.landingCompanyName = message.authorize.landing_company_fullname;
+                        localStorage.landingCompany = message.authorize.landing_company_name;
+                        appStateService.scopes = message.authorize.scopes;
+                        appStateService.upgradeableLandingCompanies = message.authorize.upgradeable_landing_companies || [];
+                        appStateService.isMaltainvest = clientService.isLandingCompanyOf('maltainvest', message.authorize.landing_company_name);
+                        // update accounts from account list whenever authorize is received
+                        var accounts = !_.isEmpty(localStorage.getItem('accounts')) && JSON.parse(localStorage.getItem('accounts'));
+                        var accountList = message.authorize.account_list;
+                        if (accounts && accounts.length && accountList) {
+                            accounts.forEach(function (account, idx) {
+                                var acc = _.find(accountList, function (a) {
+                                    return a.loginid === account.id;
+                                });
+                                account.country = message.authorize.country || '';
+                                accounts[idx] = _.assign(account, acc);
+                            });
+                            localStorage.setItem('accounts', JSON.stringify(accounts));
+                        }
+
+                        if (_.isEmpty(message.authorize.currency)) {
+                            websocketService.sendRequestFor.currencies();
+                        } else {
+                            sessionStorage.currency = message.authorize.currency;
+                        }
+                        appStateService.loginFinished = true;
+
+                        $rootScope.$broadcast("authorize", message.authorize, message.req_id, message.passthrough);
+                    } else {
+                        var errorMessage = "Unexpected Error!";
+                        if (message.hasOwnProperty("error")) {
+                            localStorageService.removeToken(message.echo_req.authorize);
+                            errorMessage = message.error.message;
+                        }
+                        $rootScope.$broadcast("authorize", false, errorMessage);
+                        appStateService.isLoggedin = false;
+                    }
+                    break;
+                case "website_status":
+                    if (message.hasOwnProperty("website_status")) {
+                        appStateService.currenciesConfig = message.website_status.currencies_config;
+                        $rootScope.$broadcast("website_status", message.website_status);
+                        localStorage.termsConditionsVersion = message.website_status.terms_conditions_version;
+                        var supportedLanguages = message.website_status.supported_languages;
+                        if (supportedLanguages.length) {
+                            supportedLanguagesService.setSupportedLanguages(message.website_status.supported_languages);
+                            $rootScope.$broadcast("supported_languages");
+                        }
+                    } else if (message.hasOwnProperty("error")) {
+                        trackJs.track(message.error.code + ": " + message.error.message);
+                    }
+                    break;
+                case "active_symbols":
+                    {
+                        var markets = message.active_symbols;
+                        var groupedMarkets = _.groupBy(markets, "market");
+                        var openMarkets = {};
+                        Object.keys(groupedMarkets).forEach(function (key, index) {
+                            if (groupedMarkets.hasOwnProperty(key)) {
+                                if (groupedMarkets[key][0].exchange_is_open === 1) {
+                                    openMarkets[key] = groupedMarkets[key];
+                                }
+                            }
+                        });
+                        // if ( !sessionStorage.hasOwnProperty('active_symbols') || sessionStorage.active_symbols != JSON.stringify(openMarkets) ) {
+                        sessionStorage.active_symbols = JSON.stringify(openMarkets);
+                        sessionStorage.all_active_symbols = JSON.stringify(message.active_symbols);
+                        $rootScope.$broadcast("symbols:updated", openMarkets);
+                        // }
+                        break;
+                    }
+                case "asset_index":
+                    // if ( !sessionStorage.hasOwnProperty('asset_index') || sessionStorage.asset_index != JSON.stringify(message.asset_index) ) {
+                    sessionStorage.asset_index = JSON.stringify(message.asset_index);
+                    $rootScope.$broadcast("assetIndex:updated");
+                    // }
+                    break;
+                case "payout_currencies":
+                    $rootScope.$broadcast("currencies", message.payout_currencies);
+                    break;
+                case "proposal":
+                    if (message.proposal) {
+                        $rootScope.$broadcast("proposal", message.proposal, message.req_id);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("proposal:error", message.error, message.req_id);
+                    }
+                    break;
+                case "contracts_for":
+                    {
+                        var symbol = message.echo_req.contracts_for;
+                        if (message.error) {
+                            trackJs.track(message.error.code + ": " + message.error.message + " - " + symbol);
+                            break;
+                        }
+                        var groupedSymbol = _.groupBy(message.contracts_for.available, "contract_category");
+                        $rootScope.$broadcast("symbol", groupedSymbol);
+                        break;
+                    }
+                case "buy":
+                    if (message.error) {
+                        $rootScope.$broadcast("purchase:error", message.error);
+                        alertService.displayError(message.error.message);
+                    } else {
+                        $rootScope.$broadcast("purchase", message);
+                    }
+                    break;
+                case "balance":
+                    if (!message.error) {
+                        $rootScope.$broadcast("balance", message.balance);
+                    }
+                    break;
+                case "tick":
+                    $rootScope.$broadcast("tick", message);
+                    break;
+                case "history":
+                    $rootScope.$broadcast("history", message);
+                    break;
+                case "candles":
+                    $rootScope.$broadcast("candles", message);
+                    break;
+                case "ohlc":
+                    $rootScope.$broadcast("ohlc", message);
+                    break;
+                case "portfolio":
+                    $rootScope.$broadcast("portfolio", message.portfolio);
+                    break;
+                case "profit_table":
+                    if (message.profit_table) {
+                        $rootScope.$broadcast("profit_table:update", message.profit_table, message.req_id);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("profit_table:error", message.error.message);
+                    }
+                    break;
+                case "sell_expired":
+                    $rootScope.$broadcast("sell:expired", message.sell_expired);
+                    break;
+                case "proposal_open_contract":
+                    $rootScope.$broadcast("proposal:open-contract", message.proposal_open_contract, message.req_id);
+                    break;
+                case "landing_company_details":
+                    if (message.landing_company_details) {
+                        $rootScope.$broadcast("landing_company_details", message.landing_company_details);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("landing_company_details:error", message.error.message);
+                    }
+                    break;
+                case "reality_check":
+                    $rootScope.$broadcast("reality_check", message.reality_check);
+                    break;
+                case "verify_email":
+                    if (message.verify_email) {
+                        $rootScope.$broadcast("verify_email", message.verify_email);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("verify_email:error", message.error.details);
+                    }
+                    break;
+                case "residence_list":
+                    $rootScope.$broadcast("residence_list", message.residence_list);
+                    break;
+                case "new_account_virtual":
+                    if (message.new_account_virtual) {
+                        $rootScope.$broadcast("new_account_virtual", message.new_account_virtual);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("new_account_virtual:error", message.error);
+                    }
+                    break;
+                case "get_settings":
+                    if (message.get_settings) {
+                        $rootScope.$broadcast("get_settings", message.get_settings);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("get_settings:error", message.error.message);
+                    }
+                    break;
+                case "landing_company":
+                    if (message.landing_company) {
+                        localStorage.setItem('landingCompanyObject', JSON.stringify(message.landing_company));
+                        $rootScope.$broadcast("landing_company", message.landing_company, message.req_id);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("landing_company:error", message.error.message);
+                    }
+                    break;
+                case "states_list":
+                    $rootScope.$broadcast("states_list", message.states_list);
+                    break;
+                case "new_account_real":
+                    if (message.new_account_real) {
+                        $rootScope.$broadcast("new_account_real", message.new_account_real);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("new_account_real:error", message.error);
+                    }
+                    break;
+                case "new_account_maltainvest":
+                    if (message.new_account_maltainvest) {
+                        $rootScope.$broadcast("new_account_maltainvest", message.new_account_maltainvest);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("new_account_maltainvest:error", message.error);
+                    }
+                    break;
+                case "statement":
+                    if (message.statement) {
+                        $rootScope.$broadcast("statement:update", message.statement, message.req_id);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("statement:error", message.error.message);
+                    }
+                    break;
+                case "get_self_exclusion":
+                    if (message.get_self_exclusion) {
+                        $rootScope.$broadcast("get-self-exclusion", message.get_self_exclusion);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("get-self-exclusion:error", message.error.message);
+                    }
+                    break;
+                case "set_self_exclusion":
+                    if (message.set_self_exclusion) {
+                        $rootScope.$broadcast("set-self-exclusion", message.set_self_exclusion);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("set-self-exclusion:error", message.error.message);
+                    }
+                    break;
+                case "set_settings":
+                    if (message.set_settings) {
+                        $rootScope.$broadcast("set-settings", message.set_settings);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("set-settings:error", message.error);
+                    }
+                    break;
+                case "tnc_approval":
+                    if (message.tnc_approval) {
+                        $rootScope.$broadcast("tnc_approval", message.tnc_approval);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("tnc_approval:error", message.error);
+                    }
+                    break;
+                case "change_password":
+                    if (message.change_password) {
+                        $rootScope.$broadcast("change_password:success", message.change_password);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("change_password:error", message.error);
+                    }
+                    break;
+                case "get_financial_assessment":
+                    if (message.get_financial_assessment) {
+                        $rootScope.$broadcast("get_financial_assessment:success", message.get_financial_assessment);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("get_financial_assessment:error", message.error);
+                    }
+                    break;
+                case "set_financial_assessment":
+                    if (message.set_financial_assessment) {
+                        $rootScope.$broadcast("set_financial_assessment:success", message.set_financial_assessment);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("set_financial_assessment:error", message.error);
+                    }
+                    break;
+                case "get_account_status":
+                    if (message.get_account_status) {
+                        $rootScope.$broadcast("get_account_status", message.get_account_status);
+                    } else if (message.error) {
+                        trackJs.track(message.error.code + ": " + message.error.message);
+                    }
+                    break;
+                case "get_limits":
+                    if (message.get_limits) {
+                        $rootScope.$broadcast("get_limits", message.get_limits);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("get_limits:error", message.error);
+                    }
+                    break;
+                case "trading_times":
+                    if (message.trading_times) {
+                        $rootScope.$broadcast("trading_times:success", message.trading_times);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("trading_times:error", message.error);
+                    }
+                    break;
+                case "forget_all":
+                    $rootScope.$broadcast("forget_all", message.req_id);
+                    break;
+                case "mt5_login_list":
+                    if (message.mt5_login_list) {
+                        $rootScope.$broadcast("mt5_login_list:success", message.mt5_login_list);
+                        localStorage.setItem("mt5LoginList", message.mt5_login_list);
+                    }
+                    break;
+                case "mt5_get_settings":
+                    if (message.mt5_get_settings) {
+                        $rootScope.$broadcast("mt5_get_settings:success", message.mt5_get_settings);
+                    }
+                    break;
+                case "set_account_currency":
+                    if (message.set_account_currency && message.set_account_currency === 1) {
+                        $rootScope.$broadcast("set_account_currency:success", message.echo_req.set_account_currency);
+                    } else if (message.error) {
+                        $rootScope.$broadcast("set_account_currency:error", message.error);
+                    }
+                    break;
+                default:
+            }
+        }
+    };
+
+    websocketService.getServerURL = localStorage.getItem('config.server_url') || config.serverUrl;
+
+    return websocketService;
+}]);
+"use strict";
+
+/**
  * @name accounts controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -10764,52 +10764,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name bgRegexValidate directive
- * @author Morteza Tavnarad
- * @contributors []
- * @since 11/02/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.regex-validate.directives").directive("bgRegexValidate", Validate);
-
-    function Validate() {
-        var directive = {
-            restrict: "A",
-            link: link,
-            require: "ngModel",
-            scope: {
-                regex: "=bgRegexValidate"
-            }
-        };
-
-        return directive;
-
-        function link(scope, elements, attrs, ngModel) {
-            scope.$watch(function () {
-                return ngModel.$viewValue;
-            }, function (newVal, oldVal) {
-                if (_.isEmpty(scope.regex) || _.isEmpty(ngModel.$viewValue)) {
-                    return;
-                }
-
-                var regex = RegExp(scope.regex);
-
-                if (!regex.test(ngModel.$viewValue)) {
-                    ngModel.$setViewValue(oldVal);
-                    ngModel.$render();
-                } else {
-                    ngModel.$setViewValue(regex.exec(ngModel.$viewValue)[0]);
-                    ngModel.$render();
-                }
-            });
-        }
-    }
-})();
-"use strict";
-
-/**
  * @name reality-check controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -11056,6 +11010,52 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             scope: {}
         };
         return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name bgRegexValidate directive
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 11/02/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.regex-validate.directives").directive("bgRegexValidate", Validate);
+
+    function Validate() {
+        var directive = {
+            restrict: "A",
+            link: link,
+            require: "ngModel",
+            scope: {
+                regex: "=bgRegexValidate"
+            }
+        };
+
+        return directive;
+
+        function link(scope, elements, attrs, ngModel) {
+            scope.$watch(function () {
+                return ngModel.$viewValue;
+            }, function (newVal, oldVal) {
+                if (_.isEmpty(scope.regex) || _.isEmpty(ngModel.$viewValue)) {
+                    return;
+                }
+
+                var regex = RegExp(scope.regex);
+
+                if (!regex.test(ngModel.$viewValue)) {
+                    ngModel.$setViewValue(oldVal);
+                    ngModel.$render();
+                } else {
+                    ngModel.$setViewValue(regex.exec(ngModel.$viewValue)[0]);
+                    ngModel.$render();
+                }
+            });
+        }
     }
 })();
 "use strict";
@@ -11438,51 +11438,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name longcode controller
- * @author Morteza Tavnarad
- * @contributors []
- * @since 09/27/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.longcode.controllers").controller("LongcodeController", Longcode);
-
-    function Longcode() {
-        var vm = this;
-    }
-})();
-"use strict";
-
-/**
- * @name longcode direciive
- * @author Morteza Tavnarad
- * @contributors []
- * @since 09/27/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.longcode.directives").directive("bgLongcode", Longcode);
-
-    function Longcode() {
-        var direciive = {
-            restrict: "E",
-            templateUrl: "js/pages/trade/components/longcode/longcode.template.html",
-            controller: "LongcodeController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {
-                purchasedContract: "="
-            }
-        };
-
-        return direciive;
-    }
-})();
-"use strict";
-
-/**
  * @name chart controller
  * @author Morteza Tavanarad
  * @contributors []
@@ -11771,6 +11726,51 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
         };
 
         return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name longcode controller
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.longcode.controllers").controller("LongcodeController", Longcode);
+
+    function Longcode() {
+        var vm = this;
+    }
+})();
+"use strict";
+
+/**
+ * @name longcode direciive
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.longcode.directives").directive("bgLongcode", Longcode);
+
+    function Longcode() {
+        var direciive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/longcode/longcode.template.html",
+            controller: "LongcodeController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {
+                purchasedContract: "="
+            }
+        };
+
+        return direciive;
     }
 })();
 "use strict";
