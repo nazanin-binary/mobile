@@ -61,21 +61,6 @@
 "use strict";
 
 /**
- * @name Contact module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 04/29/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.contact", ["binary.pages.contact.controllers"]);
-
-  angular.module("binary.pages.contact.controllers", []);
-})();
-"use strict";
-
-/**
  * @name Change Password module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -87,6 +72,21 @@
   angular.module("binary.pages.change-password", ["binary.pages.change-password.controllers"]);
 
   angular.module("binary.pages.change-password.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name Contact module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 04/29/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.contact", ["binary.pages.contact.controllers"]);
+
+  angular.module("binary.pages.contact.controllers", []);
 })();
 "use strict";
 
@@ -121,21 +121,6 @@
 "use strict";
 
 /**
- * @name new-account-maltainvest module
- * @author Nazanin Reihanib Haghighi
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.maltainvest-account-opening", []);
-
-  angular.module("binary.pages.maltainvest-account-opening.controllers", []);
-})();
-"use strict";
-
-/**
  * @name Limits module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -151,17 +136,17 @@
 "use strict";
 
 /**
- * @name Notifications module
- * @author Nazanin Reihani Haghighi
+ * @name new-account-maltainvest module
+ * @author Nazanin Reihanib Haghighi
  * @contributors []
- * @since 05/02/2017
+ * @since 08/14/2016
  * @copyright Binary Ltd
  */
 
 (function () {
-  angular.module("binary.pages.notifications", ["binary.pages.notifications.controllers"]);
+  angular.module("binary.pages.maltainvest-account-opening", []);
 
-  angular.module("binary.pages.notifications.controllers", []);
+  angular.module("binary.pages.maltainvest-account-opening.controllers", []);
 })();
 "use strict";
 
@@ -179,6 +164,21 @@
     angular.module("binary.pages.meta-trader.controllers", []);
 
     angular.module("binary.pages.meta-trader.directives", []);
+})();
+"use strict";
+
+/**
+ * @name Notifications module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 05/02/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.notifications", ["binary.pages.notifications.controllers"]);
+
+  angular.module("binary.pages.notifications.controllers", []);
 })();
 "use strict";
 
@@ -215,21 +215,6 @@
 "use strict";
 
 /**
- * @name Redirect Module
- * @author Morteza Tavanarad
- * @contributors []
- * @since 03/03/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.redirect", ["binary.pages.redirect.controllers"]);
-
-  angular.module("binary.pages.redirect.controllers", []);
-})();
-"use strict";
-
-/**
  * @name new-account-real module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -241,6 +226,21 @@
   angular.module("binary.pages.real-account-opening", []);
 
   angular.module("binary.pages.real-account-opening.controllers", []);
+})();
+"use strict";
+
+/**
+ * @name Redirect Module
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 03/03/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.redirect", ["binary.pages.redirect.controllers"]);
+
+  angular.module("binary.pages.redirect.controllers", []);
 })();
 "use strict";
 
@@ -637,6 +637,23 @@
 "use strict";
 
 /**
+ * @name reality-check module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/14/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.reality-check", ["binary.share.components.reality-check.controllers", "binary.share.components.reality-check.directives"]);
+
+    angular.module("binary.share.components.reality-check.controllers", []);
+
+    angular.module("binary.share.components.reality-check.directives", []);
+})();
+"use strict";
+
+/**
  * @name Regex Validate Module
  * @author Morteza Tavnarad
  * @contributors []
@@ -699,23 +716,6 @@
     angular.module("binary.share.components.updater.controllers", []);
 
     angular.module("binary.share.components.updater.directives", []);
-})();
-"use strict";
-
-/**
- * @name reality-check module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.reality-check", ["binary.share.components.reality-check.controllers", "binary.share.components.reality-check.directives"]);
-
-    angular.module("binary.share.components.reality-check.controllers", []);
-
-    angular.module("binary.share.components.reality-check.directives", []);
 })();
 "use strict";
 
@@ -2440,6 +2440,76 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
+ * @name Change Password controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/11/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.change-password.controllers").controller("ChangePasswordController", ChangePassword);
+
+    ChangePassword.$inject = ["$scope", "$timeout", "websocketService", "appStateService", "alertService", "validationService"];
+
+    function ChangePassword($scope, $timeout, websocketService, appStateService, alertService, validationService) {
+        var vm = this;
+        vm.validation = validationService;
+        vm.passwordEqual = false;
+        vm.newPasswordHasError = false;
+        vm.oldPasswordHasError = false;
+        vm.hideInput = false;
+        vm.hideChangedPasswordText = true;
+
+        vm.checkPassword = function () {
+            $scope.$applyAsync(function () {
+                vm.passwordEqual = vm.newPassword === vm.repeatNewPassword;
+            });
+        };
+
+        vm.changePass = function () {
+            websocketService.sendRequestFor.changePassword(vm.currentPassword, vm.newPassword);
+            vm.newPasswordHasError = false;
+            vm.oldPasswordHasError = false;
+            vm.passwordUpdating = true;
+        };
+
+        $scope.$on("change_password:success", function (e, change_password) {
+            appStateService.passwordChanged = true;
+            vm.passwordUpdating = false;
+            $scope.$applyAsync(function () {
+                vm.hideInput = true;
+                vm.hideChangedPasswordText = false;
+            });
+            $timeout(function () {
+                websocketService.logout();
+            }, 5000);
+        });
+
+        $scope.$on("change_password:error", function (e, error) {
+            vm.passwordUpdating = false;
+            if (error.hasOwnProperty("details")) {
+                if (error.details.hasOwnProperty("new_password")) {
+                    $scope.$applyAsync(function () {
+                        vm.newPasswordHasError = true;
+                        vm.newPasswordError = error.details.new_password;
+                    });
+                }
+                if (error.details.hasOwnProperty("old_password")) {
+                    $scope.$applyAsync(function () {
+                        vm.oldPasswordHasError = true;
+                        vm.oldPasswordError = error.details.old_password;
+                    });
+                }
+            } else {
+                alertService.displayError(error.message);
+            }
+        });
+    }
+})();
+"use strict";
+
+/**
  * @name Contact controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2522,76 +2592,6 @@ angular.module("binary").constant("financialInformationOptions", {
                 }
             }
         };
-    }
-})();
-"use strict";
-
-/**
- * @name Change Password controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/11/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.change-password.controllers").controller("ChangePasswordController", ChangePassword);
-
-    ChangePassword.$inject = ["$scope", "$timeout", "websocketService", "appStateService", "alertService", "validationService"];
-
-    function ChangePassword($scope, $timeout, websocketService, appStateService, alertService, validationService) {
-        var vm = this;
-        vm.validation = validationService;
-        vm.passwordEqual = false;
-        vm.newPasswordHasError = false;
-        vm.oldPasswordHasError = false;
-        vm.hideInput = false;
-        vm.hideChangedPasswordText = true;
-
-        vm.checkPassword = function () {
-            $scope.$applyAsync(function () {
-                vm.passwordEqual = vm.newPassword === vm.repeatNewPassword;
-            });
-        };
-
-        vm.changePass = function () {
-            websocketService.sendRequestFor.changePassword(vm.currentPassword, vm.newPassword);
-            vm.newPasswordHasError = false;
-            vm.oldPasswordHasError = false;
-            vm.passwordUpdating = true;
-        };
-
-        $scope.$on("change_password:success", function (e, change_password) {
-            appStateService.passwordChanged = true;
-            vm.passwordUpdating = false;
-            $scope.$applyAsync(function () {
-                vm.hideInput = true;
-                vm.hideChangedPasswordText = false;
-            });
-            $timeout(function () {
-                websocketService.logout();
-            }, 5000);
-        });
-
-        $scope.$on("change_password:error", function (e, error) {
-            vm.passwordUpdating = false;
-            if (error.hasOwnProperty("details")) {
-                if (error.details.hasOwnProperty("new_password")) {
-                    $scope.$applyAsync(function () {
-                        vm.newPasswordHasError = true;
-                        vm.newPasswordError = error.details.new_password;
-                    });
-                }
-                if (error.details.hasOwnProperty("old_password")) {
-                    $scope.$applyAsync(function () {
-                        vm.oldPasswordHasError = true;
-                        vm.oldPasswordError = error.details.old_password;
-                    });
-                }
-            } else {
-                alertService.displayError(error.message);
-            }
-        });
     }
 })();
 "use strict";
@@ -2739,6 +2739,82 @@ angular.module("binary").constant("financialInformationOptions", {
         };
 
         init();
+    }
+})();
+"use strict";
+
+/**
+ * @name Limits controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 01/18/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.limits.controllers").controller("LimitsController", Limits);
+
+    Limits.$inject = ["$scope", "$state", "websocketService", "accountService", "appStateService", "clientService"];
+
+    function Limits($scope, $state, websocketService, accountService, appStateService, clientService) {
+        var vm = this;
+        vm.limits = {};
+        vm.isDataLoaded = false;
+        var account = accountService.getDefault();
+        vm.loginid = account.id;
+        var landingCompany = account.landing_company_name;
+        vm.currency = account.currency && account.currency.length ? account.currency : clientService.landingCompanyValue(landingCompany, 'legal_default_currency');
+
+        var isLandingCompanyOf = function isLandingCompanyOf(targetLandingCompany, accountLandingCompany) {
+            return clientService.isLandingCompanyOf(targetLandingCompany, accountLandingCompany);
+        };
+
+        websocketService.sendRequestFor.accountLimits();
+        $scope.$on("get_limits", function (e, get_limits) {
+            $scope.$applyAsync(function () {
+                vm.limits = get_limits;
+                if (vm.limits.lifetime_limit === 99999999 && vm.limits.num_of_days_limit === 99999999) {
+                    // fully aithenticated
+                    vm.fullyAuthenticated = true;
+                    vm.mxAccount = false;
+                    vm.crAccount = false;
+                    vm.otherAccount = false;
+                } else if (isLandingCompanyOf('iom', landingCompany)) {
+                    // MX accounts
+                    vm.mxAccount = true;
+                    vm.fullyAuthenticated = false;
+                    vm.crAccount = false;
+                    vm.otherAccount = false;
+                } else if (isLandingCompanyOf('costarica', landingCompany) || isLandingCompanyOf('svg', landingCompany)) {
+                    // CR accounts
+                    vm.crAccount = true;
+                    vm.fullyAuthenticated = false;
+                    vm.mxAccount = false;
+                    vm.otherAccount = false;
+                } else {
+                    vm.otherAccount = true;
+                    vm.fullyAuthenticated = false;
+                    vm.mxAccount = false;
+                    vm.crAccount = false;
+                }
+            });
+            vm.isDataLoaded = true;
+        });
+
+        $scope.$on("authorize", function () {
+            if (appStateService.limitsChange) {
+                if (appStateService.virtuality) {
+                    $state.go("trade");
+                } else {
+                    $state.reload();
+                }
+                appStateService.limitsChange = false;
+            }
+        });
+
+        vm.getLanguageId = function (title) {
+            return "limits." + title.replace(/[\s]/g, '_').toLowerCase();
+        };
     }
 })();
 "use strict";
@@ -3027,106 +3103,6 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
- * @name Limits controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 01/18/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.limits.controllers").controller("LimitsController", Limits);
-
-    Limits.$inject = ["$scope", "$state", "websocketService", "accountService", "appStateService", "clientService"];
-
-    function Limits($scope, $state, websocketService, accountService, appStateService, clientService) {
-        var vm = this;
-        vm.limits = {};
-        vm.isDataLoaded = false;
-        var account = accountService.getDefault();
-        vm.loginid = account.id;
-        var landingCompany = account.landing_company_name;
-        vm.currency = account.currency && account.currency.length ? account.currency : clientService.landingCompanyValue(landingCompany, 'legal_default_currency');
-
-        var isLandingCompanyOf = function isLandingCompanyOf(targetLandingCompany, accountLandingCompany) {
-            return clientService.isLandingCompanyOf(targetLandingCompany, accountLandingCompany);
-        };
-
-        websocketService.sendRequestFor.accountLimits();
-        $scope.$on("get_limits", function (e, get_limits) {
-            $scope.$applyAsync(function () {
-                vm.limits = get_limits;
-                if (vm.limits.lifetime_limit === 99999999 && vm.limits.num_of_days_limit === 99999999) {
-                    // fully aithenticated
-                    vm.fullyAuthenticated = true;
-                    vm.mxAccount = false;
-                    vm.crAccount = false;
-                    vm.otherAccount = false;
-                } else if (isLandingCompanyOf('iom', landingCompany)) {
-                    // MX accounts
-                    vm.mxAccount = true;
-                    vm.fullyAuthenticated = false;
-                    vm.crAccount = false;
-                    vm.otherAccount = false;
-                } else if (isLandingCompanyOf('costarica', landingCompany) || isLandingCompanyOf('svg', landingCompany)) {
-                    // CR accounts
-                    vm.crAccount = true;
-                    vm.fullyAuthenticated = false;
-                    vm.mxAccount = false;
-                    vm.otherAccount = false;
-                } else {
-                    vm.otherAccount = true;
-                    vm.fullyAuthenticated = false;
-                    vm.mxAccount = false;
-                    vm.crAccount = false;
-                }
-            });
-            vm.isDataLoaded = true;
-        });
-
-        $scope.$on("authorize", function () {
-            if (appStateService.limitsChange) {
-                if (appStateService.virtuality) {
-                    $state.go("trade");
-                } else {
-                    $state.reload();
-                }
-                appStateService.limitsChange = false;
-            }
-        });
-
-        vm.getLanguageId = function (title) {
-            return "limits." + title.replace(/[\s]/g, '_').toLowerCase();
-        };
-    }
-})();
-"use strict";
-
-/**
- * @name Notifications controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 05/02/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.notifications.controllers").controller("NotificationsController", Notifications);
-
-    Notifications.$inject = ["$scope", "notificationService"];
-
-    function Notifications($scope, notificationService) {
-        var vm = this;
-        $scope.$watch(function () {
-            return notificationService.notices;
-        }, function () {
-            vm.notices = notificationService.notices;
-        });
-    }
-})();
-"use strict";
-
-/**
  * @name MetaTrader Controller
  * @author Morteza Tavanarad
  * @contributors []
@@ -3308,6 +3284,30 @@ angular.module("binary").constant("financialInformationOptions", {
         vm.url += $stateParams.id;
 
         vm.url = $sce.trustAsResourceUrl(vm.url);
+    }
+})();
+"use strict";
+
+/**
+ * @name Notifications controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 05/02/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.notifications.controllers").controller("NotificationsController", Notifications);
+
+    Notifications.$inject = ["$scope", "notificationService"];
+
+    function Notifications($scope, notificationService) {
+        var vm = this;
+        $scope.$watch(function () {
+            return notificationService.notices;
+        }, function () {
+            vm.notices = notificationService.notices;
+        });
     }
 })();
 "use strict";
@@ -3932,38 +3932,6 @@ angular.module("binary").constant("financialInformationOptions", {
         return DataChange;
     }
 })();
-'use strict';
-
-/**
- * @name Redirect Controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 03/03/2018
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module('binary.pages.redirect.controllers').controller("RedirectController", Redirect);
-
-    Redirect.$inject = ['$state'];
-
-    function Redirect($state) {
-        var vm = this;
-
-        vm.init = function () {
-            var url = window.location.href;
-            var result = /^.*\?(.*)$/g.exec(url);
-
-            if (result) {
-                $state.go('signin', { accountTokens: url });
-            } else {
-                $state.go('home');
-            }
-        };
-
-        vm.init();
-    }
-})();
 "use strict";
 
 /**
@@ -4114,6 +4082,38 @@ angular.module("binary").constant("financialInformationOptions", {
             vm.errors = {};
             websocketService.sendRequestFor.residenceListSend();
             vm.readOnly = !isVirtual;
+        };
+
+        vm.init();
+    }
+})();
+'use strict';
+
+/**
+ * @name Redirect Controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 03/03/2018
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module('binary.pages.redirect.controllers').controller("RedirectController", Redirect);
+
+    Redirect.$inject = ['$state'];
+
+    function Redirect($state) {
+        var vm = this;
+
+        vm.init = function () {
+            var url = window.location.href;
+            var result = /^.*\?(.*)$/g.exec(url);
+
+            if (result) {
+                $state.go('signin', { accountTokens: url });
+            } else {
+                $state.go('home');
+            }
         };
 
         vm.init();
@@ -7530,6 +7530,7 @@ angular.module("binary").factory("chartService", ["$rootScope", function ($rootS
     return {
         destroy: destroy,
         drawChart: drawChart,
+        contractCtrls: contractCtrls,
         dragStart: chartDrawer.dragStart,
         dragEnd: chartDrawer.dragEnd,
         zoomIn: chartDrawer.zoomIn,
@@ -10767,6 +10768,257 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
+ * @name reality-check controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/14/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.reality-check.controllers").controller("RealityCheckController", RealityCheck);
+
+    RealityCheck.$inject = ["$scope", "$timeout", "$translate", "$state", "websocketService", "appStateService", "alertService"];
+
+    function RealityCheck($scope, $timeout, $translate, $state, websocketService, appStateService, alertService) {
+        var vm = this;
+        var landingCompanyName = void 0;
+        vm.integerError = false;
+
+        var setInSessions = function setInSessions(key, val) {
+            return sessionStorage.setItem(key, val);
+        };
+        var getFromSessions = function getFromSessions(key) {
+            return sessionStorage.getItem(key);
+        };
+        var removeFromSessions = function removeFromSessions(key) {
+            return sessionStorage.removeItem(key);
+        };
+
+        var hasRealityCheck = function hasRealityCheck() {
+            // if not asked the interval from user and the start time of reality check popups are not set in sessionStorage
+            if (!appStateService.isRealityChecked && _.isEmpty(sessionStorage._interval) === true) {
+                realityCheck();
+            } else if (!appStateService.isRealityChecked && !_.isEmpty(sessionStorage.start)) {
+                // if not asked the interval from user and the start time of reality check popups are set in sessionStorage
+                // happens when user refresh the browser
+                appStateService.isRealityChecked = true;
+                // calculate the difference between time of last popup and current time
+                var timeGap = getFromSessions("start");
+                var thisTime = new Date().getTime();
+                // if the difference above is smaller than the interval set the period for popup timeout to remained time
+                if (getFromSessions("_interval") * 60000 - (thisTime - timeGap) > 0) {
+                    var period = getFromSessions("_interval") * 60000 - (thisTime - timeGap);
+                    vm.realityCheckTimeout = $timeout(getRealityCheck, period);
+                }
+            } else if (!_.isEmpty(sessionStorage._interval)) {
+                // if user did not refresh the app and the interval is set
+                var _period = getFromSessions("_interval") * 60000;
+                vm.realityCheckTimeout = $timeout(getRealityCheck, _period);
+            }
+        };
+
+        var makePopupHidden = function makePopupHidden() {
+            $(".popup-container").removeClass("popup-showing");
+            $("body").removeClass("popup-open");
+            $(".backdrop").removeClass("visible");
+        };
+
+        $scope.$on("authorize", function (e, authorize) {
+            vm.sessionLoginId = authorize.loginid;
+            if (!appStateService.realityCheckLogin) {
+                appStateService.realityCheckLogin = true;
+                // check if user is not already authorized, account is real money account  & is not changed in app
+                if (!appStateService.isRealityChecked && authorize.is_virtual === 0 && !appStateService.isChangedAccount) {
+                    landingCompanyName = authorize.landing_company_name;
+                    websocketService.sendRequestFor.landingCompanyDetails(landingCompanyName);
+                } else if (appStateService.isRealityChecked && appStateService.isChangedAccount && authorize.is_virtual === 1) {
+                    // check if user is already authorized, account changed and is virtual money account
+                    $timeout.cancel(vm.realityCheckTimeout);
+                    appStateService.isChangedAccount = false;
+                    appStateService.isRealityChecked = true;
+                    if (!_.isEmpty(sessionStorage.realityCheckStart)) {
+                        removeFromSessions('realityCheckStart');
+                    }
+                    if (!_.isEmpty(sessionStorage.start)) {
+                        removeFromSessions('start');
+                    }
+                } else if (appStateService.isRealityChecked && appStateService.isChangedAccount && authorize.is_virtual === 0) {
+                    // check if account is changed and is real money account
+                    if (vm.realityCheckTimeout) {
+                        $timeout.cancel(vm.realityCheckTimeout);
+                    }
+                    if (!_.isEmpty(sessionStorage.realityCheckStart)) {
+                        removeFromSessions('realityCheckStart');
+                    }
+                    if (!_.isEmpty(sessionStorage.start)) {
+                        removeFromSessions('start');
+                    }
+                    appStateService.isRealityChecked = false;
+                    landingCompanyName = authorize.landing_company_name;
+                    websocketService.sendRequestFor.landingCompanyDetails(landingCompanyName);
+                    appStateService.isChangedAccount = false;
+                } else if (!appStateService.isRealityChecked && appStateService.isChangedAccount && authorize.is_virtual === 0) {
+                    if (vm.realityCheckTimeout) {
+                        $timeout.cancel(vm.realityCheckTimeout);
+                    }
+                    if (!_.isEmpty(sessionStorage.realityCheckStart)) {
+                        removeFromSessions('realityCheckStart');
+                    }
+                    if (!_.isEmpty(sessionStorage.start)) {
+                        removeFromSessions('start');
+                    }
+                    appStateService.isRealityChecked = false;
+                    landingCompanyName = authorize.landing_company_name;
+                    websocketService.sendRequestFor.landingCompanyDetails(landingCompanyName);
+                    appStateService.isChangedAccount = false;
+                }
+            }
+        });
+
+        $scope.$on("landing_company_details", function (e, landingCompanyDetails) {
+            if (landingCompanyDetails.has_reality_check === 1) hasRealityCheck();
+        });
+
+        var realityCheck = function realityCheck() {
+            appStateService.isRealityChecked = true;
+            vm.data = {};
+            vm.data.interval = 60;
+            if (!appStateService.isPopupOpen) {
+                appStateService.isPopupOpen = true;
+                alertService.displayRealitCheckInterval($translate.instant("reality-check.title"), "reality-check get-interval", $scope, "js/share/components/reality-check/interval-popup.template.html", [{
+                    text: $translate.instant("reality-check.continue"),
+                    type: "button-positive",
+                    onTap: function onTap(e) {
+                        if (vm.data.interval <= 60 && vm.data.interval >= 10 && !vm.integerError) {
+                            setInSessions('_interval', vm.data.interval);
+                            vm.data.start_interval = new Date().getTime();
+                            setInSessions('start', vm.data.start_interval);
+                            hasRealityCheck();
+                            appStateService.isPopupOpen = false;
+                            setInSessions("realityCheckStart", Date.now());
+                        } else {
+                            e.preventDefault();
+                        }
+                    }
+                }]);
+            }
+        };
+
+        var getLastInterval = function getLastInterval() {
+            removeFromSessions("_interval");
+            setInSessions('_interval', vm.data.interval);
+        };
+
+        $scope.$on("reality_check", function (e, reality_check) {
+            alertRealityCheck(reality_check);
+        });
+
+        var getRealityCheck = function getRealityCheck() {
+            return websocketService.sendRequestFor.realityCheck();
+        };
+
+        var sessionTime = function sessionTime() {
+            vm.realityCheckItems.start_time = getFromSessions('realityCheckStart');
+            vm.now = Date.now();
+            var duration = vm.now - vm.realityCheckItems.start_time;
+            vm.realityCheckItems.days = Math.floor(duration / 864e5);
+            var hour = duration - vm.realityCheckItems.days * 864e5;
+            vm.realityCheckItems.hours = Math.floor(hour / 36e5);
+            var min = duration - (vm.realityCheckItems.days * 864e5 + vm.realityCheckItems.hours * 36e5);
+            vm.realityCheckItems.minutes = Math.floor(min / 60000);
+        };
+
+        vm.logout = function () {
+            alertService.confirmRemoveAllAccount(function (res) {
+                if (typeof res !== "boolean") {
+                    if (res === 1) res = true;else res = false;
+                }
+                if (res) {
+                    websocketService.logout();
+                } else {
+                    appStateService.isPopupOpen = false;
+                    hasRealityCheck();
+                }
+            });
+        };
+
+        var alertRealityCheck = function alertRealityCheck(reality_check) {
+            removeFromSessions("start");
+            vm.realityCheckItems = reality_check;
+            if (vm.sessionLoginId === vm.realityCheckItems.loginid && !appStateService.isPopupOpen) {
+                sessionTime();
+                vm.data = {};
+                vm.data.interval = parseInt(getFromSessions("_interval"));
+                $timeout.cancel(vm.realityCheckTimeout);
+                appStateService.isPopupOpen = true;
+                alertService.displayRealityCheckResult($translate.instant("reality-check.title"), "reality-check result-popup", $scope, "js/share/components/reality-check/reality-check-result.template.html", [{
+                    text: $translate.instant("reality-check.logout"),
+                    type: "button-secondary",
+                    onTap: function onTap() {
+                        vm.logout();
+                    }
+                }, {
+                    text: $translate.instant("reality-check.view_statement"),
+                    type: "button-positive",
+                    onTap: function onTap(e) {
+                        $state.go("statement");
+                        makePopupHidden();
+                        e.preventDefault();
+                    }
+                }, {
+                    text: $translate.instant("reality-check.continue"),
+                    type: "button-positive",
+                    onTap: function onTap(e) {
+                        if (vm.data.interval <= 60 && vm.data.interval >= 10 && !vm.integerError) {
+                            if (vm.sessionLoginId === vm.realityCheckItems.loginid) {
+                                getLastInterval(vm.data.interval);
+                                vm.data.start_interval = new Date().getTime();
+                                setInSessions('start', vm.data.start_interval);
+                                hasRealityCheck();
+                                appStateService.isPopupOpen = false;
+                            }
+                        } else {
+                            e.preventDefault();
+                        }
+                    }
+                }]);
+            }
+        };
+
+        $scope.$watch("vm.data.interval", function () {
+            vm.integerError = appStateService.isPopupOpen && !(Math.floor(vm.data.interval) === vm.data.interval && $.isNumeric(vm.data.interval));
+        });
+    }
+})();
+"use strict";
+
+/**
+ * @name reality-check directive
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/14/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.reality-check.directives").directive("bgRealityCheck", RealityCheck);
+
+    function RealityCheck() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/share/components/reality-check/reality-check.template.html",
+            controller: "RealityCheckController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
+        };
+        return directive;
+    }
+})();
+"use strict";
+
+/**
  * @name bgRegexValidate directive
  * @author Morteza Tavnarad
  * @contributors []
@@ -11021,257 +11273,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             scope: {}
         };
 
-        return directive;
-    }
-})();
-"use strict";
-
-/**
- * @name reality-check controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.reality-check.controllers").controller("RealityCheckController", RealityCheck);
-
-    RealityCheck.$inject = ["$scope", "$timeout", "$translate", "$state", "websocketService", "appStateService", "alertService"];
-
-    function RealityCheck($scope, $timeout, $translate, $state, websocketService, appStateService, alertService) {
-        var vm = this;
-        var landingCompanyName = void 0;
-        vm.integerError = false;
-
-        var setInSessions = function setInSessions(key, val) {
-            return sessionStorage.setItem(key, val);
-        };
-        var getFromSessions = function getFromSessions(key) {
-            return sessionStorage.getItem(key);
-        };
-        var removeFromSessions = function removeFromSessions(key) {
-            return sessionStorage.removeItem(key);
-        };
-
-        var hasRealityCheck = function hasRealityCheck() {
-            // if not asked the interval from user and the start time of reality check popups are not set in sessionStorage
-            if (!appStateService.isRealityChecked && _.isEmpty(sessionStorage._interval) === true) {
-                realityCheck();
-            } else if (!appStateService.isRealityChecked && !_.isEmpty(sessionStorage.start)) {
-                // if not asked the interval from user and the start time of reality check popups are set in sessionStorage
-                // happens when user refresh the browser
-                appStateService.isRealityChecked = true;
-                // calculate the difference between time of last popup and current time
-                var timeGap = getFromSessions("start");
-                var thisTime = new Date().getTime();
-                // if the difference above is smaller than the interval set the period for popup timeout to remained time
-                if (getFromSessions("_interval") * 60000 - (thisTime - timeGap) > 0) {
-                    var period = getFromSessions("_interval") * 60000 - (thisTime - timeGap);
-                    vm.realityCheckTimeout = $timeout(getRealityCheck, period);
-                }
-            } else if (!_.isEmpty(sessionStorage._interval)) {
-                // if user did not refresh the app and the interval is set
-                var _period = getFromSessions("_interval") * 60000;
-                vm.realityCheckTimeout = $timeout(getRealityCheck, _period);
-            }
-        };
-
-        var makePopupHidden = function makePopupHidden() {
-            $(".popup-container").removeClass("popup-showing");
-            $("body").removeClass("popup-open");
-            $(".backdrop").removeClass("visible");
-        };
-
-        $scope.$on("authorize", function (e, authorize) {
-            vm.sessionLoginId = authorize.loginid;
-            if (!appStateService.realityCheckLogin) {
-                appStateService.realityCheckLogin = true;
-                // check if user is not already authorized, account is real money account  & is not changed in app
-                if (!appStateService.isRealityChecked && authorize.is_virtual === 0 && !appStateService.isChangedAccount) {
-                    landingCompanyName = authorize.landing_company_name;
-                    websocketService.sendRequestFor.landingCompanyDetails(landingCompanyName);
-                } else if (appStateService.isRealityChecked && appStateService.isChangedAccount && authorize.is_virtual === 1) {
-                    // check if user is already authorized, account changed and is virtual money account
-                    $timeout.cancel(vm.realityCheckTimeout);
-                    appStateService.isChangedAccount = false;
-                    appStateService.isRealityChecked = true;
-                    if (!_.isEmpty(sessionStorage.realityCheckStart)) {
-                        removeFromSessions('realityCheckStart');
-                    }
-                    if (!_.isEmpty(sessionStorage.start)) {
-                        removeFromSessions('start');
-                    }
-                } else if (appStateService.isRealityChecked && appStateService.isChangedAccount && authorize.is_virtual === 0) {
-                    // check if account is changed and is real money account
-                    if (vm.realityCheckTimeout) {
-                        $timeout.cancel(vm.realityCheckTimeout);
-                    }
-                    if (!_.isEmpty(sessionStorage.realityCheckStart)) {
-                        removeFromSessions('realityCheckStart');
-                    }
-                    if (!_.isEmpty(sessionStorage.start)) {
-                        removeFromSessions('start');
-                    }
-                    appStateService.isRealityChecked = false;
-                    landingCompanyName = authorize.landing_company_name;
-                    websocketService.sendRequestFor.landingCompanyDetails(landingCompanyName);
-                    appStateService.isChangedAccount = false;
-                } else if (!appStateService.isRealityChecked && appStateService.isChangedAccount && authorize.is_virtual === 0) {
-                    if (vm.realityCheckTimeout) {
-                        $timeout.cancel(vm.realityCheckTimeout);
-                    }
-                    if (!_.isEmpty(sessionStorage.realityCheckStart)) {
-                        removeFromSessions('realityCheckStart');
-                    }
-                    if (!_.isEmpty(sessionStorage.start)) {
-                        removeFromSessions('start');
-                    }
-                    appStateService.isRealityChecked = false;
-                    landingCompanyName = authorize.landing_company_name;
-                    websocketService.sendRequestFor.landingCompanyDetails(landingCompanyName);
-                    appStateService.isChangedAccount = false;
-                }
-            }
-        });
-
-        $scope.$on("landing_company_details", function (e, landingCompanyDetails) {
-            if (landingCompanyDetails.has_reality_check === 1) hasRealityCheck();
-        });
-
-        var realityCheck = function realityCheck() {
-            appStateService.isRealityChecked = true;
-            vm.data = {};
-            vm.data.interval = 60;
-            if (!appStateService.isPopupOpen) {
-                appStateService.isPopupOpen = true;
-                alertService.displayRealitCheckInterval($translate.instant("reality-check.title"), "reality-check get-interval", $scope, "js/share/components/reality-check/interval-popup.template.html", [{
-                    text: $translate.instant("reality-check.continue"),
-                    type: "button-positive",
-                    onTap: function onTap(e) {
-                        if (vm.data.interval <= 60 && vm.data.interval >= 10 && !vm.integerError) {
-                            setInSessions('_interval', vm.data.interval);
-                            vm.data.start_interval = new Date().getTime();
-                            setInSessions('start', vm.data.start_interval);
-                            hasRealityCheck();
-                            appStateService.isPopupOpen = false;
-                            setInSessions("realityCheckStart", Date.now());
-                        } else {
-                            e.preventDefault();
-                        }
-                    }
-                }]);
-            }
-        };
-
-        var getLastInterval = function getLastInterval() {
-            removeFromSessions("_interval");
-            setInSessions('_interval', vm.data.interval);
-        };
-
-        $scope.$on("reality_check", function (e, reality_check) {
-            alertRealityCheck(reality_check);
-        });
-
-        var getRealityCheck = function getRealityCheck() {
-            return websocketService.sendRequestFor.realityCheck();
-        };
-
-        var sessionTime = function sessionTime() {
-            vm.realityCheckItems.start_time = getFromSessions('realityCheckStart');
-            vm.now = Date.now();
-            var duration = vm.now - vm.realityCheckItems.start_time;
-            vm.realityCheckItems.days = Math.floor(duration / 864e5);
-            var hour = duration - vm.realityCheckItems.days * 864e5;
-            vm.realityCheckItems.hours = Math.floor(hour / 36e5);
-            var min = duration - (vm.realityCheckItems.days * 864e5 + vm.realityCheckItems.hours * 36e5);
-            vm.realityCheckItems.minutes = Math.floor(min / 60000);
-        };
-
-        vm.logout = function () {
-            alertService.confirmRemoveAllAccount(function (res) {
-                if (typeof res !== "boolean") {
-                    if (res === 1) res = true;else res = false;
-                }
-                if (res) {
-                    websocketService.logout();
-                } else {
-                    appStateService.isPopupOpen = false;
-                    hasRealityCheck();
-                }
-            });
-        };
-
-        var alertRealityCheck = function alertRealityCheck(reality_check) {
-            removeFromSessions("start");
-            vm.realityCheckItems = reality_check;
-            if (vm.sessionLoginId === vm.realityCheckItems.loginid && !appStateService.isPopupOpen) {
-                sessionTime();
-                vm.data = {};
-                vm.data.interval = parseInt(getFromSessions("_interval"));
-                $timeout.cancel(vm.realityCheckTimeout);
-                appStateService.isPopupOpen = true;
-                alertService.displayRealityCheckResult($translate.instant("reality-check.title"), "reality-check result-popup", $scope, "js/share/components/reality-check/reality-check-result.template.html", [{
-                    text: $translate.instant("reality-check.logout"),
-                    type: "button-secondary",
-                    onTap: function onTap() {
-                        vm.logout();
-                    }
-                }, {
-                    text: $translate.instant("reality-check.view_statement"),
-                    type: "button-positive",
-                    onTap: function onTap(e) {
-                        $state.go("statement");
-                        makePopupHidden();
-                        e.preventDefault();
-                    }
-                }, {
-                    text: $translate.instant("reality-check.continue"),
-                    type: "button-positive",
-                    onTap: function onTap(e) {
-                        if (vm.data.interval <= 60 && vm.data.interval >= 10 && !vm.integerError) {
-                            if (vm.sessionLoginId === vm.realityCheckItems.loginid) {
-                                getLastInterval(vm.data.interval);
-                                vm.data.start_interval = new Date().getTime();
-                                setInSessions('start', vm.data.start_interval);
-                                hasRealityCheck();
-                                appStateService.isPopupOpen = false;
-                            }
-                        } else {
-                            e.preventDefault();
-                        }
-                    }
-                }]);
-            }
-        };
-
-        $scope.$watch("vm.data.interval", function () {
-            vm.integerError = appStateService.isPopupOpen && !(Math.floor(vm.data.interval) === vm.data.interval && $.isNumeric(vm.data.interval));
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name reality-check directive
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.reality-check.directives").directive("bgRealityCheck", RealityCheck);
-
-    function RealityCheck() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/share/components/reality-check/reality-check.template.html",
-            controller: "RealityCheckController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
         return directive;
     }
 })();
@@ -12957,8 +12958,7 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
                 });
                 var req_id = Date.now();
                 proposalService.openContractId = req_id;
-                var params = { subscribe: 1, req_id: req_id };
-                websocketService.sendRequestFor.openContract(response.buy.contract_id, params);
+                websocketService.sendRequestFor.openContract(response.buy.contract_id, { req_id: req_id });
             }
         });
 
