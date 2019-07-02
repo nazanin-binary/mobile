@@ -471,6 +471,21 @@
 "use strict";
 
 /**
+ * @name big number Module
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 06/09/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.share.components.big-number", ["binary.share.components.big-number.directives"]);
+
+  angular.module("binary.share.components.big-number.directives", []);
+})();
+"use strict";
+
+/**
  * @name Check User Status module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -522,6 +537,23 @@
 "use strict";
 
 /**
+ * @name logout module
+ * @author
+ * @contributors []
+ * @since 08/14/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.logout", ["binary.share.components.logout.controllers", "binary.share.components.logout.directives"]);
+
+    angular.module("binary.share.components.logout.controllers", []);
+
+    angular.module("binary.share.components.logout.directives", []);
+})();
+"use strict";
+
+/**
  * @name language module
  * @author Morteza Tavnarad
  * @contributors []
@@ -536,23 +568,6 @@
     angular.module("binary.share.components.language.directives", []);
 
     angular.module("binary.share.components.language.controllers", []);
-})();
-"use strict";
-
-/**
- * @name logout module
- * @author
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.logout", ["binary.share.components.logout.controllers", "binary.share.components.logout.directives"]);
-
-    angular.module("binary.share.components.logout.controllers", []);
-
-    angular.module("binary.share.components.logout.directives", []);
 })();
 "use strict";
 
@@ -585,21 +600,6 @@
     angular.module("binary.share.components.notification-icon.controllers", []);
 
     angular.module("binary.share.components.notification-icon.directives", []);
-})();
-"use strict";
-
-/**
- * @name big number Module
- * @author Morteza Tavanarad
- * @contributors []
- * @since 06/09/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.share.components.big-number", ["binary.share.components.big-number.directives"]);
-
-  angular.module("binary.share.components.big-number.directives", []);
 })();
 "use strict";
 
@@ -9622,6 +9622,74 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
+ * @name big number Controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 06/09/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.big-number.directives").directive("bgBigNumber", BigNumber);
+
+    BigNumber.$inject = [];
+
+    function BigNumber() {
+        var directive = {
+            restrict: "A",
+            require: "?ngModel",
+            link: link
+        };
+
+        function link(scope, element, attr, ctrl) {
+            if (ctrl) {
+                ctrl.$formatters.push(function (modelValue) {
+                    if (angular.isDefined(modelValue) && _.isEmpty(modelValue.toString())) {
+                        return null;
+                    }
+                    return modelValue;
+                });
+
+                ctrl.$parsers.push(function (viewValue) {
+                    if (!viewValue) {
+                        return null;
+                    }
+                    return viewValue;
+                });
+
+                var minVal = void 0;
+                var maxVal = void 0;
+
+                if (angular.isDefined(attr.min) || attr.ngMin) {
+                    ctrl.$validators.min = function (value) {
+                        return ctrl.$isEmpty(value) || angular.isUndefined(minVal) || value >= parseFloat(minVal);
+                    };
+
+                    attr.$observe("min", function (val) {
+                        minVal = val;
+                        ctrl.$validate();
+                    });
+                }
+
+                if (angular.isDefined(attr.max) || attr.ngMax) {
+                    ctrl.$validators.max = function (value) {
+                        return ctrl.$isEmpty(value) || angular.isUndefined(maxVal) || value <= parseFloat(maxVal);
+                    };
+
+                    attr.$observe("max", function (val) {
+                        maxVal = val;
+                        ctrl.$validate();
+                    });
+                }
+            }
+        }
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
  * @name Check User Status controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -10284,6 +10352,61 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
+ * @name logout controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/15/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.logout.controllers").controller("LogoutController", Logout);
+
+    Logout.$inject = ["websocketService", "alertService"];
+
+    function Logout(websocketService, alertService) {
+        var vm = this;
+        vm.logout = function (res) {
+            alertService.confirmRemoveAllAccount(function (res) {
+                if (typeof res !== "boolean") {
+                    if (res === 1) res = true;else res = false;
+                }
+
+                if (res) {
+                    websocketService.logout();
+                }
+            });
+        };
+    }
+})();
+"use strict";
+
+/**
+ * @name logout directive
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 08/14/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.logout.directives").directive("bgLogout", Logout);
+
+    function Logout() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/share/components/logout/logout.template.html",
+            controller: "LogoutController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
+        };
+        return directive;
+    }
+})();
+"use strict";
+
+/**
  * @name language-list directive
  * @author Morteza Tavnarad
  * @contributors []
@@ -10395,61 +10518,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             bindToController: true
         };
 
-        return directive;
-    }
-})();
-"use strict";
-
-/**
- * @name logout controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/15/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.logout.controllers").controller("LogoutController", Logout);
-
-    Logout.$inject = ["websocketService", "alertService"];
-
-    function Logout(websocketService, alertService) {
-        var vm = this;
-        vm.logout = function (res) {
-            alertService.confirmRemoveAllAccount(function (res) {
-                if (typeof res !== "boolean") {
-                    if (res === 1) res = true;else res = false;
-                }
-
-                if (res) {
-                    websocketService.logout();
-                }
-            });
-        };
-    }
-})();
-"use strict";
-
-/**
- * @name logout directive
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 08/14/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.logout.directives").directive("bgLogout", Logout);
-
-    function Logout() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/share/components/logout/logout.template.html",
-            controller: "LogoutController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
         return directive;
     }
 })();
@@ -10590,74 +10658,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             scope: {},
             bindToController: true
         };
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
- * @name big number Controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 06/09/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.big-number.directives").directive("bgBigNumber", BigNumber);
-
-    BigNumber.$inject = [];
-
-    function BigNumber() {
-        var directive = {
-            restrict: "A",
-            require: "?ngModel",
-            link: link
-        };
-
-        function link(scope, element, attr, ctrl) {
-            if (ctrl) {
-                ctrl.$formatters.push(function (modelValue) {
-                    if (angular.isDefined(modelValue) && _.isEmpty(modelValue.toString())) {
-                        return null;
-                    }
-                    return modelValue;
-                });
-
-                ctrl.$parsers.push(function (viewValue) {
-                    if (!viewValue) {
-                        return null;
-                    }
-                    return viewValue;
-                });
-
-                var minVal = void 0;
-                var maxVal = void 0;
-
-                if (angular.isDefined(attr.min) || attr.ngMin) {
-                    ctrl.$validators.min = function (value) {
-                        return ctrl.$isEmpty(value) || angular.isUndefined(minVal) || value >= parseFloat(minVal);
-                    };
-
-                    attr.$observe("min", function (val) {
-                        minVal = val;
-                        ctrl.$validate();
-                    });
-                }
-
-                if (angular.isDefined(attr.max) || attr.ngMax) {
-                    ctrl.$validators.max = function (value) {
-                        return ctrl.$isEmpty(value) || angular.isUndefined(maxVal) || value <= parseFloat(maxVal);
-                    };
-
-                    attr.$observe("max", function (val) {
-                        maxVal = val;
-                        ctrl.$validate();
-                    });
-                }
-            }
-        }
 
         return directive;
     }
@@ -11455,6 +11455,7 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 
     function Chart($scope, chartService, websocketService, proposalService) {
         var vm = this;
+        vm.addedContracts = [];
 
         $scope.$on("$destroy", function (e, value) {
             websocketService.sendRequestFor.forgetTicks();
@@ -11463,16 +11464,19 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 
         $scope.$on("proposal:open-contract", function (e, contract, req_id) {
             if (contract && proposalService.openContractId === req_id) {
-                var contractId = contract.contract_id;
-
+                var contractId = vm.purchasedContract.contractId;
+                if (vm.addedContracts.indexOf(contractId) > -1) return;
                 if (typeof contractId === "string" && !_.isEmpty(contractId) || contractId) {
-                    chartService.addContract({
-                        startTime: contract.date_start + 1,
-                        duration: parseInt(vm.proposal.duration),
-                        type: vm.proposal.tradeType === "Higher/Lower" ? contract.contract_type + "HL" : contract.contract_type,
-                        selectedTick: vm.proposal.tradeType === "High/Low Ticks" ? vm.proposal.selected_tick : null,
-                        barrier: vm.proposal.barrier
-                    });
+                    if (contract.contract_id.toString() === contractId.toString()) {
+                        vm.addedContracts.push(contractId);
+                        chartService.addContract({
+                            startTime: contract.date_start + 1,
+                            duration: parseInt(vm.proposal.duration),
+                            type: vm.proposal.tradeType === "Higher/Lower" ? contract.contract_type + "HL" : contract.contract_type,
+                            selectedTick: vm.proposal.tradeType === "High/Low Ticks" ? vm.proposal.selected_tick : null,
+                            barrier: vm.proposal.barrier
+                        });
+                    }
                 }
             }
         });
@@ -12957,7 +12961,7 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
                 });
                 var req_id = Date.now();
                 proposalService.openContractId = req_id;
-                websocketService.sendRequestFor.openContract(response.buy.contract_id, { req_id: req_id });
+                websocketService.sendRequestFor.openContract(response.buy.contract_id, { req_id: req_id, subscribe: 1 });
             }
         });
 
