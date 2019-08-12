@@ -1,6 +1,21 @@
 "use strict";
 
 /**
+ * @name Account management module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 10/28/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.accounts-management", ["binary.pages.accounts-management.controllers"]);
+
+  angular.module("binary.pages.accounts-management.controllers", []);
+})();
+"use strict";
+
+/**
  * @name account categorisation module
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -42,21 +57,6 @@
   angular.module("binary.pages.authentication", ["binary.pages.authentication.controllers"]);
 
   angular.module("binary.pages.authentication.controllers", []);
-})();
-"use strict";
-
-/**
- * @name Account management module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 10/28/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.accounts-management", ["binary.pages.accounts-management.controllers"]);
-
-  angular.module("binary.pages.accounts-management.controllers", []);
 })();
 "use strict";
 
@@ -686,23 +686,6 @@
 "use strict";
 
 /**
- * @name updater module
- * @author Morteza Tavanarad
- * @contributors []
- * @since 12/20/2015
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.updater", ["binary.share.components.updater.controllers", "binary.share.components.updater.directives"]);
-
-    angular.module("binary.share.components.updater.controllers", []);
-
-    angular.module("binary.share.components.updater.directives", []);
-})();
-"use strict";
-
-/**
  * @name spinner-logo module
  * @author Morteza Tavnarad
  * @contributors []
@@ -720,19 +703,32 @@
 "use strict";
 
 /**
- * @name longcode module
- * @author Morteza Tavnarad
+ * @name updater module
+ * @author Morteza Tavanarad
  * @contributors []
- * @since 09/22/2016
+ * @since 12/20/2015
  * @copyright Binary Ltd
  */
 
 (function () {
-    angular.module("binary.pages.trade.components.longcode", ["binary.pages.trade.components.longcode.controllers", "binary.pages.trade.components.longcode.directives"]);
+    angular.module("binary.share.components.updater", ["binary.share.components.updater.controllers", "binary.share.components.updater.directives"]);
 
-    angular.module("binary.pages.trade.components.longcode.controllers", []);
+    angular.module("binary.share.components.updater.controllers", []);
 
-    angular.module("binary.pages.trade.components.longcode.directives", []);
+    angular.module("binary.share.components.updater.directives", []);
+})();
+"use strict";
+
+/**
+ * @name Oauth module
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 8/13/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+  angular.module("binary.pages.signin.components.oauth", []);
 })();
 "use strict";
 
@@ -752,6 +748,23 @@
     angular.module("binary.pages.trade.components.chart.directives", []);
 
     angular.module("binary.pages.trade.components.chart.services", []);
+})();
+"use strict";
+
+/**
+ * @name longcode module
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/22/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.longcode", ["binary.pages.trade.components.longcode.controllers", "binary.pages.trade.components.longcode.directives"]);
+
+    angular.module("binary.pages.trade.components.longcode.controllers", []);
+
+    angular.module("binary.pages.trade.components.longcode.directives", []);
 })();
 "use strict";
 
@@ -805,19 +818,6 @@
     angular.module("binary.pages.trade.components.purchase.controllers", []);
 
     angular.module("binary.pages.trade.components.purchase.directives", []);
-})();
-"use strict";
-
-/**
- * @name Oauth module
- * @author Morteza Tavanarad
- * @contributors []
- * @since 8/13/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-  angular.module("binary.pages.signin.components.oauth", []);
 })();
 "use strict";
 
@@ -1950,6 +1950,233 @@ angular.module("binary").constant("financialInformationOptions", {
 "use strict";
 
 /**
+ * @name Accounts management controller
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 10/28/2017
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.accounts-management.controllers").controller("AccountsManagementController", AccountsManagement);
+
+    AccountsManagement.$inject = ["$scope", "$state", "$filter", "$timeout", "$translate", "appStateService", "accountService", "clientService", "websocketService", "alertService"];
+
+    function AccountsManagement($scope, $state, $filter, $timeout, $translate, appStateService, accountService, clientService, websocketService, alertService) {
+        var vm = this;
+        var hasRealAccount = false;
+        var upgradingRealAccountDirectly = false;
+        vm.upgradeButtonDisabled = false;
+        var activeMarkets = {
+            commodities: $translate.instant('accounts-management.commodities'),
+            forex: $translate.instant('accounts-management.forex'),
+            indices: $translate.instant('accounts-management.indices'),
+            stocks: $translate.instant('accounts-management.stocks'),
+            volidx: $translate.instant('accounts-management.volidx')
+        };
+
+        var requiredDirectUpgradeFields = ['salutation', 'first_name', 'last_name', 'date_of_birth', 'residence', 'place_of_birth', 'address_line_1', 'address_city', 'phone', 'account_opening_reason'];
+
+        var directUpgradeData = {
+            salutation: '',
+            first_name: '',
+            last_name: '',
+            date_of_birth: '',
+            place_of_birth: '',
+            residence: '',
+            address_line_1: '',
+            address_line_2: '',
+            address_city: '',
+            address_state: '',
+            address_postcode: '',
+            phone: '',
+            account_opening_reason: ''
+        };
+
+        var filterMarkets = function filterMarkets(markets) {
+            var availableMarkets = [];
+            _.forEach(markets, function (market) {
+                if (market in activeMarkets && _.indexOf(availableMarkets, activeMarkets[market]) < 0) {
+                    availableMarkets.push(activeMarkets[market]);
+                }
+            });
+            return availableMarkets;
+        };
+
+        var isCryptocurrency = function isCryptocurrency(currencyConfig, curr) {
+            return (/crypto/i.test(currencyConfig[curr].type)
+            );
+        };
+
+        var getNextAccountTitle = function getNextAccountTitle(typeOfNextAccount) {
+            var nextAccount = void 0;
+            if (typeOfNextAccount === 'real') {
+                nextAccount = $translate.instant('accounts-management.account_real');
+            } else if (typeOfNextAccount === 'financial') {
+                nextAccount = $translate.instant('accounts-management.account_financial');
+            }
+            return nextAccount;
+        };
+
+        var getCurrenciesForNewAccount = function getCurrenciesForNewAccount(currencies) {
+            var currencyConfig = appStateService.currenciesConfig;
+            var currenciesLength = currencies.length;
+            var currencyOptions = [];
+            for (var i = 0; i < currenciesLength; i++) {
+                var currencyObject = {};
+                var curr = currencies[i];
+                currencyObject.name = curr;
+                // adding translate labels to currencies
+                currencyObject.currencyGroup = isCryptocurrency(currencyConfig, curr) ? $translate.instant('accounts-management.crypto_currencies') : $translate.instant('accounts-management.fiat_currencies');
+                currencyOptions.push(currencyObject);
+            }
+            return currencyOptions;
+        };
+
+        var accountType = function accountType(landingCompany) {
+            return clientService.getAccountType(landingCompany);
+        };
+
+        var getAvailableMarkets = function getAvailableMarkets(landingCompany) {
+            var legalAllowedMarkets = clientService.landingCompanyValue(landingCompany, 'legal_allowed_markets');
+            var availableMarkets = [];
+            if (Array.isArray(legalAllowedMarkets) && legalAllowedMarkets.length) {
+                availableMarkets = _.join(filterMarkets(legalAllowedMarkets), ', ');
+            }
+            return availableMarkets;
+        };
+
+        var getExistingAccounts = function getExistingAccounts() {
+            var existingAccounts = [];
+            _.forEach(vm.accounts, function (acc) {
+                var account = {};
+                account.id = acc.id;
+                account.isDisabled = acc.is_disabled;
+                account.excludedUntil = acc.excluded_until ? $filter('date')(acc.excluded_until * 1000, 'yyyy-MM-dd HH:mm:ss') : false;
+                account.availableMarkets = getAvailableMarkets(acc.landing_company_name);
+                account.type = accountType(acc.landing_company_name);
+                if (vm.currentAccount.id !== account.id) {
+                    account.currency = acc.currency || '-';
+                } else {
+                    account.currency = acc.currency;
+                }
+                existingAccounts.push(account);
+            });
+            return existingAccounts;
+        };
+
+        var getAvailableAccounts = function getAvailableAccounts() {
+            vm.upgrade = appStateService.upgrade;
+            if (vm.upgrade.canUpgrade) {
+                vm.legalAllowedMarkets = _.join(filterMarkets(vm.upgrade.allowedMarkets), ', ');
+                vm.titleOfNextAccount = getNextAccountTitle(vm.upgrade.typeOfNextAccount);
+                vm.newAccountCurrencyOptions = getCurrenciesForNewAccount(vm.upgrade.currencyOptions);
+                if (vm.newAccountCurrencyOptions.length) {
+                    vm.selectedCurrency = vm.newAccountCurrencyOptions[0].name;
+                }
+            }
+        };
+
+        var init = function init() {
+            vm.accounts = accountService.getAll();
+            vm.currentAccount = accountService.getDefault();
+            var landingCompany = vm.currentAccount.landing_company_name;
+            vm.isMultiAccount = clientService.isLandingCompanyOf('costarica', landingCompany) || clientService.isLandingCompanyOf('svg', landingCompany);
+            vm.selectCurrencyError = false;
+            getAvailableAccounts();
+            vm.existingAccounts = getExistingAccounts();
+            hasRealAccount = !!_.find(vm.existingAccounts, function (acc) {
+                return acc.type === 'real';
+            });
+            vm.showContact = _.some(vm.existingAccounts, function (acc) {
+                return acc.isDisabled || acc.excludedUntil;
+            });
+        };
+
+        vm.redirectToSetCurrency = function () {
+            $state.go('set-currency');
+        };
+
+        vm.openNewAccount = function () {
+            if ((vm.currentAccount.currency && vm.currentAccount.currency !== '' || !vm.upgrade.multi) && !vm.upgradeButtonDisabled) {
+                vm.upgradeButtonDisabled = true;
+                appStateService.selectedCurrency = vm.selectedCurrency;
+                appStateService.redirectedFromAccountsManagemenet = true;
+                if (vm.upgrade.typeOfNextAccount === 'real') {
+                    if (hasRealAccount) {
+                        upgradingRealAccountDirectly = true;
+                        websocketService.sendRequestFor.accountSetting();
+                    } else {
+                        $state.go('real-account-opening');
+                    }
+                } else if (vm.upgrade.typeOfNextAccount === 'financial') {
+                    $state.go('maltainvest-account-opening');
+                }
+            } else {
+                $scope.$applyAsync(function () {
+                    vm.upgradeButtonDisabled = false;
+                    vm.selectCurrencyError = true;
+                });
+            }
+        };
+
+        $scope.$on("get_settings", function (e, get_settings) {
+            if (upgradingRealAccountDirectly && get_settings) {
+                _.forEach(directUpgradeData, function (val, k) {
+                    if (get_settings[k]) directUpgradeData[k] = get_settings[k];
+                });
+                directUpgradeData.residence = get_settings.country_code;
+                directUpgradeData.date_of_birth = get_settings.date_of_birth ? $filter("date")(get_settings.date_of_birth * 1000, "yyyy-MM-dd") : '';
+                directUpgradeData.currency = vm.selectedCurrency;
+                // Some users have upgraded their account before the place_of_birth became required for real_account_opening
+                // redirect these users to upgrade page to fill the form with place_of_birth included
+                if (_.findIndex(requiredDirectUpgradeFields, function (field) {
+                    return !directUpgradeData[field];
+                }) > -1) {
+                    $state.go('profile');
+                } else {
+                    websocketService.sendRequestFor.createRealAccountSend(directUpgradeData);
+                }
+            }
+        });
+
+        $scope.$on("new_account_real:error", function (e, error) {
+            vm.upgradeButtonDisabled = false;
+            if (error.hasOwnProperty("details")) {
+                alertService.displayError(error.details);
+            } else if (error.code) {
+                alertService.displayError(error.message);
+            }
+        });
+
+        $scope.$on("new_account_real", function (e, new_account_real) {
+            var selectedAccount = new_account_real.oauth_token;
+            websocketService.authenticate(selectedAccount);
+            appStateService.newAccountAdded = true;
+            accountService.addedAccount = selectedAccount;
+            vm.upgradeButtonDisabled = false;
+        });
+
+        var reInitAfterChangeAccount = function reInitAfterChangeAccount() {
+            if (appStateService.checkingUpgradeDone) {
+                init();
+            } else {
+                $timeout(reInitAfterChangeAccount, 500);
+            }
+        };
+
+        $scope.$on('authorize', function (e, authorize) {
+            if (vm.currentAccount.id !== authorize.loginid) {
+                reInitAfterChangeAccount();
+            }
+        });
+
+        init();
+    }
+})();
+"use strict";
+
+/**
  * @name account categorisation controller
  * @author Nazanin Reihani Haghighi
  * @contributors []
@@ -2208,233 +2435,6 @@ angular.module("binary").constant("financialInformationOptions", {
 
     function Authentication() {
         var vm = this;
-    }
-})();
-"use strict";
-
-/**
- * @name Accounts management controller
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 10/28/2017
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.accounts-management.controllers").controller("AccountsManagementController", AccountsManagement);
-
-    AccountsManagement.$inject = ["$scope", "$state", "$filter", "$timeout", "$translate", "appStateService", "accountService", "clientService", "websocketService", "alertService"];
-
-    function AccountsManagement($scope, $state, $filter, $timeout, $translate, appStateService, accountService, clientService, websocketService, alertService) {
-        var vm = this;
-        var hasRealAccount = false;
-        var upgradingRealAccountDirectly = false;
-        vm.upgradeButtonDisabled = false;
-        var activeMarkets = {
-            commodities: $translate.instant('accounts-management.commodities'),
-            forex: $translate.instant('accounts-management.forex'),
-            indices: $translate.instant('accounts-management.indices'),
-            stocks: $translate.instant('accounts-management.stocks'),
-            volidx: $translate.instant('accounts-management.volidx')
-        };
-
-        var requiredDirectUpgradeFields = ['salutation', 'first_name', 'last_name', 'date_of_birth', 'residence', 'place_of_birth', 'address_line_1', 'address_city', 'phone', 'account_opening_reason'];
-
-        var directUpgradeData = {
-            salutation: '',
-            first_name: '',
-            last_name: '',
-            date_of_birth: '',
-            place_of_birth: '',
-            residence: '',
-            address_line_1: '',
-            address_line_2: '',
-            address_city: '',
-            address_state: '',
-            address_postcode: '',
-            phone: '',
-            account_opening_reason: ''
-        };
-
-        var filterMarkets = function filterMarkets(markets) {
-            var availableMarkets = [];
-            _.forEach(markets, function (market) {
-                if (market in activeMarkets && _.indexOf(availableMarkets, activeMarkets[market]) < 0) {
-                    availableMarkets.push(activeMarkets[market]);
-                }
-            });
-            return availableMarkets;
-        };
-
-        var isCryptocurrency = function isCryptocurrency(currencyConfig, curr) {
-            return (/crypto/i.test(currencyConfig[curr].type)
-            );
-        };
-
-        var getNextAccountTitle = function getNextAccountTitle(typeOfNextAccount) {
-            var nextAccount = void 0;
-            if (typeOfNextAccount === 'real') {
-                nextAccount = $translate.instant('accounts-management.account_real');
-            } else if (typeOfNextAccount === 'financial') {
-                nextAccount = $translate.instant('accounts-management.account_financial');
-            }
-            return nextAccount;
-        };
-
-        var getCurrenciesForNewAccount = function getCurrenciesForNewAccount(currencies) {
-            var currencyConfig = appStateService.currenciesConfig;
-            var currenciesLength = currencies.length;
-            var currencyOptions = [];
-            for (var i = 0; i < currenciesLength; i++) {
-                var currencyObject = {};
-                var curr = currencies[i];
-                currencyObject.name = curr;
-                // adding translate labels to currencies
-                currencyObject.currencyGroup = isCryptocurrency(currencyConfig, curr) ? $translate.instant('accounts-management.crypto_currencies') : $translate.instant('accounts-management.fiat_currencies');
-                currencyOptions.push(currencyObject);
-            }
-            return currencyOptions;
-        };
-
-        var accountType = function accountType(landingCompany) {
-            return clientService.getAccountType(landingCompany);
-        };
-
-        var getAvailableMarkets = function getAvailableMarkets(landingCompany) {
-            var legalAllowedMarkets = clientService.landingCompanyValue(landingCompany, 'legal_allowed_markets');
-            var availableMarkets = [];
-            if (Array.isArray(legalAllowedMarkets) && legalAllowedMarkets.length) {
-                availableMarkets = _.join(filterMarkets(legalAllowedMarkets), ', ');
-            }
-            return availableMarkets;
-        };
-
-        var getExistingAccounts = function getExistingAccounts() {
-            var existingAccounts = [];
-            _.forEach(vm.accounts, function (acc) {
-                var account = {};
-                account.id = acc.id;
-                account.isDisabled = acc.is_disabled;
-                account.excludedUntil = acc.excluded_until ? $filter('date')(acc.excluded_until * 1000, 'yyyy-MM-dd HH:mm:ss') : false;
-                account.availableMarkets = getAvailableMarkets(acc.landing_company_name);
-                account.type = accountType(acc.landing_company_name);
-                if (vm.currentAccount.id !== account.id) {
-                    account.currency = acc.currency || '-';
-                } else {
-                    account.currency = acc.currency;
-                }
-                existingAccounts.push(account);
-            });
-            return existingAccounts;
-        };
-
-        var getAvailableAccounts = function getAvailableAccounts() {
-            vm.upgrade = appStateService.upgrade;
-            if (vm.upgrade.canUpgrade) {
-                vm.legalAllowedMarkets = _.join(filterMarkets(vm.upgrade.allowedMarkets), ', ');
-                vm.titleOfNextAccount = getNextAccountTitle(vm.upgrade.typeOfNextAccount);
-                vm.newAccountCurrencyOptions = getCurrenciesForNewAccount(vm.upgrade.currencyOptions);
-                if (vm.newAccountCurrencyOptions.length) {
-                    vm.selectedCurrency = vm.newAccountCurrencyOptions[0].name;
-                }
-            }
-        };
-
-        var init = function init() {
-            vm.accounts = accountService.getAll();
-            vm.currentAccount = accountService.getDefault();
-            var landingCompany = vm.currentAccount.landing_company_name;
-            vm.isMultiAccount = clientService.isLandingCompanyOf('costarica', landingCompany) || clientService.isLandingCompanyOf('svg', landingCompany);
-            vm.selectCurrencyError = false;
-            getAvailableAccounts();
-            vm.existingAccounts = getExistingAccounts();
-            hasRealAccount = !!_.find(vm.existingAccounts, function (acc) {
-                return acc.type === 'real';
-            });
-            vm.showContact = _.some(vm.existingAccounts, function (acc) {
-                return acc.isDisabled || acc.excludedUntil;
-            });
-        };
-
-        vm.redirectToSetCurrency = function () {
-            $state.go('set-currency');
-        };
-
-        vm.openNewAccount = function () {
-            if ((vm.currentAccount.currency && vm.currentAccount.currency !== '' || !vm.upgrade.multi) && !vm.upgradeButtonDisabled) {
-                vm.upgradeButtonDisabled = true;
-                appStateService.selectedCurrency = vm.selectedCurrency;
-                appStateService.redirectedFromAccountsManagemenet = true;
-                if (vm.upgrade.typeOfNextAccount === 'real') {
-                    if (hasRealAccount) {
-                        upgradingRealAccountDirectly = true;
-                        websocketService.sendRequestFor.accountSetting();
-                    } else {
-                        $state.go('real-account-opening');
-                    }
-                } else if (vm.upgrade.typeOfNextAccount === 'financial') {
-                    $state.go('maltainvest-account-opening');
-                }
-            } else {
-                $scope.$applyAsync(function () {
-                    vm.upgradeButtonDisabled = false;
-                    vm.selectCurrencyError = true;
-                });
-            }
-        };
-
-        $scope.$on("get_settings", function (e, get_settings) {
-            if (upgradingRealAccountDirectly && get_settings) {
-                _.forEach(directUpgradeData, function (val, k) {
-                    if (get_settings[k]) directUpgradeData[k] = get_settings[k];
-                });
-                directUpgradeData.residence = get_settings.country_code;
-                directUpgradeData.date_of_birth = get_settings.date_of_birth ? $filter("date")(get_settings.date_of_birth * 1000, "yyyy-MM-dd") : '';
-                directUpgradeData.currency = vm.selectedCurrency;
-                // Some users have upgraded their account before the place_of_birth became required for real_account_opening
-                // redirect these users to upgrade page to fill the form with place_of_birth included
-                if (_.findIndex(requiredDirectUpgradeFields, function (field) {
-                    return !directUpgradeData[field];
-                }) > -1) {
-                    $state.go('profile');
-                } else {
-                    websocketService.sendRequestFor.createRealAccountSend(directUpgradeData);
-                }
-            }
-        });
-
-        $scope.$on("new_account_real:error", function (e, error) {
-            vm.upgradeButtonDisabled = false;
-            if (error.hasOwnProperty("details")) {
-                alertService.displayError(error.details);
-            } else if (error.code) {
-                alertService.displayError(error.message);
-            }
-        });
-
-        $scope.$on("new_account_real", function (e, new_account_real) {
-            var selectedAccount = new_account_real.oauth_token;
-            websocketService.authenticate(selectedAccount);
-            appStateService.newAccountAdded = true;
-            accountService.addedAccount = selectedAccount;
-            vm.upgradeButtonDisabled = false;
-        });
-
-        var reInitAfterChangeAccount = function reInitAfterChangeAccount() {
-            if (appStateService.checkingUpgradeDone) {
-                init();
-            } else {
-                $timeout(reInitAfterChangeAccount, 500);
-            }
-        };
-
-        $scope.$on('authorize', function (e, authorize) {
-            if (vm.currentAccount.id !== authorize.loginid) {
-                reInitAfterChangeAccount();
-            }
-        });
-
-        init();
     }
 })();
 "use strict";
@@ -4268,14 +4268,16 @@ angular.module("binary").constant("financialInformationOptions", {
 
             vm.minDateTime = startingDate.toISOString();
             startingDate.setDate(startingDate.getDate() + 1);
-            // calculating the min date for 'timeout until' (6 weeks after tomorrow in format yyyy-mm-dd in UTC)
+            // calculating the min date for 'timeout until' 
+            // (6 weeks after tomorrow in format yyyy-mm-dd in UTC)
             var tomorrow = _.clone(startingDate);
             vm.minDate = tomorrow.toISOString().slice(0, 10) + "T00:00:00";
             var dateAfterSixWeeks = tomorrow.setDate(tomorrow.getDate() + 41);
             vm.nextSixWeeks = filterDate(dateAfterSixWeeks);
             vm.nextSixWeeksDateTime = vm.nextSixWeeks + "T23:59:59";
 
-            // calculating the min date for 'exclude until' (6 month after tomorrow in format yyyy-mm-dd in UTC)
+            // calculating the min date for 'exclude until' 
+            // (6 month after tomorrow in format yyyy-mm-dd in UTC)
             var dateAfterSixMonths = new Date(startingDate.setMonth(startingDate.getMonth() + 6)).getTime();
             vm.nextSixMonths = filterDate(dateAfterSixMonths);
         };
@@ -11114,33 +11116,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name side-menu directive
- * @author Morteza Tavnarad
- * @contributors []
- * @since 08/08/2016
- * @copyright Binary Ltd
- * Application Side Menu
- */
-
-(function () {
-    angular.module("binary.share.components").directive("bgSideMenu", SideMenu);
-
-    function SideMenu() {
-        var directive = {
-            link: link,
-            templateUrl: "js/share/components/side-menu/side-menu.template.html",
-            retrict: "A",
-            scope: {}
-        };
-
-        function link() {}
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
  * @name Service Outage Page Controller
  * @author Morteza Tavanarad
  * @contributors []
@@ -11226,46 +11201,26 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name updater module
- * @author Morteza Tavanarad
+ * @name side-menu directive
+ * @author Morteza Tavnarad
  * @contributors []
- * @since 12/20/2015
+ * @since 08/08/2016
  * @copyright Binary Ltd
+ * Application Side Menu
  */
 
 (function () {
-    angular.module("binary.share.components.updater.controllers").controller("UpdaterController", Updater);
+    angular.module("binary.share.components").directive("bgSideMenu", SideMenu);
 
-    Updater.$inject = ["$ionicPlatform"];
-
-    function Updater($ionicPlatform) {
-        $ionicPlatform.ready(function () {
-            if (window.codePush) {
-                window.codePush.sync();
-            }
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name updater directive
- * @author Morteza Tavanarad
- * @contributors []
- * @since 12/26/2015
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.updater.directives").directive("bgUpdater", Updater);
-
-    function Updater() {
+    function SideMenu() {
         var directive = {
-            restrict: "E",
-            controller: "UpdaterController",
-            controllerAs: "vm",
+            link: link,
+            templateUrl: "js/share/components/side-menu/side-menu.template.html",
+            retrict: "A",
             scope: {}
         };
+
+        function link() {}
 
         return directive;
     }
@@ -11328,46 +11283,211 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name longcode controller
- * @author Morteza Tavnarad
+ * @name updater module
+ * @author Morteza Tavanarad
  * @contributors []
- * @since 09/27/2016
+ * @since 12/20/2015
  * @copyright Binary Ltd
  */
 
 (function () {
-    angular.module("binary.pages.trade.components.longcode.controllers").controller("LongcodeController", Longcode);
+    angular.module("binary.share.components.updater.controllers").controller("UpdaterController", Updater);
 
-    function Longcode() {
-        var vm = this;
+    Updater.$inject = ["$ionicPlatform"];
+
+    function Updater($ionicPlatform) {
+        $ionicPlatform.ready(function () {
+            if (window.codePush) {
+                window.codePush.sync();
+            }
+        });
     }
 })();
 "use strict";
 
 /**
- * @name longcode direciive
- * @author Morteza Tavnarad
+ * @name updater directive
+ * @author Morteza Tavanarad
  * @contributors []
- * @since 09/27/2016
+ * @since 12/26/2015
  * @copyright Binary Ltd
  */
 
 (function () {
-    angular.module("binary.pages.trade.components.longcode.directives").directive("bgLongcode", Longcode);
+    angular.module("binary.share.components.updater.directives").directive("bgUpdater", Updater);
 
-    function Longcode() {
-        var direciive = {
+    function Updater() {
+        var directive = {
             restrict: "E",
-            templateUrl: "js/pages/trade/components/longcode/longcode.template.html",
-            controller: "LongcodeController",
+            controller: "UpdaterController",
             controllerAs: "vm",
-            bindToController: true,
-            scope: {
-                purchasedContract: "="
+            scope: {}
+        };
+
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name Oauth Controller
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 8/13/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.signin.components.oauth").controller("OauthController", Oauth);
+
+    Oauth.$inject = ["$scope", "$ionicLoading", "config", "websocketService", "alertService", "accountService", "languageService"];
+
+    function Oauth($scope, $ionicLoading, config, websocketService, alertService, accountService, languageService) {
+        var vm = this;
+
+        var accounts = [];
+
+        var authenticate = function authenticate(_token) {
+            // Validate the token
+            if (_token && _token.length === 32) {
+                $ionicLoading.show();
+                websocketService.authenticate(_token);
+            } else {
+                alertService.accountError.tokenNotValid();
             }
         };
 
-        return direciive;
+        var handleUrl = function handleUrl(url) {
+            accounts = getAccountsFromUrl(url);
+            if (accounts.length > 0) {
+                authenticate(accounts[0].token);
+            }
+        };
+
+        window.onmessage = function (_message) {
+            if (_message.data && _message.data.url) {
+                handleUrl(_message.data.url);
+            }
+        };
+
+        $scope.$on("authorize", function (e, response) {
+            if (response) {
+                var accountList = response.account_list;
+                accounts.forEach(function (value, index) {
+                    if (index > 0) {
+                        var account = accounts[index];
+                        account.email = response.email;
+                        account.country = response.country;
+                        if (accountList) {
+                            var acc = _.find(accountList, function (a) {
+                                return a.loginid === account.loginid;
+                            });
+                            account = _.assign(account, acc);
+                        }
+                        accountService.add(account);
+                    }
+                });
+            }
+            $ionicLoading.hide();
+        });
+
+        vm.init = function () {
+            if (!_.isEmpty(vm.accountTokens)) {
+                handleUrl(vm.accountTokens);
+            }
+        };
+
+        vm.signin = function () {
+            var serverUrl = localStorage.getItem('config.server_url');
+            var oauthUrl = serverUrl ? "https://" + serverUrl + "/oauth2/authorize" : config.oauthUrl;
+            var appId = localStorage.getItem('config.app_id') || config.app_id;
+            var oauthWindowUrl = oauthUrl + "?app_id=" + appId + "&l=" + languageService.read();
+
+            var windowTarget = '_system';
+
+            if (window.navigator.standalone) {
+                windowTarget = '_self';
+            }
+
+            var authWindow = window.open(oauthWindowUrl, windowTarget, "location=no,toolbar=no");
+
+            $(authWindow).on("loadstart", function (e) {
+                var url = e.originalEvent.url;
+
+                if (getErrorFromUrl(url).length > 0) {
+                    authWindow.close();
+                    return;
+                }
+
+                accounts = getAccountsFromUrl(url);
+                if (accounts && accounts.length) {
+                    authWindow.close();
+
+                    authenticate(accounts[0].token);
+                }
+            });
+        };
+
+        function getAccountsFromUrl(_url) {
+            var regex = /acct\d+=(\w+)&token\d+=(\w{2}-\w{29})(&cur\d+=(\w{2,3}))?/g;
+            var result = null;
+            var accounts = [];
+
+            do {
+                result = regex.exec(_url);
+                if (result) {
+                    accounts.push({
+                        loginid: result[1],
+                        token: result[2],
+                        currency: result[4] ? result[4] : null
+                    });
+                }
+            } while (result);
+            return accounts;
+        }
+
+        function getErrorFromUrl(_url) {
+            var regex = /error=(\w+)/g;
+            var result = null;
+            var error = [];
+
+            do {
+                result = regex.exec(_url);
+                if (result) {
+                    error.push(result[1]);
+                }
+            } while (result);
+
+            return error;
+        }
+
+        vm.init();
+    }
+})();
+"use strict";
+
+/**
+ * @name Oauth directive
+ * @author Morteza Tavanarad
+ * @contributors []
+ * @since 8/13/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.signin.components.oauth").directive("oauth", Oauth);
+
+    function Oauth() {
+        var directive = {
+            restrict: "E",
+            scope: { accountTokens: "=" },
+            templateUrl: "js/pages/sign-in/components/oauth/oauth.template.html",
+            controller: "OauthController",
+            controllerAs: "vm",
+            bindToController: true
+        };
+
+        return directive;
     }
 })();
 "use strict";
@@ -11643,6 +11763,51 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
         };
 
         return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name longcode controller
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.longcode.controllers").controller("LongcodeController", Longcode);
+
+    function Longcode() {
+        var vm = this;
+    }
+})();
+"use strict";
+
+/**
+ * @name longcode direciive
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.longcode.directives").directive("bgLongcode", Longcode);
+
+    function Longcode() {
+        var direciive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/longcode/longcode.template.html",
+            controller: "LongcodeController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {
+                purchasedContract: "="
+            }
+        };
+
+        return direciive;
     }
 })();
 "use strict";
@@ -13013,169 +13178,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
                 purchasedContract: "=",
                 showSummary: "=inPurchaseMode"
             }
-        };
-
-        return directive;
-    }
-})();
-"use strict";
-
-/**
- * @name Oauth Controller
- * @author Morteza Tavanarad
- * @contributors []
- * @since 8/13/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.signin.components.oauth").controller("OauthController", Oauth);
-
-    Oauth.$inject = ["$scope", "$ionicLoading", "config", "websocketService", "alertService", "accountService", "languageService"];
-
-    function Oauth($scope, $ionicLoading, config, websocketService, alertService, accountService, languageService) {
-        var vm = this;
-
-        var accounts = [];
-
-        var authenticate = function authenticate(_token) {
-            // Validate the token
-            if (_token && _token.length === 32) {
-                $ionicLoading.show();
-                websocketService.authenticate(_token);
-            } else {
-                alertService.accountError.tokenNotValid();
-            }
-        };
-
-        var handleUrl = function handleUrl(url) {
-            accounts = getAccountsFromUrl(url);
-            if (accounts.length > 0) {
-                authenticate(accounts[0].token);
-            }
-        };
-
-        window.onmessage = function (_message) {
-            if (_message.data && _message.data.url) {
-                handleUrl(_message.data.url);
-            }
-        };
-
-        $scope.$on("authorize", function (e, response) {
-            if (response) {
-                var accountList = response.account_list;
-                accounts.forEach(function (value, index) {
-                    if (index > 0) {
-                        var account = accounts[index];
-                        account.email = response.email;
-                        account.country = response.country;
-                        if (accountList) {
-                            var acc = _.find(accountList, function (a) {
-                                return a.loginid === account.loginid;
-                            });
-                            account = _.assign(account, acc);
-                        }
-                        accountService.add(account);
-                    }
-                });
-            }
-            $ionicLoading.hide();
-        });
-
-        vm.init = function () {
-            if (!_.isEmpty(vm.accountTokens)) {
-                handleUrl(vm.accountTokens);
-            }
-        };
-
-        vm.signin = function () {
-            var serverUrl = localStorage.getItem('config.server_url');
-            var oauthUrl = serverUrl ? "https://" + serverUrl + "/oauth2/authorize" : config.oauthUrl;
-            var appId = localStorage.getItem('config.app_id') || config.app_id;
-            var oauthWindowUrl = oauthUrl + "?app_id=" + appId + "&l=" + languageService.read();
-
-            var windowTarget = '_system';
-
-            if (window.navigator.standalone) {
-                windowTarget = '_self';
-            }
-
-            var authWindow = window.open(oauthWindowUrl, windowTarget, "location=no,toolbar=no");
-
-            $(authWindow).on("loadstart", function (e) {
-                var url = e.originalEvent.url;
-
-                if (getErrorFromUrl(url).length > 0) {
-                    authWindow.close();
-                    return;
-                }
-
-                accounts = getAccountsFromUrl(url);
-                if (accounts && accounts.length) {
-                    authWindow.close();
-
-                    authenticate(accounts[0].token);
-                }
-            });
-        };
-
-        function getAccountsFromUrl(_url) {
-            var regex = /acct\d+=(\w+)&token\d+=(\w{2}-\w{29})(&cur\d+=(\w{2,3}))?/g;
-            var result = null;
-            var accounts = [];
-
-            do {
-                result = regex.exec(_url);
-                if (result) {
-                    accounts.push({
-                        loginid: result[1],
-                        token: result[2],
-                        currency: result[4] ? result[4] : null
-                    });
-                }
-            } while (result);
-            return accounts;
-        }
-
-        function getErrorFromUrl(_url) {
-            var regex = /error=(\w+)/g;
-            var result = null;
-            var error = [];
-
-            do {
-                result = regex.exec(_url);
-                if (result) {
-                    error.push(result[1]);
-                }
-            } while (result);
-
-            return error;
-        }
-
-        vm.init();
-    }
-})();
-"use strict";
-
-/**
- * @name Oauth directive
- * @author Morteza Tavanarad
- * @contributors []
- * @since 8/13/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.signin.components.oauth").directive("oauth", Oauth);
-
-    function Oauth() {
-        var directive = {
-            restrict: "E",
-            scope: { accountTokens: "=" },
-            templateUrl: "js/pages/sign-in/components/oauth/oauth.template.html",
-            controller: "OauthController",
-            controllerAs: "vm",
-            bindToController: true
         };
 
         return directive;
