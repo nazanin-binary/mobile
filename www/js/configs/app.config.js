@@ -4,12 +4,16 @@
  * @copyright Binary Ltd
  */
 
+const isBinaryMe = window.location.host === 'ticktrade.binary.me';
+
 angular.module("binary").constant("config", {
-    app_id         : "10",
-    serverUrl      : "frontend.binaryws.com",
-    wsUrl          : "wss://frontend.binaryws.com/websockets/v3", // Don't set language value here
-    oauthUrl       : "https://oauth.binary.com/oauth2/authorize",
-    tradeCategories: [
+    app_id          : isBinaryMe ? "15488" : "10",
+    serverUrl       : "frontend.binaryws.com",
+    serverCertFP    : "",
+    qaMachinesCertFP: "",
+    wsUrl           : "wss://frontend.binaryws.com/websockets/v3", // Don't set language value here
+    oauthUrl        : `https://oauth.binary.${isBinaryMe ? 'me' : 'com'}/oauth2/authorize`,
+    tradeCategories : [
         {
             name   : "up_down",
             markets: ["forex", "volidx", "random"],
@@ -36,66 +40,97 @@ angular.module("binary").constant("config", {
             name   : "asians",
             value  : "Asians",
             markets: ["volidx", "random"]
+        },
+        {
+            name   : "high_low_ticks",
+            value  : "HIGH/LOW TICKS",
+            markets: ["volidx"]
         }
     ],
     tradeTypes: [
         {
-            name    : "Up",
-            value   : "CALL",
-            digits  : false,
-            category: "UP/DOWN"
+            name         : "Up",
+            value        : "CALL",
+            digits       : false,
+            selected_tick: false,
+            category     : "UP/DOWN"
         },
         {
-            name    : "Down",
-            value   : "PUT",
-            digits  : false,
-            category: "UP/DOWN"
+            name         : "Down",
+            value        : "PUT",
+            digits       : false,
+            selected_tick: false,
+            category     : "UP/DOWN"
         },
         {
-            name    : "Asians Up",
-            value   : "ASIANU",
-            digits  : false,
-            category: "Asians"
+            name         : "Asians Up",
+            value        : "ASIANU",
+            digits       : false,
+            selected_tick: false,
+            category     : "Asians"
         },
         {
-            name    : "Asians Down",
-            value   : "ASIAND",
-            digits  : false,
-            category: "Asians"
+            name         : "Asians Down",
+            value        : "ASIAND",
+            digits       : false,
+            selected_tick: false,
+            category     : "Asians"
         },
         {
-            name    : "Digit Match",
-            value   : "DIGITMATCH",
-            digits  : true,
-            category: "MATCH/DIFF"
+            name         : "Digit Match",
+            value        : "DIGITMATCH",
+            digits       : true,
+            selected_tick: false,
+            category     : "MATCH/DIFF"
         },
         {
-            name    : "Digit Differs",
-            value   : "DIGITDIFF",
-            digits  : true,
-            category: "MATCH/DIFF"
+            name         : "Digit Differs",
+            value        : "DIGITDIFF",
+            digits       : true,
+            selected_tick: false,
+            category     : "MATCH/DIFF"
         },
         {
-            name    : "Digit Even",
-            value   : "DIGITEVEN",
-            category: "EVEN/ODD"
+            name         : "Digit Even",
+            value        : "DIGITEVEN",
+            digits       : true,
+            selected_tick: false,
+            category     : "EVEN/ODD"
         },
         {
-            name    : "Digit Odd",
-            value   : "DIGITODD",
-            category: "EVEN/ODD"
+            name         : "Digit Odd",
+            value        : "DIGITODD",
+            digits       : true,
+            selected_tick: false,
+            category     : "EVEN/ODD"
         },
         {
-            name    : "Digit Over",
-            value   : "DIGITOVER",
-            digits  : true,
-            category: "OVER/UNDER"
+            name         : "Digit Over",
+            value        : "DIGITOVER",
+            digits       : true,
+            selected_tick: false,
+            category     : "OVER/UNDER"
         },
         {
-            name    : "Digit Under",
-            value   : "DIGITUNDER",
-            digits  : true,
-            category: "OVER/UNDER"
+            name         : "Digit Under",
+            value        : "DIGITUNDER",
+            digits       : true,
+            selected_tick: false,
+            category     : "OVER/UNDER"
+        },
+        {
+            name         : "TICK HIGH",
+            value        : "TICKHIGH",
+            digits       : false,
+            selected_tick: true,
+            category     : "HIGH/LOW TICKS"
+        },
+        {
+            name         : "TICK LOW",
+            value        : "TICKLOW",
+            digits       : false,
+            selected_tick: true,
+            category     : "HIGH/LOW TICKS"
         }
     ],
     supportedTradeTypes: [
@@ -105,7 +140,8 @@ angular.module("binary").constant("config", {
         "Higher/Lower",
         "Rise/Fall",
         "Asians",
-        "Up/Down"
+        "Up/Down",
+        "High/Low Ticks"
     ],
     language    : "en",
     assetIndexes: {
@@ -123,6 +159,7 @@ angular.module("binary").constant("config", {
         ETH: { name: 'ether' },
         ETC: { name: 'ether_classic' },
         LTC: { name: 'litecoin' },
+        DAI: { name: 'dai' }
     },
     appSupportedLanguages: ["en", "id", "ru", "zh_tw", "zh_cn", "de", "fr", "pl", "it"]
 });

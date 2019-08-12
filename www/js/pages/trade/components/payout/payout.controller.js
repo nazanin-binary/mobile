@@ -15,6 +15,7 @@
         const vm = this;
         vm.amount = vm.proposal.amount;
         vm.isIOS = ionic.Platform.isIOS();
+        vm.marketsClosed = false;
 
         setCurrecyPattern();
 
@@ -47,7 +48,7 @@
                 if (/^\.\d+$/.test(vm.amount)){
                     vm.amount = `0${vm.amount}`;
                 }
-                vm.proposal.amount = vm.amount;
+                vm.proposal.amount = +vm.amount;
             }
             proposalService.setPropertyValue("amount", vm.proposal.amount);
         };
@@ -61,9 +62,17 @@
         };
 
         vm.stopLongPress = () => {
-            vm.proposal.amount = vm.amount;
+            vm.proposal.amount = +vm.amount;
             proposalService.setPropertyValue("amount", vm.proposal.amount);
         };
+
+        $scope.$on("symbols:updated", (e, openMarkets) => {
+            if (_.isEmpty(openMarkets)) {
+                vm.marketsClosed = true;
+            } else {
+                vm.marketsClosed = false;
+            }
+        });
 
         function init() {}
 

@@ -10,25 +10,36 @@ angular
         clientService) {
         const vm = this;
         vm.hasMTAccess = false;
+        vm.hasNotSelectedCountry = false;
         let currentAccount = {};
         vm.serverUrl = websocketService.getServerURL;
         vm.defaultServerUrl = config.serverUrl;
+
+        const isLandingCompanyOf = (targetLandingCompany, accountLandingCompany) =>
+            clientService.isLandingCompanyOf(targetLandingCompany, accountLandingCompany);
 
         const getAccountInfo = () => {
             vm.upgrade = {};
             vm.accounts = accountService.getAll();
             currentAccount = accountService.getDefault();
-            if (currentAccount && _.keys(currentAccount).length) {
-                const landingCompany = localStorage.getItem('landingCompany');
-                vm.showNetworkStatus = landingCompany === 'iom' ||
-                    landingCompany === 'malta' ||
-                    landingCompany === 'maltainvest';
+            if (!_.isEmpty(currentAccount)) {
+                const landingCompany = currentAccount.landing_company_name;
+                vm.showNetworkStatus = isLandingCompanyOf('iom', landingCompany) ||
+                    isLandingCompanyOf('malta', landingCompany) ||
+                    isLandingCompanyOf('maltainvest', landingCompany);
                 if (currentAccount.country) {
                     const country = currentAccount.country;
+                    $scope.$applyAsync(() => {
+                        vm.hasNotSelectedCountry = false;
+                    });
                     if (country !== 'jp') {
                         const reqId = 1;
                         websocketService.sendRequestFor.landingCompanySend(country, reqId);
                     }
+                } else {
+                    $scope.$applyAsync(() => {
+                        vm.hasNotSelectedCountry = true;
+                    });
                 }
             } else {
                 $timeout(getAccountInfo, 1000);
@@ -41,18 +52,13 @@ angular
 
         const hasMTfinancialCompany = data => (hasShortCode(data.financial_company, 'vanuatu'));
 
-        const getLegalAllowedCurrencies = (loginid, landingCompany) =>
-            clientService.landingCompanyValue(loginid, 'legal_allowed_currencies', landingCompany);
-        const getLegalAllowedMarkets = (loginid, landingCompany) =>
-            clientService.landingCompanyValue(loginid, 'legal_allowed_markets', landingCompany);
-
         const getExistingCurrencies = accounts => clientService.getExistingCurrencies(accounts);
 
         const getDividedCurrencies = currencies => clientService.dividedCurrencies(currencies);
 
-        const getUpgradeInfo = (landingCompany, id) => {
+        const getUpgradeInfo = landingCompanyObj => {
             const upgradeableLandingCompanies = appStateService.upgradeableLandingCompanies;
-            const currentLandingCompany = localStorage.getItem('landingCompany');
+            const currentLandingCompany = currentAccount.landing_company_name;
             let canUpgrade = !!(upgradeableLandingCompanies && upgradeableLandingCompanies.length);
             let canUpgradeMultiAccount = false;
             let multi = false;
@@ -61,31 +67,32 @@ angular
             let currencyOptions;
             let allowedMarkets;
             if (canUpgrade) {
-                canUpgradeMultiAccount = 
+                canUpgradeMultiAccount =
                 !!_.find(upgradeableLandingCompanies, landingCompany => landingCompany === currentLandingCompany);
             }
 
             const canUpgradeToLandingCompany = arr_landing_company => !!_.find(arr_landing_company, landingCompany =>
                 landingCompany !== currentLandingCompany && upgradeableLandingCompanies.indexOf(landingCompany) > -1);
 
-            if (canUpgradeToLandingCompany(['costarica', 'malta', 'iom']) && !canUpgradeMultiAccount) {
+            if (canUpgradeToLandingCompany(['costarica', 'svg', 'malta', 'iom']) && !canUpgradeMultiAccount) {
                 typeOfNextAccount = 'real';
                 upgradeLink = 'real-account-opening';
-                currencyOptions = landingCompany.gaming_company ?
-                    landingCompany.gaming_company.legal_allowed_currencies :
-                    landingCompany.financial_company.legal_allowed_currencies;
-                allowedMarkets = landingCompany.gaming_company ? landingCompany.gaming_company.legal_allowed_markets :
-                    landingCompany.financial_company.legal_allowed_markets;
+                currencyOptions = landingCompanyObj.gaming_company ?
+                    landingCompanyObj.gaming_company.legal_allowed_currencies :
+                    landingCompanyObj.financial_company.legal_allowed_currencies;
+                allowedMarkets = landingCompanyObj.gaming_company ?
+                    landingCompanyObj.gaming_company.legal_allowed_markets :
+                    landingCompanyObj.financial_company.legal_allowed_markets;
             } else if (canUpgradeToLandingCompany(['maltainvest'])) {
                 typeOfNextAccount = 'financial';
                 upgradeLink = 'maltainvest-account-opening';
-                currencyOptions = landingCompany.financial_company.legal_allowed_currencies;
-                allowedMarkets = landingCompany.financial_company.legal_allowed_markets;
+                currencyOptions = landingCompanyObj.financial_company.legal_allowed_currencies;
+                allowedMarkets = landingCompanyObj.financial_company.legal_allowed_markets;
             } else if (canUpgradeMultiAccount) {
                 typeOfNextAccount = 'real';
                 upgradeLink = '';
-                allowedMarkets = landingCompany.financial_company.legal_allowed_markets;
-                const legalAllowedCurrencies = landingCompany.financial_company.legal_allowed_currencies;
+                allowedMarkets = landingCompanyObj.financial_company.legal_allowed_markets;
+                const legalAllowedCurrencies = landingCompanyObj.financial_company.legal_allowed_currencies;
                 const existingCurrencies = getExistingCurrencies(vm.accounts);
                 if (existingCurrencies.length) {
                     const dividedExistingCurrencies = getDividedCurrencies(existingCurrencies);
@@ -123,7 +130,9 @@ angular
         };
 
         $scope.$on('authorize', (e, authorize) => {
-            if (currentAccount && currentAccount.id !== authorize.loginid) {
+            // check for upgrade info after changing account or user selects country in profile page and updates settings
+            if (currentAccount &&
+              (currentAccount.id !== authorize.loginid || currentAccount.country !== authorize.country)) {
                 getAccountInfo();
             }
         });
@@ -136,7 +145,7 @@ angular
             const landingCompany = landing_company;
             vm.hasMTAccess = hasMTfinancialCompany(landingCompany);
             if (req_id === 1) {
-                vm.upgrade = getUpgradeInfo(landingCompany, currentAccount.id);
+                vm.upgrade = getUpgradeInfo(landingCompany);
                 if (vm.upgrade.canUpgrade) {
                     appStateService.upgrade = vm.upgrade;
                 } else {
@@ -146,13 +155,18 @@ angular
             }
         });
 
-        vm.linkToRegulatory = `https://www.binary.com/${localStorage.getItem("language") || "en"}/regulation.html`;
         vm.goToRegulatory = function() {
-            window.open(vm.linkToRegulatory, "_blank");
+            const linkToRegulatory = `https://www.binary.com/${localStorage.getItem("language") || "en"}/regulation.html`;
+            window.open(linkToRegulatory, "_blank");
         };
 
         vm.goToNetworkStatus = () => {
             window.open("https://binarycom.statuspage.io/", "_blank");
-        }
+        };
+
+        vm.goToResponsbileTrading = () => {
+            const linkToResponsibleTrading = `https://www.binary.com/${localStorage.getItem("language") || "en"}/responsible-trading.html`;
+            window.open(linkToResponsibleTrading, "_blank");
+        };
 
     });

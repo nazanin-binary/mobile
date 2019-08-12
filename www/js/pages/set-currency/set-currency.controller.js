@@ -16,7 +16,9 @@
         'appStateService',
         'websocketService',
         'accountService',
-        'clientService'];
+        'clientService',
+        'alertService'
+    ];
 
     function SetCurrency($scope,
         $rootScope,
@@ -25,17 +27,19 @@
         appStateService,
         websocketService,
         accountService,
-        clientService) {
+        clientService,
+        alertService) {
         const vm = this;
         const cryptoConfig = config.cryptoConfig;
         const currencyConfig = appStateService.currenciesConfig;
         const accounts = accountService.getAll();
         const currentAccount = accountService.getDefault();
-        vm.isCRAccount = /CR/i.test(currentAccount.id);
+        const landingCompany = currentAccount.landing_company_name;
+        vm.isCRAccount = clientService.isLandingCompanyOf('costarica', landingCompany) || clientService.isLandingCompanyOf('svg', landingCompany);
         vm.currenciesOptions = [];
 
         vm.getCurrenciesOptions = () => {
-            const legalAllowedCurrencies = clientService.landingCompanyValue(currentAccount.id, 'legal_allowed_currencies');
+            const legalAllowedCurrencies = clientService.landingCompanyValue(landingCompany, 'legal_allowed_currencies');
             if (vm.isCRAccount) {
                 const existingCurrencies = clientService.getExistingCurrencies(accounts);
                 if (existingCurrencies.length) {
@@ -59,6 +63,7 @@
             options.forEach(curr => {
                 const currency = currencyConfig[curr];
                 const isCryptoCurrency = /crypto/i.test(currencyConfig[curr].type);
+                if (isCryptoCurrency && !cryptoConfig[curr]) return;
                 currency.symb = curr;
                 currency.isCryptoCurrency = isCryptoCurrency;
                 currency.img = `img/currency/${curr.toLowerCase()}.svg`;
@@ -89,6 +94,7 @@
                 }
             }
             localStorage.setItem("accounts", JSON.stringify(accounts));
+            sessionStorage.setItem("currency", currency);
             appStateService.accountCurrencyChanged = true;
             $rootScope.$broadcast("currency:changed", currency);
             // if user is redirected here from accounts-management page redirect him/her to account-management page
@@ -97,6 +103,10 @@
             } else {
                 $state.go("trade");
             }
+        });
+
+        $scope.$on('set_account_currency:error', (e, error) => {
+            alertService.displayError(error.message);
         });
 
         $scope.$on('$stateChangeSuccess', (ev, to, toParams, from, fromParams) => {

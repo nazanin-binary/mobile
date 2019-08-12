@@ -49,12 +49,13 @@
             </div>
             {{ 'menu.statement' | translate }}
           </ion-item>
-          <ion-item nav-clear menu-close ui-sref="meta-trader" href="#">
-            <div class="icon-wrapper">
-              <i class="ion-shuffle"></i>
-            </div>
-            {{ 'menu.mt5' | translate }}
-          </ion-item>
+          <!-- MT5 menu has been disable because of changes in API -->
+          <!-- <ion-item nav-clear menu-close ui-sref="meta-trader" href="#"> -->
+          <!--   <div class="icon-wrapper"> -->
+          <!--     <i class="ion-shuffle"></i> -->
+          <!--   </div> -->
+          <!--   {{ 'menu.mt5' | translate }} -->
+          <!-- </ion-item> -->
           <ion-item nav-clear menu-close ui-sref="settings" href="#">
             <div class="icon-wrapper">
               <i class="ion-ios-gear"></i>
@@ -68,6 +69,7 @@
             {{ 'menu.resources' | translate }}
           </ion-item>
           <ion-item
+                  ng-if="!vm.hasNotSelectedCountry"
                   nav-clear
                   menu-close
                   ui-sref="accounts-management"
@@ -94,6 +96,12 @@
               <i class="ion-information"></i>
             </div>
             {{ 'menu.regulatory_information' | translate }}
+          </ion-item>
+          <ion-item nav-clear menu-close ng-click="vm.goToResponsbileTrading()">
+            <div class="icon-wrapper">
+              <i class="ion-eye"></i>
+            </div>
+            {{ 'menu.responsible_trading' | translate }}
           </ion-item>
           <ion-item nav-clear menu-close ng-if="vm.showNetworkStatus" ng-click="vm.goToNetworkStatus()">
             <div class="icon-wrapper">

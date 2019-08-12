@@ -71,6 +71,7 @@
         "binary.pages.set-currency",
         "binary.pages.accounts-management",
         "binary.pages.redirect",
+        "binary.pages.account-categorisation"
     ]);
 
     String.prototype.capitalize = function() {

@@ -17,6 +17,7 @@
         "appStateService",
         "proposalService",
         "websocketService",
+        "chartService",
         "$ionicLoading"
     ];
 
@@ -27,6 +28,7 @@
         appStateService,
         proposalService,
         websocketService,
+        chartService,
         $ionicLoading) {
         const vm = this;
         let forgetRequestId = 0;
@@ -38,6 +40,8 @@
         vm.showSummary = false;
         vm.purchasedContractIndex = -1;
         vm.currencyType = "fiat";
+        vm.isContractFinished = false;
+        vm.contractType = '';
 
         $scope.$watch(
             () => vm.proposal,
@@ -75,9 +79,14 @@
                     vm.proposalResponses[reqId - 1].isReceiving = false;
                     vm.longcode[reqId - 1] = proposal.longcode;
                 });
+            }
+
+            if (vm.isContractFinished) {
                 // Unlock view to navigate
+                appStateService.purchaseMode = false;
                 vm.inPurchaseMode = false;
             }
+
         });
 
         $scope.$on("proposal:error", (e, error, reqId) => {
@@ -91,21 +100,32 @@
         });
 
         $scope.$on("purchase", (e, response) => {
+            const purchaseInfo = response.buy;
+
             if (!_.isEmpty(response.buy)) {
                 vm.showSummary = true;
                 $scope.$applyAsync(() => {
                     vm.purchasedContract = {
-                        contractId   : response.buy.contract_id,
-                        longcode     : response.buy.longcode,
+                        contractId   : purchaseInfo.contract_id,
+                        longcode     : purchaseInfo.longcode,
                         payout       : vm.proposalResponses[vm.purchasedContractIndex].payout,
-                        cost         : response.buy.buy_price,
-                        balance      : response.buy.balance_after,
-                        transactionId: response.buy.transaction_id,
+                        cost         : purchaseInfo.buy_price,
+                        balance      : purchaseInfo.balance_after,
+                        transactionId: purchaseInfo.transaction_id,
                         profit       : parseFloat(vm.proposalResponses[vm.purchasedContractIndex].payout) -
-                        parseFloat(response.buy.buy_price),
+                        parseFloat(purchaseInfo.buy_price),
                     };
                 });
-                websocketService.sendRequestFor.portfolio();
+                chartService.addContract({
+                    startTime: purchaseInfo.start_time + 1,
+                    duration : parseInt(vm.proposal.duration),
+                    type     :
+                        vm.proposal.tradeType === "Higher/Lower"
+                            ? `${vm.contractType}HL`
+                            : vm.contractType,
+                    selectedTick: vm.proposal.tradeType === "High/Low Ticks" ? vm.proposal.selected_tick : null,
+                    barrier     : vm.proposal.barrier
+                });
             }
         });
 
@@ -123,12 +143,14 @@
                 if (contract.result === "win") {
                     vm.purchasedContract.buyPrice = vm.purchasedContract.cost;
                     vm.purchasedContract.profit = vm.purchasedContract.profit;
-                    vm.purchasedContract.finalPrice = vm.purchasedContract.buyPrice + vm.purchasedContract.profit;
+                    vm.purchasedContract.finalPrice =
+                        parseFloat(vm.purchasedContract.buyPrice) + parseFloat(vm.purchasedContract.profit);
                     websocketService.sendRequestFor.openContract();
                 } else if (contract.result === "lose") {
                     vm.purchasedContract.buyPrice = vm.purchasedContract.cost;
                     vm.purchasedContract.loss = vm.purchasedContract.cost;
-                    vm.purchasedContract.finalPrice = vm.purchasedContract.buyPrice + vm.purchasedContract.loss;
+                    vm.purchasedContract.finalPrice =
+                        parseFloat(vm.purchasedContract.buyPrice) + parseFloat(vm.purchasedContract.loss);
                 }
                 vm.purchasedContract.result = contract.result === "lose" ? "loss" : contract.result;
 
@@ -142,19 +164,8 @@
                     vm.purchasedContract.payout
                 );
 
-                const ampEventProperties = {
-                    Symbol      : proposal.underlying_symbol,
-                    TradeType   : proposal.contract_type,
-                    Stake       : vm.purchasedContract.buyPrice,
-                    Market      : proposal.market,
-                    Duration    : vm.proposal.duration,
-                    DurationUnit: vm.proposal.duration_unit,
-                    result      : contract.result === "lose" ? "Lost" : "Won"
-                };
+                vm.isContractFinished = true;
                 sendProposal();
-
-                // Unlock view to navigate
-                appStateService.purchaseMode = false;
             }
         });
 
@@ -189,13 +200,17 @@
             return `img/trade-icon/${contractType.toLowerCase()}.svg`;
         };
 
-        vm.purchase = function (contractIndex) {
+        vm.purchase = function (contractIndex, contract_type) {
             $scope.$applyAsync(() => {
+                vm.isContractFinished = false;
                 vm.inPurchaseMode = true;
                 vm.purchasedContractIndex = contractIndex;
                 appStateService.purchaseMode = true;
                 appStateService.tradeMode = false;
             });
+            if (contract_type) {
+                vm.contractType = contract_type;
+            }
             proposalService.purchase(vm.proposalResponses[contractIndex]);
         };
 

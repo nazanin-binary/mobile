@@ -13,8 +13,11 @@
 
     MaltainvestAccountOpening.$inject = [
         "$scope",
+        "$state",
         "$filter",
+        "$translate",
         "$ionicModal",
+        "$ionicScrollDelegate",
         "websocketService",
         "appStateService",
         "accountService",
@@ -27,8 +30,11 @@
 
     function MaltainvestAccountOpening(
         $scope,
+        $state,
         $filter,
+        $translate,
         $ionicModal,
+        $ionicScrollDelegate,
         websocketService,
         appStateService,
         accountService,
@@ -45,13 +51,23 @@
         vm.touchedTaxResidence = false;
         vm.hasResidence = false;
         vm.hasPOB = false;
-        const loginid = accountService.getDefault().id;
-        const isVirtual = clientService.isAccountOfType('virtual', loginid);
+        vm.hasCitizen = false;
+        let modalIsSubmitted = false;
+        vm.showRiskDisclaimer = false;
+        vm.tncAccepted = false;
+        let acceptRisk = 0;
+        const landingCompany = accountService.getDefault().landing_company_name;
+        const isVirtual = clientService.isLandingCompanyOf('virtual', landingCompany);
+        const accounts = accountService.getAll();
+        const upgradableLandingCompanies = appStateService.upgradeableLandingCompanies;
+        vm.hasIOM = _.indexOf(upgradableLandingCompanies, 'iom') > -1 ||
+            clientService.hasAccountOfLandingCompany(accounts, 'iom');
         vm.receivedSettings = false;
         vm.options = _.merge(financialInformationOptions, accountOptions);
         vm.validation = validationService;
-        vm.linkToTermAndConditions = `https://www.binary.com/${localStorage.getItem("language") ||
+        const linkToTermAndConditions = `https://www.binary.com/${localStorage.getItem("language") ||
         "en"}/terms-and-conditions.html`;
+        const linkToTINSite = 'https://ec.europa.eu/taxation_customs/tin/tinByCountry.html';
         vm.data = {
             salutation                          : '',
             first_name                          : '',
@@ -59,6 +75,7 @@
             date_of_birth                       : '',
             residence                           : '',
             place_of_birth                      : '',
+            citizen                             : '',
             address_line_1                      : '',
             address_line_2                      : '',
             address_city                        : '',
@@ -67,14 +84,10 @@
             phone                               : '',
             forex_trading_experience            : '',
             forex_trading_frequency             : '',
-            indices_trading_experience          : '',
-            indices_trading_frequency           : '',
-            commodities_trading_experience      : '',
-            commodities_trading_frequency       : '',
-            stocks_trading_experience           : '',
-            stocks_trading_frequency            : '',
-            other_derivatives_trading_experience: '',
-            other_derivatives_trading_frequency : '',
+            binary_options_trading_experience   : '',
+            binary_options_trading_frequency    : '',
+            cfd_trading_experience              : '',
+            cfd_trading_frequency               : '',
             other_instruments_trading_experience: '',
             other_instruments_trading_frequency : '',
             employment_industry                 : '',
@@ -88,7 +101,8 @@
             account_turnover                    : '',
             account_opening_reason              : '',
             source_of_wealth                    : '',
-            employment_status                   : ''
+            employment_status                   : '',
+            client_type                         : ''
         };
 
         if (isVirtual) {
@@ -108,8 +122,27 @@
             });
 
         vm.closeModal = () => {
-            if (vm.modalCtrl) vm.modalCtrl.hide();
+            if (vm.modalCtrl) {
+                vm.modalCtrl.hide();
+            }
         };
+
+        $scope.$on('modal.hidden', () => {
+            // check in modal close action to see if it's closed by submitting changes or not
+            // if it's not saved, changes to popup state should not be saved too
+            // not saving applies when user clicks outside popup to close popup either
+            if (!modalIsSubmitted) {
+                const taxResidence = _.split(vm.data.tax_residence, ',');
+                _.filter(vm.residenceList, (residence, idx) => {
+                    if (_.indexOf(taxResidence, residence.value) > -1) {
+                        vm.residenceList[idx].checked = true;
+                    } else {
+                        vm.residenceList[idx].checked = false;
+                    }
+                });
+            }
+            modalIsSubmitted = false;
+        });
 
         vm.showTaxResidenceItems = () => vm.modalCtrl.show();
 
@@ -136,6 +169,9 @@
                 }
                 if (get_settings.place_of_birth) {
                     vm.hasPOB = true;
+                }
+                if (get_settings.citizen) {
+                    vm.hasCitizen = true;
                 }
                 if (get_settings.country_code) {
                     const countryCode = get_settings.country_code;
@@ -173,7 +209,8 @@
             vm.disableUpdatebutton = true;
             vm.error = {};
             let params = _.clone(vm.data);
-            params.accept_risk = vm.accept_risk ? 1 : 0;
+            params.client_type = vm.client_type ? 'professional' : 'retail';
+            params.accept_risk = acceptRisk;
             params.date_of_birth = vm.data.date_of_birth ? $filter("date")(vm.data.date_of_birth, "yyyy-MM-dd") : '';
             params = _.forEach(params, (val, k) => {
                 params[k] = _.trim(val);
@@ -182,11 +219,26 @@
             websocketService.sendRequestFor.createMaltainvestAccountSend(params);
         };
 
+        vm.acceptRisk = () => {
+            acceptRisk = 1;
+            vm.submitAccountOpening();
+        };
+
+        vm.declineRisk = () => {
+            acceptRisk = 0;
+            $state.go('trade');
+        }
+
         $scope.$on("new_account_maltainvest:error", (e, error) => {
             vm.disableUpdatebutton = false;
             if (error.hasOwnProperty("details")) {
                 $scope.$apply(() => {
                     vm.errors = error.details;
+                });
+            } else if (error.code && error.code === 'show risk disclaimer') {
+                $scope.$applyAsync(() => {
+                    vm.showRiskDisclaimer = true;
+                    $ionicScrollDelegate.scrollTop(true);
                 });
             } else if (error.code) {
                 alertService.displayError(error.message);
@@ -196,20 +248,60 @@
         $scope.$on("new_account_maltainvest", (e, new_account_maltainvest) => {
             vm.disableUpdatebutton = false;
             const selectedAccount = new_account_maltainvest.oauth_token;
+            appStateService.loginFinished = false;
             websocketService.authenticate(selectedAccount);
             appStateService.newAccountAdded = true;
             accountService.addedAccount = selectedAccount;
         });
 
-        vm.openTermsAndConditions = () =>
-            window.open(vm.linkToTermAndConditions, "_blank");
+        vm.openTermsAndConditions = () => {
+            window.open(linkToTermAndConditions, "_system");
+        }
 
-        vm.init = () => {
+        vm.openProfessionalClientInformation = () => {
+            alertService.showProfessioanlClientInformation($scope);
+        }
+
+        vm.openPEPInformation = () => {
+            alertService.showPEPInformation($scope);
+        }
+
+        vm.openTaxInformation = () => {
+            alertService.showTaxInformation($scope);
+        }
+
+        vm.goToTINSite = () => {
+            window.open(linkToTINSite, "_blank");
+        }
+
+        vm.showConfirmProfessionalClient = () => {
+            if (vm.client_type) {
+                alertService.displayProfessionalClientConfirmation(
+                    $translate.instant('professional-client-confirmation.professional_clients'),
+                    'information-popup',
+                    $scope,
+                    'js/share/templates/professional-client/professional-client-confirmation.template.html',
+                    [
+                        {
+                            text : $translate.instant("professional-client-confirmation.decline"),
+                            onTap: () => vm.client_type = 0
+                        },
+                        {
+                            text : $translate.instant("professional-client-confirmation.accept"),
+                            type : "button-positive",
+                            onTap: () => true
+                        }
+                    ]
+                );
+            }
+        }
+
+        const init = () => {
             vm.error = {};
             websocketService.sendRequestFor.residenceListSend();
             vm.readOnly = !isVirtual;
         };
 
-        vm.init();
+        init();
     }
 })();

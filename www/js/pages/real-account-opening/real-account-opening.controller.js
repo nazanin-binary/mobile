@@ -35,13 +35,20 @@
         const vm = this;
         vm.data = {};
         vm.errors= {};
-        const loginid = accountService.getDefault().id;
-        const isVirtual = clientService.isAccountOfType('virtual', loginid);
+        const landingCompany = accountService.getDefault().landing_company_name;
+        const isVirtual = clientService.isLandingCompanyOf('virtual', landingCompany);
+        const accounts = accountService.getAll();
+        const upgradableLandingCompanies = appStateService.upgradeableLandingCompanies;
+        vm.hasIOM = _.indexOf(upgradableLandingCompanies, 'iom') > -1 ||
+            clientService.hasAccountOfLandingCompany(accounts, 'iom');
+        vm.requireCitizen = _.indexOf(upgradableLandingCompanies, 'malta') > -1 ||
+            _.indexOf(upgradableLandingCompanies, 'iom') > -1;
         vm.validation = validationService;
         vm.options = accountOptions;
         vm.receivedSettings = false;
         vm.hasResidence = false;
         vm.hasPOB = false;
+        vm.hasCitizen = false;
         vm.disableUpdatebutton = false;
         vm.linkToTermAndConditions = `https://www.binary.com/${localStorage.getItem("language") ||
             "en"}/terms-and-conditions.html`;
@@ -50,6 +57,7 @@
             first_name            : '',
             last_name             : '',
             date_of_birth         : '',
+            citizen               : '',
             place_of_birth        : '',
             residence             : '',
             address_line_1        : '',
@@ -87,6 +95,9 @@
                 if (get_settings.place_of_birth) {
                     vm.hasPOB = true;
                 }
+                if (get_settings.citizen) {
+                    vm.hasCitizen = true;
+                }
                 if (get_settings.country_code) {
                     const countryCode = get_settings.country_code;
                     vm.hasResidence = true;
@@ -110,6 +121,10 @@
             vm.disableUpdatebutton = true;
             vm.error = {};
             let params = _.clone(vm.data);
+            const currency = appStateService.selectedCurrency || '';
+            if (currency) {
+                params.currency = currency;
+            }
             params.date_of_birth = vm.data.date_of_birth ? $filter("date")(vm.data.date_of_birth, "yyyy-MM-dd") : '';
             params = _.forEach(params, (val, k) => {
                 params[k] = _.trim(val);
@@ -133,12 +148,19 @@
         $scope.$on("new_account_real", (e, new_account_real) => {
             vm.disableUpdatebutton = false;
             const selectedAccount = new_account_real.oauth_token;
+            appStateService.loginFinished = false;
             websocketService.authenticate(selectedAccount);
             appStateService.newAccountAdded = true;
             accountService.addedAccount = selectedAccount;
         });
 
-        vm.openTermsAndConditions = () => window.open(vm.linkToTermAndConditions, "_blank");
+        vm.openTermsAndConditions = () => {
+            window.open(vm.linkToTermAndConditions, "_blank");
+        }
+
+        vm.openPEPInformation = () => {
+            alertService.showPEPInformation($scope);
+        }
 
         vm.init = () => {
             vm.errors = {};

@@ -17,7 +17,8 @@
         "accountService",
         "appStateService",
         "websocketService",
-        "notificationService"
+        "notificationService",
+        "validationService"
     ];
 
     function Accounts(
@@ -28,9 +29,11 @@
         accountService,
         appStateService,
         websocketService,
-        notificationService
+        notificationService,
+        validationService
     ) {
         const vm = this;
+        let updatingAccount = false;
 
         const init = function() {
             vm.accounts = accountService.getAll();
@@ -65,6 +68,8 @@
         init();
 
         vm.updateAccount = function(_selectedAccount) {
+            updatingAccount = true;
+            appStateService.loginFinished = false;
             accountService.setDefault(_selectedAccount);
             accountService.validate();
             updateSymbols();
@@ -108,14 +113,18 @@
                 vm.selectedAccount = authorize.token;
                 appStateService.virtuality = authorize.is_virtual;
                 accountService.addedAccount = "";
+                const selectedCurrency = appStateService.selectedCurrency || '';
+                validationService.reset();
 
-                vm.selectedCurrency = appStateService.selectedCurrency;
-                if (vm.selectedCurrency) {
-                    websocketService.sendRequestFor.setAccountCurrency(vm.selectedCurrency);
-                    $state.go("trade");
-                } else {
+                if (!authorize.currency && !selectedCurrency) {
                     $state.go("set-currency")
+                } else if (!authorize.currency && selectedCurrency) {
+                    websocketService.sendRequestFor.setAccountCurrency(selectedCurrency);
+                } else {
+                    $state.go("trade");
                 }
+            } else if (authorize && updatingAccount) {
+                validationService.reset();
             }
         });
 
@@ -127,9 +136,12 @@
                     break;
                 }
             }
+            localStorage.accounts = JSON.stringify(accounts);
             localStorage.setItem("accounts", JSON.stringify(accounts));
             appStateService.accountCurrencyChanged = true;
             $rootScope.$broadcast("currency:changed", currency);
+            validationService.reset();
+            $state.go("trade");
         });
     }
 })();

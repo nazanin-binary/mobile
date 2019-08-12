@@ -8,31 +8,37 @@
 
 angular.module("binary").service("clientService", function(appStateService) {
 
-    this.getAccountType = (loginid) => {
+    this.isLandingCompanyOf = (targetLandingCompany, accountLandingCompany) =>
+        targetLandingCompany === accountLandingCompany;
+
+    this.hasAccountOfLandingCompany = (accounts, landingCompany) => !!_.find(accounts, account =>
+        this.isLandingCompanyOf(landingCompany, account.landing_company_name))
+
+    this.getAccountType = landingCompany => {
         let account_type;
-        if (/VR/i.test(loginid))  account_type = 'virtual';
-        else if (/MF/i.test(loginid))  account_type = 'financial';
-        else if (/MLT/i.test(loginid)) account_type = 'gaming';
-        else account_type = 'real';
+        if (landingCompany) {
+            if (this.isLandingCompanyOf('virtual', landingCompany)) account_type = 'virtual';
+            else if (this.isLandingCompanyOf('maltainvest', landingCompany)) account_type = 'financial';
+            else if (this.isLandingCompanyOf('malta', landingCompany)) account_type = 'gaming';
+            else account_type = 'real';
+        }
         return account_type;
     };
 
-    this.isAccountOfType = (type, loginid) => {
-        const accountType = this.getAccountType(loginid);
+    this.isAccountOfType = (type, landingCompany) => {
+        const accountType = this.getAccountType(landingCompany);
         return (
             (type === 'virtual' && accountType === 'virtual') ||
             (type === 'real'    && accountType !== 'virtual') ||
             type === accountType);
     };
 
-    const isCryptocurrency = (currencyConfig, curr) => /crypto/i.test(currencyConfig[curr].type)
-
-    this.landingCompanyValue = (loginid, key, landingCompany) => {
+    this.landingCompanyValue = (landingCompany, key, landingCompanyObj) => {
         let landingCompanyOfAccount;
-        const landingCompanyObject = landingCompany || JSON.parse(localStorage.getItem('landingCompanyObject'));
-        if (this.isAccountOfType('financial', loginid)) {
+        const landingCompanyObject = landingCompanyObj || JSON.parse(localStorage.getItem('landingCompanyObject'));
+        if (this.isAccountOfType('financial', landingCompany)) {
             landingCompanyOfAccount = landingCompanyObject.financial_company;
-        } else if (this.isAccountOfType('real', loginid)) {
+        } else if (this.isAccountOfType('real', landingCompany)) {
             landingCompanyOfAccount = landingCompanyObject.gaming_company;
             if (!landingCompanyOfAccount) {
                 landingCompanyOfAccount = landingCompanyObject.financial_company;
@@ -50,30 +56,50 @@ angular.module("binary").service("clientService", function(appStateService) {
     this.getExistingCurrencies = (accounts) => {
         const currencies = [];
         _.forIn(accounts, (account, key) => {
-            if (!/VR/i.test(account.id) && account.currency.length > 0) {
+            if (!this.isLandingCompanyOf('virtual', account.landing_company_name) && account.currency.length > 0) {
                 currencies.push(account.currency);
             }
         });
         return currencies;
     }
 
-    this.dividedCurrencies = (currencies) => {
+    this.dividedCurrencies = currencies => {
         const currencyConfig = appStateService.currenciesConfig;
         const cryptoCurrencies = [];
         const fiatCurrencies = [];
-        _.forEach(currencies, curr => {
-            const currency = currencyConfig[curr];
-            const isCryptoCurrency = /crypto/i.test(currencyConfig[curr].type);
+        _.forEach(currencies, currency => {
+            const isCryptoCurrency = /crypto/i.test(currencyConfig[currency].type);
             if (isCryptoCurrency) {
-                cryptoCurrencies.push(curr);
+                cryptoCurrencies.push(currency);
             } else {
-                fiatCurrencies.push(curr);
+                fiatCurrencies.push(currency);
             }
         });
         return {
             cryptoCurrencies,
             fiatCurrencies
         };
-    }
+    };
+
+    this.getFractionalDigits = () => {
+        const currency = sessionStorage.getItem('currency') || 'USD';
+        const currencyConfig = appStateService.currenciesConfig || {};
+        return !_.isEmpty(currencyConfig) &&
+        currencyConfig[currency] ? currencyConfig[currency].fractional_digits : 2;
+    };
+
+    this.groupMT5Accounts = accounts => {
+        const groupedAccounts = {};
+        const demo = [];
+        const real = [];
+        _.forEach(accounts, account => account.isDemo ? demo.push(account) : real.push(account));
+        if (demo.length) {
+            groupedAccounts.demo = demo;
+        }
+        if (real.length) {
+            groupedAccounts.real = real;
+        }
+        return groupedAccounts;
+    };
 
 });

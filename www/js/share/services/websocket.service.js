@@ -13,14 +13,17 @@ angular
         "websocketService",
         (
             $ionicLoading,
+            $ionicPlatform,
             $rootScope,
             $state,
             $translate,
             alertService,
             appStateService,
             localStorageService,
+            clientService,
             config,
-            notificationService
+            notificationService,
+            supportedLanguagesService
         ) => {
             let dataStream = "";
             const messageBuffer = [];
@@ -41,14 +44,14 @@ angular
             };
 
             const waitForConnection = function(callback, isAuthonticationRequest) {
-                if (dataStream.readyState === 3) {
+                if (dataStream && dataStream.readyState === 3) {
                     init();
                     if (!isAuthonticationRequest) {
                         setTimeout(() => {
                             waitForConnection(callback);
                         }, 1000);
                     }
-                } else if (dataStream.readyState === 1) {
+                } else if (dataStream && dataStream.readyState === 1) {
                     callback();
                 } else if (!(dataStream instanceof WebSocket)) {
                     init();
@@ -66,9 +69,12 @@ angular
 
             const sendMessage = function(_data) {
                 const token = localStorageService.getDefaultToken();
-                waitForConnection(() => {
-                    dataStream.send(JSON.stringify(_data));
-                }, _data.hasOwnProperty("authorize") && token);
+
+                $ionicPlatform.ready(() => {
+                    waitForConnection(() => {
+                        dataStream.send(JSON.stringify(_data));
+                    }, _data.hasOwnProperty("authorize") && token);
+                });
             };
 
             const getAppId = () => window.localStorage.getItem('config.app_id') || config.app_id;
@@ -78,6 +84,26 @@ angular
                 const wsUrl = server_url ? `wss://${server_url}/websockets/v3` : config.wsUrl;
                 return wsUrl;
             };
+
+            const getFPofURL = (url) => {
+                if (_.isEmpty(url)) {
+                    return null;
+                }
+
+                const result = /(binaryqa\d{2}.com)/.exec(url);
+
+                if (!_.isEmpty(result)) {
+                    const bareUrl = `www.${result[1]}`;
+
+                    const matchedCert = _.find(config.qaMachinesCertFP, (c) => c.url.indexOf(bareUrl) > -1);
+
+                    if (matchedCert) {
+                        return matchedCert.fp;
+                    }
+                }
+
+                return config.serverCertFP;
+            }
 
             const init = function(forced) {
                 forced = forced || false;
@@ -95,45 +121,66 @@ angular
 
 
 
+                const onFailed = () => {
+                    $rootScope.$broadcast("connection:error", true);
+                };
+
+                const onSuccess = () => {
+
+                    dataStream = new WebSocket(`${wsUrl}?app_id=${appId}&l=${language}`);
+
+                    dataStream.onopen = function() {
+                        // Authorize the default token if it's exist
+                        const token = localStorageService.getDefaultToken();
+                        if (token) {
+                            const data = {
+                                authorize  : token,
+                                passthrough: {
+                                    type: "reopen-connection"
+                                }
+                            };
+                            sendMessage(data);
+                        }
+
+                        console.log("socket is opened"); // eslint-disable-line
+                        $rootScope.$broadcast("connection:ready");
+                    };
+
+                    dataStream.onmessage = function(message) {
+                        receiveMessage(message);
+                    };
+
+                    dataStream.onclose = function(e) {
+                        console.log("socket is closed ", e); // eslint-disable-line
+                        init();
+                        console.log("socket is reopened"); // eslint-disable-line
+                        appStateService.isLoggedin = false;
+                        $rootScope.$broadcast("connection:reopened");
+                    };
+
+                    dataStream.onerror = function(e) {
+                        if (e.target.readyState === 3) {
+                            $rootScope.$broadcast("connection:error");
+                        }
+                        appStateService.isLoggedin = false;
+                    };
+
+                };
+
                 const appId = getAppId();
                 const wsUrl = getSocketURL();
-                dataStream = new WebSocket(`${wsUrl}?app_id=${appId}&l=${language}`);
+                const fp = getFPofURL(wsUrl);
 
-                dataStream.onopen = function() {
-                    // Authorize the default token if it's exist
-                    const token = localStorageService.getDefaultToken();
-                    if (token) {
-                        const data = {
-                            authorize  : token,
-                            passthrough: {
-                                type: "reopen-connection"
-                            }
-                        };
-                        sendMessage(data);
-                    }
-
-                    console.log("socket is opened"); // eslint-disable-line
-                    $rootScope.$broadcast("connection:ready");
-                };
-
-                dataStream.onmessage = function(message) {
-                    receiveMessage(message);
-                };
-
-                dataStream.onclose = function(e) {
-                    console.log("socket is closed ", e); // eslint-disable-line
-                    init();
-                    console.log("socket is reopened"); // eslint-disable-line
-                    appStateService.isLoggedin = false;
-                    $rootScope.$broadcast("connection:reopened");
-                };
-
-                dataStream.onerror = function(e) {
-                    if (e.target.readyState === 3) {
-                        $rootScope.$broadcast("connection:error");
-                    }
-                    appStateService.isLoggedin = false;
-                };
+                if (window.plugins && window.plugins.sslCertificateChecker) {
+                    window.plugins.sslCertificateChecker.check(
+                        onSuccess,
+                        onFailed,
+                        `https://${wsUrl.slice(6)}`,
+                        fp,
+                    );
+                } else {
+                    onSuccess();
+                }
             };
 
             $rootScope.$on("language:updated", () => {
@@ -148,6 +195,11 @@ angular
 
             const websocketService = {};
             websocketService.authenticate = function(_token, extraParams) {
+                if (_token && _token !== "<not shown>") {
+                    appStateService.authorizeToken = _token;
+                } else {
+                    _token = appStateService.authorizeToken;
+                }
                 extraParams = null || extraParams;
                 appStateService.isLoggedin = false;
 
@@ -170,10 +222,14 @@ angular
                 appStateService.isChangedAccount = false;
                 appStateService.isPopupOpen = false;
                 appStateService.isLoggedin = false;
+                appStateService.authorizeToken = '';
                 sessionStorage.removeItem("start");
                 sessionStorage.removeItem("_interval");
                 sessionStorage.removeItem("realityCheckStart");
                 localStorage.removeItem("termsConditionsVersion");
+                localStorage.removeItem("landingCompanyObject");
+                localStorage.removeItem("landingCompany");
+                localStorage.removeItem("landingCompanyName");
                 appStateService.profitTableRefresh = true;
                 appStateService.statementRefresh = true;
                 sessionStorage.removeItem("countryParams");
@@ -196,6 +252,8 @@ angular
                 appStateService.selectedCurrency = false;
                 notificationService.emptyNotices();
                 appStateService.checkingUpgradeDone = false;
+                appStateService.loginFinished = false;
+                appStateService.isMaltainvest = false;
 
                 if (error) {
                     $translate(["alert.error", "alert.ok"]).then(translation => {
@@ -280,6 +338,7 @@ angular
                         buy  : _proposalId,
                         price: price || 0
                     };
+
                     sendMessage(data);
                 },
                 balance() {
@@ -508,6 +567,13 @@ angular
                     };
 
                     sendMessage(data);
+                },
+                serverTime() {
+                    const data = {
+                        time: 1,
+                    };
+
+                    sendMessage(data);
                 }
             };
             websocketService.closeConnection = function() {
@@ -536,6 +602,7 @@ angular
                     switch (messageType) {
                         case "authorize":
                             if (message.authorize) {
+                                message.echo_req.authorize = appStateService.authorizeToken;
                                 message.authorize.token = message.echo_req.authorize;
                                 window._trackJs.userId = message.authorize.loginid;
                                 appStateService.isLoggedin = true;
@@ -546,6 +613,8 @@ angular
                                 appStateService.upgradeableLandingCompanies =
                                 message.authorize.upgradeable_landing_companies
                                 || [];
+                                appStateService.isMaltainvest =
+                                    clientService.isLandingCompanyOf('maltainvest', message.authorize.landing_company_name);
                                 // update accounts from account list whenever authorize is received
                                 const accounts = !_.isEmpty(localStorage.getItem('accounts')) &&
                                 JSON.parse(localStorage.getItem('accounts'));
@@ -553,6 +622,7 @@ angular
                                 if (accounts && accounts.length && accountList) {
                                     accounts.forEach((account, idx) => {
                                         const acc = _.find(accountList, a => a.loginid === account.id);
+                                        account.country = message.authorize.country || '';
                                         accounts[idx] = _.assign(account, acc);
                                     });
                                     localStorage.setItem('accounts', JSON.stringify(accounts));
@@ -563,6 +633,7 @@ angular
                                 } else {
                                     sessionStorage.currency = message.authorize.currency;
                                 }
+                                appStateService.loginFinished = true;
 
                                 $rootScope.$broadcast(
                                     "authorize",
@@ -585,6 +656,13 @@ angular
                                 appStateService.currenciesConfig = message.website_status.currencies_config;
                                 $rootScope.$broadcast("website_status", message.website_status);
                                 localStorage.termsConditionsVersion = message.website_status.terms_conditions_version;
+                                const supportedLanguages = message.website_status.supported_languages;
+                                if (supportedLanguages.length) {
+                                    supportedLanguagesService.setSupportedLanguages(
+                                        message.website_status.supported_languages
+                                    );
+                                    $rootScope.$broadcast("supported_languages");
+                                }
                             } else if (message.hasOwnProperty("error")) {
                                 trackJs.track(`${message.error.code}: ${message.error.message}`);
                             }
@@ -807,7 +885,11 @@ angular
                             }
                             break;
                         case "get_limits":
-                            $rootScope.$broadcast("get_limits", message.get_limits);
+                            if (message.get_limits) {
+                                $rootScope.$broadcast("get_limits", message.get_limits);
+                            } else if (message.error) {
+                                $rootScope.$broadcast("get_limits:error", message.error);
+                            }
                             break;
                         case "trading_times":
                             if (message.trading_times) {
@@ -835,6 +917,13 @@ angular
                                 $rootScope.$broadcast("set_account_currency:success", message.echo_req.set_account_currency);
                             } else if (message.error) {
 	                            $rootScope.$broadcast("set_account_currency:error", message.error);
+                            }
+                            break;
+                        case "time": 
+                            if (message.time) {
+                                $rootScope.$broadcast("time:success", message.time);
+                            } else if (message.error) {
+                                $rootScope.$broadcast("time:error", message.error);
                             }
                             break;
                         default:

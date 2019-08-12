@@ -115,6 +115,49 @@ gulp.task('deploy-translation', ['build'], function(done){
   return done();
 });
 
+gulp.task('deploy-apk', function(done){
+
+  sh.config.silent = true;
+
+  var remote = getRemoteName(process.argv);
+  var remoteUrl = getRemoteUrl(remote);
+
+  // remove last tmp directory if it exists
+  sh.rm('-rf', 'tmp');
+
+  //make a tmp directory
+  sh.mkdir('tmp');
+  if(sh.error()){
+    console.log(gutil.colors.red('Error: ' + sh.error()));
+    process.exit(1);
+  }
+
+  sh.cd('tmp');
+  console.log('Fetching gh-pages ...');
+  sh.config.silent = false;
+  sh.exec('git clone '+ remoteUrl +' -b gh-pages ./');
+  sh.config.silent = true;
+
+  console.log('Copying latest verison of APK ...');
+    sh.rm('-rf', 'download');
+    sh.mkdir('download');
+    sh.cp('../platforms/android/app/build/outputs/apk/release/ticktrade-app.apk','download/ticktrade-app.apk');
+
+  console.log('Pushing changes to gh-pages ...');
+  sh.config.silent = false;
+  sh.exec('git config user.name "Morteza Tavanarad"');
+  sh.exec('git config user.email "morteza@binary.com"');
+  sh.exec('git add .');
+    sh.exec(`git commit -m "Deployed new version of APK - ${new Date().toUTCString()}"`);
+  sh.exec('git push origin gh-pages:gh-pages');
+  sh.config.silent = true;
+
+  console.log('Cleaning workspace ...');
+  // remove tmp directory to clean workspace
+  sh.cd('../');
+  sh.rm('-rf', 'tmp');
+  return done();
+});
 gulp.task('code-push', function(done){
   if(!sh.which('code-push')){
     console.log('  ' + gutil.colors.red('Code-Push is not installed.'));
@@ -142,14 +185,17 @@ gulp.task('code-push', function(done){
     process.exit(-1);
   }
 
+var targetVersion = getArgvBySwitchName("--targetVersion");
+targetVersion = targetVersion ? ' --targetBinaryVersion "' + targetVersion + '"'  : '';
+
   console.log('  ' + gutil.colors.blue('Preparing files ...'));
-  sh.sed('-i', ".otherwise('/')", ".otherwise('/update')", 'www/js/configs/states.config.js');
+  sh.sed('-i', '.otherwise("/")', '.otherwise("/update")', 'www/js/configs/states.config.js');
 
   console.log('  ' + gutil.colors.blue('Run code-push ...'));
-  sh.exec('code-push release-cordova ' + app + ' ' + platform + ' --deploymentName ' + deployment + ' --mandatory');
+    sh.exec('code-push release-cordova ' + app + ' ' + platform + ' --deploymentName ' + deployment + targetVersion  +  ' --mandatory');
 
   console.log('  ' + gutil.colors.blue('Rolling back dump changes ...'));
-  sh.sed('-i', ".otherwise('/update')", ".otherwise('/')", 'www/js/configs/states.config.js');
+  sh.sed('-i', '.otherwise("/update")', '.otherwise("/")', 'www/js/configs/states.config.js');
   sh.exec('ionic prepare');
 
   done();
@@ -157,7 +203,7 @@ gulp.task('code-push', function(done){
 
 
 gulp.task('compress', function(done){
-  gulp.src(['www/js/**/*.module.js', 'www/js/**/{*.js, !*.module.js}', 'www/*.js', '!www/js/service-worker-registration.js'])
+  gulp.src(['www/js/**/*.module.js', 'www/js/**/{*.js, !*.module.js}', 'www/*.js', '!www/js/**/*.spec.js', '!www/js/service-worker-registration.js'])
       .pipe(babel({presets: ['es2015']}))
       .pipe(ngmin())
       .pipe(concat('main.js'))
@@ -220,6 +266,38 @@ gulp.task('deploy', ['service-worker'], function(){
 
 gulp.task('build-desktop', function(){
   electronPkg.build();
+});
+
+gulp.task('release-qa', function() {
+
+    /**
+     * Usage gulp release-qa --qa_machine qaurl1,qaurl2,...
+     *
+     */
+    
+    const gitResult = sh.exec('echo | git branch | grep "*"');
+
+    if (gitResult && gitResult.output && gitResult.output.indexOf('qa_version') < 0) {
+        console.log("You're not in qa_version branch");
+        process.exit(-1);
+    }
+
+    const qaMachine = getArgvBySwitchName('--qa_machine');
+
+    if (qaMachine) {
+        sh.exec('ionic cordova build --release android -- --qa_machine=' + qaMachine);
+    }
+
+    const qaMachineFile = getArgvBySwitchName('--qa_machine_file');
+
+    if (qaMachineFile) {
+        const qaMachineList = require(qaMachineFile);
+        if (qaMachineList && qaMachineList.length) {
+            sh.exec('ionic cordova build --release android -- --qa_machine=' + qaMachineList.join(','));
+        }
+    }
+
+
 });
 
 

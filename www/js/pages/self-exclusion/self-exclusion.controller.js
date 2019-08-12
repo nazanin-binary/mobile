@@ -9,21 +9,42 @@
 (function() {
     angular.module("binary.pages.self-exclusion.controllers").controller("SelfExclusionController", SelfExclusion);
 
-    SelfExclusion.$inject = ["$scope", "$translate", "alertService", "websocketService", "validationService", "appStateService"];
+    SelfExclusion.$inject = [
+        "$scope",
+        "$state",
+        "$filter",
+        "$translate",
+        "$ionicScrollDelegate",
+        "alertService",
+        "websocketService",
+        "accountService",
+        "validationService"
+    ];
 
-    function SelfExclusion($scope, $translate, alertService, websocketService,
-        validationService, appStateService) {
+    function SelfExclusion(
+        $scope,
+        $state,
+        $filter,
+        $translate,
+        $ionicScrollDelegate,
+        alertService,
+        websocketService,
+        accountService,
+        validationService
+    ) {
         const vm = this;
+        vm.hasError = false;
         vm.validation = validationService;
         vm.fractionalDigits = vm.validation.fractionalDigits;
-        vm.today = new Date();
-        vm.minDate = vm.today.toISOString().slice(0, 10);
-        vm.minDateTime = vm.today.toISOString();
-        vm.nextSixWeeks = new Date(vm.today.getTime() + 7 * 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-        vm.nextSixMonths = new Date(vm.today.getTime() + 30 * 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
         vm.disableUpdateButton = true;
         vm.isDataLoaded = false;
+        vm.disableForZeroValues = false;
+        let isUpdated = false;
         vm.data = {};
+        const account = accountService.getDefault();
+        vm.country = account.country;
+        const noZeroValues = ['max_balance', 'max_turnover', 'max_losses', 'max_7day_turnover', 'max_7day_losses',
+            'max_30day_turnover', 'max_30day_losses', 'max_open_bets'];
 
         $scope.$on("get-self-exclusion", (e, response) => {
             $scope.$applyAsync(() => {
@@ -43,14 +64,20 @@
         });
 
         $scope.$on("set-self-exclusion", (e, response) => {
-            $translate(["self-exclusion.success", "self-exclusion.save-prompt"]).then(translation => {
+            $translate(["self-exclusion.success", "self-exclusion.save_prompt"]).then(translation => {
                 alertService.displayAlert(
                     translation["self-exclusion.success"],
-                    translation["self-exclusion.save-prompt"]
+                    translation["self-exclusion.save_prompt"]
                 );
             });
             vm.limits = _.clone(vm.data);
             vm.disableUpdateButton = false;
+            if (isUpdated) {
+                isUpdated = false;
+                if (vm.country === 'gb') {
+                    $ionicScrollDelegate.scrollBottom();
+                }
+            }
         });
 
         $scope.$on("set-self-exclusion:error", (e, error) => {
@@ -58,18 +85,27 @@
             vm.disableUpdateButton = false;
         });
 
+        vm.checkZeroValues = () => {
+            const hasZeroValue = [];
+            _.forEach(noZeroValues, field => {
+                if (parseInt(vm.data[field]) === 0) {
+                    hasZeroValue.push(field);
+                }
+            });
+            $scope.$applyAsync(() => {
+                vm.disableForZeroValues = !!hasZeroValue.length;
+            });
+        };
+
         vm.submit = () => {
             vm.disableUpdateButton = true;
             setSelfExclusion();
         };
 
-        init();
+        const getSelfExclusion = () => websocketService.sendRequestFor.getSelfExclusion();
+        const getLimits = () => websocketService.sendRequestFor.accountLimits();
 
-        function getSelfExclusion() {
-            websocketService.sendRequestFor.getSelfExclusion();
-        }
-
-        function setSelfExclusion() {
+        const setSelfExclusion = () => {
             const data = _.clone(vm.data);
 
             if (data.timeout_until) {
@@ -84,10 +120,63 @@
             let stringify = JSON.stringify(data);
             stringify = stringify.replace(/:(\d+)([,}])/g, ':"$1"$2');
             websocketService.sendRequestFor.setSelfExclusion(JSON.parse(stringify));
+            isUpdated = true;
         }
 
-        function init() {
-            getSelfExclusion();
+        // yyyy-mm-dd
+        const filterDate = (date) => {
+            const year  = $filter('date')(date, 'yyyy', 'UTC');
+            const month = $filter('date')(date, 'MM', 'UTC');
+            const day = $filter('date')(date, 'dd', 'UTC');
+            return `${year}-${month}-${day}`;
         }
+
+        const calculateDateLimits = (startingDate = new Date()) => {
+            vm.minDateTime = startingDate.toISOString();
+            startingDate.setDate(startingDate.getDate() + 1);
+            // calculating the min date for 'timeout until' 
+            // (6 weeks after tomorrow in format yyyy-mm-dd in UTC)
+            const tomorrow = _.clone(startingDate);
+            vm.minDate = `${tomorrow.toISOString().slice(0, 10)}T00:00:00`;
+            const dateAfterSixWeeks = tomorrow.setDate(tomorrow.getDate() + 41);
+            vm.nextSixWeeks = filterDate(dateAfterSixWeeks);
+            vm.nextSixWeeksDateTime = `${vm.nextSixWeeks}T23:59:59`
+
+            // calculating the min date for 'exclude until' 
+            // (6 month after tomorrow in format yyyy-mm-dd in UTC)
+            const dateAfterSixMonths = new Date(startingDate.setMonth(startingDate.getMonth() + 6)).getTime();
+            vm.nextSixMonths = filterDate(dateAfterSixMonths);
+        };
+
+        $scope.$on('get_limits', (e, limits) => {
+            vm.hasError = false;
+            vm.accountLimits = limits;
+            getSelfExclusion();
+        });
+
+        $scope.$on('get_limits:error', () => {
+            vm.hasError = true;
+        });
+
+        vm.goToContact = () => {
+            $state.go('contact');
+        };
+
+        $scope.$on('time:success', (e, time) => {
+            const startingDate = new Date(time * 1000);
+            calculateDateLimits(startingDate);
+        });
+
+        $scope.$on('time:error', () => {
+            calculateDateLimits();
+        });
+
+        const init = () => {
+            websocketService.sendRequestFor.serverTime();
+            getLimits();
+        };
+        
+        init();
+
     }
 })();

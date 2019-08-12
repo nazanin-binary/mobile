@@ -71,11 +71,16 @@
             const options = JSON.parse(localStorage.options);
             const proposal = create();
             proposal.symbol = options.underlying.symbol;
-            proposal.duration = options.tick;
+            proposal.duration = parseInt(options.tick);
             if (options.tradeType === "Higher/Lower") {
                 proposal.barrier = _.isEmpty(options.barrier) ? "" : options.barrier;
             } else {
                 proposal.barrier = options.digit;
+            }
+            if (options.tradeType === 'High/Low Ticks') {
+                proposal.selected_tick = options.selected_tick;
+            } else {
+                proposal.selected_tick = '';
             }
             proposal.tradeType = options.tradeType;
             proposal.basis = options.basis || proposal.basis;
@@ -83,11 +88,10 @@
 
             const currencyConfig = appStateService.currenciesConfig[sessionStorage.currency];
             if (currencyConfig && currencyConfig.type === "crypto") {
-                proposal.amount = options.cryptoAmounti || proposal.amount;
+                proposal.amount = options.cryptoAmount || proposal.amount;
             } else {
                 proposal.amount = options.amount || proposal.amount;
             }
-
             return proposal;
         };
 
@@ -116,12 +120,13 @@
             }
 
             proposal.symbol = options.underlying.symbol;
-            proposal.duration = options.tick;
+            proposal.duration = parseInt(options.tick);
             if (options.tradeType === "Higher/Lower") {
                 proposal.barrier = _.isEmpty(options.barrier) ? "" : options.barrier;
             } else {
                 proposal.barrier = options.digit;
             }
+            proposal.selected_tick = options.tradeType === "High/Low Ticks" ? options.selected_tick : null;
             proposal.tradeType = options.tradeType;
             proposal.basis = options.basis || proposal.basis;
 
