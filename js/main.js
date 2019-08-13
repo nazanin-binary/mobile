@@ -437,23 +437,6 @@
 "use strict";
 
 /**
- * @name app version module
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 12/19/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.app-version", ["binary.share.components.app-version.controllers", "binary.share.components.app-version.directives"]);
-
-    angular.module("binary.share.components.app-version.controllers", []);
-
-    angular.module("binary.share.components.app-version.directives", []);
-})();
-"use strict";
-
-/**
  * @name balance module
  * @author Morteza Tavnarad
  * @contributors []
@@ -499,6 +482,23 @@
     angular.module("binary.share.components.check-user-status.controllers", []);
 
     angular.module("binary.share.components.check-user-status.directives", []);
+})();
+"use strict";
+
+/**
+ * @name app version module
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 12/19/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.app-version", ["binary.share.components.app-version.controllers", "binary.share.components.app-version.directives"]);
+
+    angular.module("binary.share.components.app-version.controllers", []);
+
+    angular.module("binary.share.components.app-version.directives", []);
 })();
 "use strict";
 
@@ -752,23 +752,6 @@
 "use strict";
 
 /**
- * @name longcode module
- * @author Morteza Tavnarad
- * @contributors []
- * @since 09/22/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.longcode", ["binary.pages.trade.components.longcode.controllers", "binary.pages.trade.components.longcode.directives"]);
-
-    angular.module("binary.pages.trade.components.longcode.controllers", []);
-
-    angular.module("binary.pages.trade.components.longcode.directives", []);
-})();
-"use strict";
-
-/**
  * @name options module
  * @author Morteza Tavnarad
  * @contributors []
@@ -818,6 +801,23 @@
     angular.module("binary.pages.trade.components.purchase.controllers", []);
 
     angular.module("binary.pages.trade.components.purchase.directives", []);
+})();
+"use strict";
+
+/**
+ * @name longcode module
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/22/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.longcode", ["binary.pages.trade.components.longcode.controllers", "binary.pages.trade.components.longcode.directives"]);
+
+    angular.module("binary.pages.trade.components.longcode.controllers", []);
+
+    angular.module("binary.pages.trade.components.longcode.directives", []);
 })();
 "use strict";
 
@@ -4277,55 +4277,50 @@ angular.module("binary").constant("financialInformationOptions", {
             return filteredDate + "T" + filteredTime;
         };
 
-        var getNextSixWeeks = function getNextSixWeeks(startingDate) {
+        var addWeeks = function addWeeks(startingDate, weeks) {
             var date = _.clone(startingDate);
             var exactTime = filterTime(date);
-            var dateAfterSixWeeks = date.setDate(date.getDate() + 42);
+            var dateAfterSixWeeks = date.setDate(date.getDate() + weeks * 7);
             return {
                 limit: filterDate(dateAfterSixWeeks) + "T" + exactTime,
                 text: filterDate(dateAfterSixWeeks) + " at " + exactTime
             };
         };
 
-        var getNextSixMonths = function getNextSixMonths(startingDate) {
+        var addMonth = function addMonth(startingDate, month) {
             var date = _.clone(startingDate);
             date.setDate(date.getDate() + 1);
-            var dateAfterSixMonths = new Date(date.setMonth(date.getMonth() + 6)).getTime();
-            return filterDate(dateAfterSixMonths);
+            var dateAfterMonths = new Date(date.setMonth(date.getMonth() + month)).getTime();
+            return filterDate(dateAfterMonths);
         };
 
-        var getNextFiveYears = function getNextFiveYears(startingDate) {
+        var addYears = function addYears(startingDate, years) {
             var date = _.clone(startingDate);
-            // we add 5 * 365 = 1825 days instead of years to be exactly like API 
-            // otherwise it will have more days considering leap years
-            var dateAfterFiveMonth = new Date(date.setDate(date.getDate() + 1825)).getTime();
+            var dateAfterFiveMonth = new Date(date.setDate(date.getDate() + years * 365)).getTime();
             return filterDate(dateAfterFiveMonth);
         };
 
-        var getNow = function getNow(startingDate) {
+        var getCurrentDateTime = function getCurrentDateTime(startingDate) {
             var date = _.clone(startingDate);
             var now = new Date(date).getTime();
             return filterDateTime(now);
         };
 
-        var isLeapYear = function isLeapYear(year) {
-            return new Date(year, 1, 29).getDate() === 29;
-        };
-
         var calculateDateLimits = function calculateDateLimits() {
             var startingDate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Date();
 
-            vm.minDateTime = getNow(startingDate);
+            vm.minTimeoutUntil = getCurrentDateTime(startingDate);
             // calculating the min date for 'timeout until' 
-            // (6 weeks after tomorrow in format yyyy-mm-dd in UTC)
-            vm.nextSixWeeks = getNextSixWeeks(startingDate);
+            // (6 weeks after tomorrow in format yyyy-mm-dd)
+            vm.maxTimeoutUntil = addWeeks(startingDate, 6);
 
             // calculating the min date for 'exclude until' 
-            // (6 month after tomorrow in format yyyy-mm-dd in UTC)
-            vm.nextSixMonths = getNextSixMonths(startingDate);
+            // (6 month after tomorrow in format yyyy-mm-dd)
+            vm.minExcludeUntil = addMonth(startingDate, 6);
             // calculating the max date for 'exclude until'
-            // (5 years after tomorrow in format yyyy-mm-dd in UTC)
-            vm.nextFiveYears = getNextFiveYears(startingDate);
+            // we add 5 * 365 = 1825 days instead of years to be exactly like API 
+            // otherwise it will have more days considering leap years
+            vm.maxExcludeUntil = addYears(startingDate, 5);
         };
 
         $scope.$on('get_limits', function (e, limits) {
@@ -9559,71 +9554,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
-		 * @name app version controller
-		 * @author Nazanin Reihani Haghighi
-		 * @contributors []
-		 * @since 12/19/2016
-		 * @copyright Binary Ltd
-		 */
-
-(function () {
-    angular.module("binary.share.components.app-version.controllers").controller("AppVersionController", AppVersion);
-
-    AppVersion.$inject = ["$scope", "$ionicPlatform", "appVersionService"];
-
-    function AppVersion($scope, $ionicPlatform, appVersionService) {
-        var vm = this;
-        vm.appVersion = '0.0.0';
-        $ionicPlatform.ready(function () {
-            $scope.$applyAsync(function () {
-                if (window.cordova) {
-                    cordova.getAppVersion(function (version) {
-                        vm.appVersion = version;
-                        window._trackJs.version = vm.appVersion;
-                    }, function (err) {
-                        // console.log(err);
-                    });
-                } else {
-                    appVersionService.getAppVersion().success(function (data) {
-                        vm.appVersion = data.version;
-                        window._trackJs.version = vm.appVersion;
-                    }).error(function (data) {
-                        vm.appVersion = "0.0.0";
-                        window._trackJs.version = vm.appVersion;
-                    });
-                }
-            });
-        });
-    }
-})();
-"use strict";
-
-/**
- * @name app version directive
- * @author Nazanin Reihani Haghighi
- * @contributors []
- * @since 12/19/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.share.components.app-version.directives").directive("bgAppVersion", AppVersion);
-
-    function AppVersion() {
-        var directive = {
-            restrict: "E",
-            templateUrl: "js/share/components/app-version/app-version.template.html",
-            controller: "AppVersionController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {}
-        };
-        return directive;
-    }
-})();
-"use strict";
-
-/**
  * @name balance controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -10054,6 +9984,71 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
             restrict: "E",
             templateUrl: "js/share/components/check-user-status/check-user-status.template.html",
             controller: "CheckUserStatusController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {}
+        };
+        return directive;
+    }
+})();
+"use strict";
+
+/**
+		 * @name app version controller
+		 * @author Nazanin Reihani Haghighi
+		 * @contributors []
+		 * @since 12/19/2016
+		 * @copyright Binary Ltd
+		 */
+
+(function () {
+    angular.module("binary.share.components.app-version.controllers").controller("AppVersionController", AppVersion);
+
+    AppVersion.$inject = ["$scope", "$ionicPlatform", "appVersionService"];
+
+    function AppVersion($scope, $ionicPlatform, appVersionService) {
+        var vm = this;
+        vm.appVersion = '0.0.0';
+        $ionicPlatform.ready(function () {
+            $scope.$applyAsync(function () {
+                if (window.cordova) {
+                    cordova.getAppVersion(function (version) {
+                        vm.appVersion = version;
+                        window._trackJs.version = vm.appVersion;
+                    }, function (err) {
+                        // console.log(err);
+                    });
+                } else {
+                    appVersionService.getAppVersion().success(function (data) {
+                        vm.appVersion = data.version;
+                        window._trackJs.version = vm.appVersion;
+                    }).error(function (data) {
+                        vm.appVersion = "0.0.0";
+                        window._trackJs.version = vm.appVersion;
+                    });
+                }
+            });
+        });
+    }
+})();
+"use strict";
+
+/**
+ * @name app version directive
+ * @author Nazanin Reihani Haghighi
+ * @contributors []
+ * @since 12/19/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.share.components.app-version.directives").directive("bgAppVersion", AppVersion);
+
+    function AppVersion() {
+        var directive = {
+            restrict: "E",
+            templateUrl: "js/share/components/app-version/app-version.template.html",
+            controller: "AppVersionController",
             controllerAs: "vm",
             bindToController: true,
             scope: {}
@@ -11814,51 +11809,6 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
 "use strict";
 
 /**
- * @name longcode controller
- * @author Morteza Tavnarad
- * @contributors []
- * @since 09/27/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.longcode.controllers").controller("LongcodeController", Longcode);
-
-    function Longcode() {
-        var vm = this;
-    }
-})();
-"use strict";
-
-/**
- * @name longcode direciive
- * @author Morteza Tavnarad
- * @contributors []
- * @since 09/27/2016
- * @copyright Binary Ltd
- */
-
-(function () {
-    angular.module("binary.pages.trade.components.longcode.directives").directive("bgLongcode", Longcode);
-
-    function Longcode() {
-        var direciive = {
-            restrict: "E",
-            templateUrl: "js/pages/trade/components/longcode/longcode.template.html",
-            controller: "LongcodeController",
-            controllerAs: "vm",
-            bindToController: true,
-            scope: {
-                purchasedContract: "="
-            }
-        };
-
-        return direciive;
-    }
-})();
-"use strict";
-
-/**
  * @name barrier controller
  * @author Morteza Tavnarad
  * @contributors []
@@ -13227,5 +13177,50 @@ angular.module("binary").factory("websocketService", ["$ionicLoading", "$ionicPl
         };
 
         return directive;
+    }
+})();
+"use strict";
+
+/**
+ * @name longcode controller
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.longcode.controllers").controller("LongcodeController", Longcode);
+
+    function Longcode() {
+        var vm = this;
+    }
+})();
+"use strict";
+
+/**
+ * @name longcode direciive
+ * @author Morteza Tavnarad
+ * @contributors []
+ * @since 09/27/2016
+ * @copyright Binary Ltd
+ */
+
+(function () {
+    angular.module("binary.pages.trade.components.longcode.directives").directive("bgLongcode", Longcode);
+
+    function Longcode() {
+        var direciive = {
+            restrict: "E",
+            templateUrl: "js/pages/trade/components/longcode/longcode.template.html",
+            controller: "LongcodeController",
+            controllerAs: "vm",
+            bindToController: true,
+            scope: {
+                purchasedContract: "="
+            }
+        };
+
+        return direciive;
     }
 })();
