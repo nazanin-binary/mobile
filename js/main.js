@@ -4241,7 +4241,6 @@ angular.module("binary").constant("financialInformationOptions", {
 
         var setSelfExclusion = function setSelfExclusion() {
             var data = _.clone(vm.data);
-            console.log(data);
 
             if (data.timeout_until) {
                 data.timeout_until = Math.floor(new Date(data.timeout_until).getTime() / 1000);
@@ -4274,9 +4273,8 @@ angular.module("binary").constant("financialInformationOptions", {
 
         var filterDateTime = function filterDateTime(date) {
             var filteredDate = filterDate(date);
-            var hour = $filter('date')(date, 'HH');
-            var minute = $filter('date')(date, 'mm');
-            return filteredDate + "T" + hour + ":" + minute;
+            var filteredTime = filterTime(date);
+            return filteredDate + "T" + filteredTime;
         };
 
         var getNextSixWeeks = function getNextSixWeeks(startingDate) {
